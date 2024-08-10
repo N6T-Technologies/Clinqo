@@ -1,0 +1,258 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum Roles {
+    DOCTOR
+    PATIENT
+    CLINICHEAD
+    EMPLOYEE
+    ADMIN
+}
+
+enum WeekDays {
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THRUSDAY
+    FRIDAY
+    SATURDAY
+    SUNDAY
+}
+
+enum Genders {
+    MALE
+    FEMALE
+    OTHER
+}
+
+enum EmployeeStatus {
+    ACTIVE
+    INACTIVE
+}
+
+enum PaymentMethods {
+    UPI
+    DEBITCARD
+    CREDITCARD
+    CASH
+}
+
+enum AppointmentStatus {
+    COMPLETED
+    CANCELED
+}
+
+enum RecordType {
+    X_RAY
+}
+
+enum RecordFormat {
+    PDF
+}
+
+model User {
+    id            String      @id @default(cuid())
+    firstName     String
+    lastName      String
+    yearOfBirth   String
+    dateOfBirth   DateTime
+    image         String?
+    gender        Genders
+    email         String      @unique
+    contactNumber String
+    countryCode   String
+    password      String
+    role          Roles
+    accounts      Account[]
+    createdAt     DateTime    @default(now())
+    updatedAt     DateTime    @updatedAt
+    ClinicHead    ClinicHead?
+    Employee      Employee?
+    Doctor        Doctor?
+    Patient       Patient?
+    Admin         Admin?
+
+    @@map("users")
+}
+
+model Account {
+    id                String  @id @default(cuid())
+    userId            String  @map("user_id")
+    type              String
+    provider          String
+    providerAccountId String  @map("provider_account_id")
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+    @@map("accounts")
+}
+
+model PasswordResetToken {
+    id      Int      @id @default(autoincrement())
+    email   String
+    token   String   @unique
+    expires DateTime
+
+    @@unique([email, token])
+}
+
+model Clinic {
+    id                    String           @id @default(cuid())
+    name                  String
+    logo                  String
+    gstin                 String
+    address               ClinicAddress?
+    employees             Employee[]
+    doctors               Doctor[]
+    clinicHeads           ClinicHead[]
+    doctorSchedules       DoctorSchedule[]
+    completedAppointments Appointment[]
+    createdAt             DateTime         @default(now())
+    updatedAt             DateTime         @updatedAt
+    adminId               String
+    admin                 Admin            @relation(fields: [adminId], references: [id])
+
+    @@map("clinics")
+}
+
+model ClinicAddress {
+    id           Int     @id @default(autoincrement())
+    addressLine1 String
+    addressLine2 String?
+    city         String
+    state        String
+    pincode      String
+    country      String
+    clinic       Clinic  @relation(fields: [clinicId], references: [id])
+    clinicId     String  @unique
+}
+
+model Admin {
+    id      String   @id @default(cuid())
+    userId  String   @unique
+    user    User     @relation(fields: [userId], references: [id])
+    clinics Clinic[]
+
+    @@map("admis")
+}
+
+model ClinicHead {
+    id       Int    @id @default(autoincrement())
+    userId   String @unique
+    clinicId String
+    user     User   @relation(fields: [userId], references: [id])
+    clinic   Clinic @relation(fields: [clinicId], references: [id])
+
+    @@map("clinicHeads")
+}
+
+model Employee {
+    id             String         @id @default(cuid())
+    userId         String         @unique
+    clinicId       String
+    employeeStatus EmployeeStatus
+    user           User           @relation(fields: [userId], references: [id])
+    clinic         Clinic         @relation(fields: [clinicId], references: [id])
+
+    @@map("employees")
+}
+
+model Doctor {
+    id                    String           @id @default(cuid())
+    userId                String           @unique
+    specialisation        String
+    mciNumber             String
+    user                  User             @relation(fields: [userId], references: [id])
+    createdRecords        PatientRecords[]
+    clinics               Clinic[]
+    schedules             DoctorSchedule[]
+    completedAppointments Appointment[]
+
+    @@index(mciNumber)
+    @@map("doctors")
+}
+
+model DoctorSchedule {
+    doctorId  String
+    clinicId  String
+    dayOfWeek WeekDays
+    startTime DateTime
+    endTime   DateTime
+    doctor    Doctor   @relation(fields: [doctorId], references: [id])
+    clinic    Clinic   @relation(fields: [clinicId], references: [id])
+
+    @@id([doctorId, clinicId])
+}
+
+model Patient {
+    id          String           @id @default(cuid())
+    appointment Appointment[]
+    records     PatientRecords[]
+    address     PatientAddress[]
+    userId      String           @unique
+    user        User             @relation(fields: [userId], references: [id])
+
+    @@map("patients")
+}
+
+model PatientAddress {
+    id           Int     @id @default(autoincrement())
+    addressLine1 String?
+    addressLine2 String?
+    city         String
+    state        String
+    pincode      String
+    country      String
+    patientId    String
+    Patient      Patient @relation(fields: [patientId], references: [id])
+}
+
+model PatientRecords {
+    id           Int          @id @default(autoincrement())
+    recordType   RecordType
+    recordFormat RecordFormat
+    recordLink   String
+    patientId    String?
+    Patient      Patient?     @relation(fields: [patientId], references: [id])
+    doctorId     String?
+    Doctor       Doctor?      @relation(fields: [doctorId], references: [id])
+}
+
+model Appointment {
+    id                Int               @id @default(autoincrement())
+    doctorId          String
+    clinicId          String
+    patientId         String
+    bookTime          DateTime
+    startTime         DateTime
+    endTime           DateTime
+    symptoms          String
+    paymentMethod     PaymentMethods
+    appointmentStatus AppointmentStatus
+    prescription      String
+    doctor            Doctor            @relation(fields: [doctorId], references: [id])
+    clinic            Clinic            @relation(fields: [clinicId], references: [id])
+    patient           Patient           @relation(fields: [patientId], references: [id])
+
+    @@map("appointments")
+}
