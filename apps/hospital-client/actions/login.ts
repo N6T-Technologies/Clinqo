@@ -1,10 +1,10 @@
 "use server";
 
 import { AuthError } from "next-auth";
-import { signIn } from "../auth.js";
-import { DEFAULT_LOGGEDIN_REDIRECT } from "../routes.js";
-import { LoginSchema, LoginSchemaType } from "../schemas/index.js";
-import { getUserByEmial } from "../data/user.js";
+import { signIn } from "../auth";
+import { DEFAULT_LOGGEDIN_REDIRECT } from "../routes";
+import { LoginSchema, LoginSchemaType } from "../schemas/index";
+import { getUserByEmial } from "../data/user";
 
 export enum LoginActionsError {
     "Invalid fields",
