@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Form, FormItem, FormControl, FormLabel, FormMessage, FormField } from "../ui/form";
-import { LoginSchema, LoginSchemaType } from "@/schemas";
+import { LoginSchema, type LoginSchemaType } from "@/types";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FormError } from "../ui/form-error";
@@ -13,7 +13,7 @@ import { FormSuccess } from "../ui/form-success";
 import { login } from "@/actions/login";
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { LoginActionsError } from "@/actions/login";
+import { LoginActionsError } from "@/types";
 
 export const LoginForm = () => {
     const [error, setError] = useState<LoginActionsError | undefined>();

@@ -3,15 +3,9 @@
 import { AuthError } from "next-auth";
 import { signIn } from "../auth";
 import { DEFAULT_LOGGEDIN_REDIRECT } from "../routes";
-import { LoginSchema, LoginSchemaType } from "../schemas/index";
+import { LoginSchema, type LoginSchemaType } from "@/types";
 import { getUserByEmial } from "../data/user";
-
-export enum LoginActionsError {
-    "Invalid fields",
-    "User not found",
-    "Invalid credentials",
-    "Something went wrong",
-}
+import { LoginActionsError } from "@/types";
 
 export const login = async (
     values: LoginSchemaType

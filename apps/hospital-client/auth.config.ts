@@ -1,7 +1,7 @@
 import type { NextAuthConfig } from "next-auth";
 import credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { LoginSchema } from "./schemas";
+import { LoginSchema } from "./types";
 import { getUserByEmial } from "./data/user";
 
 export default {

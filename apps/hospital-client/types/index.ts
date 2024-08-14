@@ -10,3 +10,10 @@ export const LoginSchema = z.object({
 });
 
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
+
+export enum LoginActionsError {
+    "Invalid fields",
+    "User not found",
+    "Invalid credentials",
+    "Something went wrong",
+}
