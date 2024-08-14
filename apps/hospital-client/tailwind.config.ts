@@ -15,9 +15,12 @@ const config = {
         extend: {
             colors: {
                 clinqoPrimary: "#2182D9",
-                clinqoHover: "#60B3FE",
+                clinqoButtonHover: "#60B3FE",
                 clinqoHoverText: "#D8EDFF",
                 clinqoNormal: "#292E91",
+                clinqoLight: "#EAEAF4",
+                clinqoActive: "#BDBEDD",
+                clinqoHover: "#DFE0EF",
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",

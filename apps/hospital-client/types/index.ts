@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { ReactNode } from "react";
 
 export const LoginSchema = z.object({
     email: z.string().email({
@@ -16,4 +17,10 @@ export enum LoginActionsError {
     "User not found",
     "Invalid credentials",
     "Something went wrong",
+}
+
+export interface Route {
+    href: string;
+    icon: ReactNode;
+    title: string;
 }
