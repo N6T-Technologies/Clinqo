@@ -17,6 +17,7 @@ const config = {
                 clinqoPrimary: "#2182D9",
                 clinqoHover: "#60B3FE",
                 clinqoHoverText: "#D8EDFF",
+                clinqoNormal: "#292E91",
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
                 ring: "hsl(var(--ring))",
