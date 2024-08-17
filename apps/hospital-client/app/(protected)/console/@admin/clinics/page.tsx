@@ -1,3 +1,6 @@
 export default function AdminClinics() {
-    return <div>Admin Clinics</div>;
+    return <div>
+        Clinics
+    </div>;
+
 }

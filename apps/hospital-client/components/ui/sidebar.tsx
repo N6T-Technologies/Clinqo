@@ -21,7 +21,7 @@ export function Sidebar({ routes, help }: { routes: Route[]; help: boolean }) {
                 </div>
                 <div className="mt-16">
                     {routes.map((route) => (
-                        <SidebarItem href={route.href} icon={route.icon} title={route.title} />
+                        <SidebarItem key={route.href} href={route.href} icon={route.icon} title={route.title} />
                     ))}
                 </div>
             </div>
