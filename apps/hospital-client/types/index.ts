@@ -42,3 +42,9 @@ export interface StepInfo {
     name: string;
     fields?: string[];
 }
+
+export interface StepperRefType {
+    next: () => void;
+    prev: () => void;
+    currentStep: number;
+}
