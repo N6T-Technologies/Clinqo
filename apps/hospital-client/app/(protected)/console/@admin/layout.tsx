@@ -9,7 +9,7 @@ import { Sidebar } from "@/components/ui/sidebar";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
     const routes: Route[] = [
-        { href: "/console/dashboard", icon: <FaHome className="h-6 w-6" />, title: "Dashboard" },
+        { href: "/console", icon: <FaHome className="h-6 w-6" />, title: "Console" },
         { href: "/console/clinics", icon: <FaHospital className="h-6 w-6" />, title: "Clinics" },
         { href: "/console/doctors", icon: <FaUserDoctor className="h-6 w-6" />, title: "Doctors" },
     ];

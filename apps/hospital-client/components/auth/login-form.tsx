@@ -28,7 +28,7 @@ export const LoginForm = () => {
         },
     });
 
-    const onSubmig = (values: LoginSchemaType) => {
+    const onSubmit = (values: LoginSchemaType) => {
         startTransition(async () => {
             const res = await login(values);
             setSuccess(res.msg);
@@ -39,7 +39,7 @@ export const LoginForm = () => {
     return (
         <CardWrapper headerLabel="Welcome back">
             <Form {...form}>
-                <form className="space-y-4" onSubmit={form.handleSubmit(onSubmig)}>
+                <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="space-y-4">
                         <FormField
                             control={form.control}
