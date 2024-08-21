@@ -113,6 +113,7 @@ model PasswordResetToken {
     expires DateTime
 
     @@unique([email, token])
+    @@map("password_reset_tokens")
 }
 
 model Clinic {
@@ -144,6 +145,8 @@ model ClinicAddress {
     country      String
     clinic       Clinic  @relation(fields: [clinicId], references: [id])
     clinicId     String  @unique
+
+    @@map("clinic_addresses")
 }
 
 model Admin {
@@ -152,7 +155,7 @@ model Admin {
     user    User     @relation(fields: [userId], references: [id])
     clinics Clinic[]
 
-    @@map("admis")
+    @@map("admins")
 }
 
 model ClinicHead {
@@ -162,7 +165,7 @@ model ClinicHead {
     user     User   @relation(fields: [userId], references: [id])
     clinic   Clinic @relation(fields: [clinicId], references: [id])
 
-    @@map("clinicHeads")
+    @@map("clinic_heads")
 }
 
 model Employee {
@@ -182,7 +185,7 @@ model Doctor {
     specialisation        String
     mciNumber             String
     user                  User             @relation(fields: [userId], references: [id])
-    createdRecords        PatientRecords[]
+    createdRecords        PatientRecord[]
     clinics               Clinic[]
     schedules             DoctorSchedule[]
     completedAppointments Appointment[]
@@ -201,12 +204,13 @@ model DoctorSchedule {
     clinic    Clinic   @relation(fields: [clinicId], references: [id])
 
     @@id([doctorId, clinicId])
+    @@map("doctor_schedules")
 }
 
 model Patient {
     id          String           @id @default(cuid())
     appointment Appointment[]
-    records     PatientRecords[]
+    records     PatientRecord[]
     address     PatientAddress[]
     userId      String           @unique
     user        User             @relation(fields: [userId], references: [id])
@@ -224,9 +228,11 @@ model PatientAddress {
     country      String
     patientId    String
     Patient      Patient @relation(fields: [patientId], references: [id])
+
+    @@map("patient_addresses")
 }
 
-model PatientRecords {
+model PatientRecord {
     id           Int          @id @default(autoincrement())
     recordType   RecordType
     recordFormat RecordFormat
@@ -235,6 +241,8 @@ model PatientRecords {
     Patient      Patient?     @relation(fields: [patientId], references: [id])
     doctorId     String?
     Doctor       Doctor?      @relation(fields: [doctorId], references: [id])
+
+    @@map("patient_records")
 }
 
 model Appointment {

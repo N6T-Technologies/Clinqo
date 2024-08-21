@@ -26,13 +26,7 @@ export const ClininRegFormDataSchema = z.object({
         .length(13, "Invalid contact number")
         .startsWith("+", "Country code is required"),
     clinicName: z.string().min(1, "Name of the Clinq is required"),
-    // logo: z
-    //     .any()
-    //     .refine((file) => file?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
-    //     .refine(
-    //         (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
-    //         "Only .jpg, .jpeg, .png and .webp formats are supported."
-    //     ),
+    logo: z.string(),
     gstin: z.string().min(1, "GSTIN is required").length(15, "Invalid GSTIN"),
     country: z.string().min(1, "Country is required"),
     addressLine1: z.string().min(1, "Street is required"),
@@ -69,3 +63,10 @@ export interface StepperRefType {
     prev: () => void;
     currentStep: number;
 }
+
+export type Clinic = {
+    id: string;
+    name: string;
+    headName: string;
+    headEmail: string;
+};

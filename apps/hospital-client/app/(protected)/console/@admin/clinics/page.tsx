@@ -1,11 +1,36 @@
-import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Clinic } from "@/types";
+import { DataTable } from "@/components/ui/data-table";
+import { columns } from "./columns";
 
 //TODO: Create Table for listing the clinics associated with the Admin
 
-export default function AdminClinics() {
+async function getData(): Promise<Clinic[]> {
+    // Fetch data from your API here.
+    return [
+        {
+            id: "728ed52f",
+            name: "Clinqo Hospital",
+            headName: "Sanat Behera",
+            headEmail: "sannyb@gmail.com",
+        },
+        {
+            id: "728ed52f",
+            name: "Clinqo Hospital",
+            headName: "Sanat Behera",
+            headEmail: "sannyb@gmail.com",
+        },
+        // ...
+    ];
+}
+
+export default async function AdminClinics() {
+    const data = await getData();
+
     return (
-        <div className="h-full flex items-center justify-center">
+        <div className="w-full h-full flex flex-col space-y-6 items-center justify-center">
+            <DataTable columns={columns} data={data} />
             <form
                 action={async () => {
                     "use server";

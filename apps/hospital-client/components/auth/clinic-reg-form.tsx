@@ -3,20 +3,15 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
+import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
+
 import { ClininRegFormDataSchema, type ClininRegFormDataSchemaType, StepInfo } from "@/types";
 import { Stepper } from "../ui/stepper";
 import { Button } from "../ui/button";
-import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
-
-enum Gender {
-    "MALE",
-    "FEMALE",
-    "OTHERS",
-}
 
 const formSteps: StepInfo[] = [
     {
@@ -29,7 +24,8 @@ const formSteps: StepInfo[] = [
         name: "Clinic Info",
         fields: ["clinicName", "gstin", "addressLine1", "addressLine2", "city", "state", "pincode", "country"],
     },
-    { id: "Step 3", name: "Complete" },
+    { id: "Step 3", name: "Upload Logo", fields: ["logo"] },
+    { id: "Step 4", name: "Complete" },
 ];
 
 export const ClinicRegForm = () => {
@@ -81,11 +77,14 @@ export const ClinicRegForm = () => {
     };
 
     return (
-        <div className="p-16 space-y-4">
+        <div className="w-full h-full p-16 space-y-4">
             <Stepper formSteps={formSteps} currentStep={currentStep} />
 
             <Form {...form}>
-                <form className="mt-12 py-12" onSubmit={form.handleSubmit(processForm)}>
+                <form
+                    className="flex justify-center w-full h-full mt-12 py-12"
+                    onSubmit={form.handleSubmit(processForm)}
+                >
                     {currentStep === 0 && (
                         <div>
                             <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
@@ -259,23 +258,6 @@ export const ClinicRegForm = () => {
                                         );
                                     }}
                                 />
-                                {/* <FormField */}
-                                {/*     control={form.control} */}
-                                {/*     name="logo" */}
-                                {/*     render={({ field }) => { */}
-                                {/*         return ( */}
-                                {/*             <FormItem> */}
-                                {/*                 <FormLabel className="block text-sm font-medium leading-6 text-gray-900"> */}
-                                {/*                     Select Clinic logo */}
-                                {/*                 </FormLabel> */}
-                                {/*                 <FormControl> */}
-                                {/*                     <Input type="file" accept=".png, .jpg, .jpeg, .webp" {...field} /> */}
-                                {/*                 </FormControl> */}
-                                {/*                 <FormMessage /> */}
-                                {/*             </FormItem> */}
-                                {/*         ); */}
-                                {/*     }} */}
-                                {/* /> */}
 
                                 <FormField
                                     control={form.control}
@@ -443,6 +425,40 @@ export const ClinicRegForm = () => {
                                         );
                                     }}
                                 />
+                            </div>
+                        </div>
+                    )}
+
+                    {currentStep === 2 && (
+                        <div className="w-full h-full">
+                            <h2 className="text-base font-semibold leading-7 text-gray-900">Clinic Logo</h2>
+                            <p className="mt-1 text-sm leading-6 text-gray-600">Add Clinic Logo</p>
+                            <div className="w-full mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                <div className="flex justify-center">
+                                    <FormField
+                                        control={form.control}
+                                        name="logo"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Clinic Logo
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            type="file"
+                                                            accept=".png, .jpg, .jpeg, .webp"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
                     )}
