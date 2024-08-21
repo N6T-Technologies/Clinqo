@@ -20,18 +20,19 @@ export const ClininRegFormDataSchema = z.object({
     email: z.string().min(1, "Email is required").email("Invalid email address"),
     dateOfBirth: z.string().date(),
     gender: z.custom<Gender>(),
-    contactNumber: z.string(),
-    // countryCode: z.string().length(3, "Invalid country code").startsWith("+", "Country code must start with +"),
+    contactNumber: z
+        .string()
+        .min(1, "Contact number is required")
+        .length(13, "Invalid contact number")
+        .startsWith("+", "Country code is required"),
     clinicName: z.string().min(1, "Name of the Clinq is required"),
     // logo: z
-    //     .instanceof(File)
-    //     .optional()
-    //     .refine((file) => {
-    //         return !file || file.size <= MAX_FILE_SIZE;
-    //     }, "File size must be less than 5MB"),
-    // .refine((file) => {
-    //     return ACCEPTED_IMAGE_TYPES.includes(file?.type || "");
-    // }, "File must be either of png, jpeg, jpg, webp"),
+    //     .any()
+    //     .refine((file) => file?.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
+    //     .refine(
+    //         (file) => ACCEPTED_IMAGE_TYPES.includes(file?.type),
+    //         "Only .jpg, .jpeg, .png and .webp formats are supported."
+    //     ),
     gstin: z.string().min(1, "GSTIN is required").length(15, "Invalid GSTIN"),
     country: z.string().min(1, "Country is required"),
     addressLine1: z.string().min(1, "Street is required"),

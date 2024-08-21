@@ -8,8 +8,15 @@ import { Stepper } from "../ui/stepper";
 import { Button } from "../ui/button";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
+
+enum Gender {
+    "MALE",
+    "FEMALE",
+    "OTHERS",
+}
 
 const formSteps: StepInfo[] = [
     {
@@ -36,15 +43,17 @@ export const ClinicRegForm = () => {
     });
 
     const processForm: SubmitHandler<ClininRegFormDataSchemaType> = (data) => {
-        startTransition(async () => {
-            await new Promise((rej, res) => {
-                setTimeout(() => {
-                    console.log(data);
-                    res();
-                }, 2000);
-            });
-            form.reset();
-        });
+        // startTransition(async () => {
+        //     await new Promise((rej, res) => {
+        //         setTimeout(() => {
+        //             console.log(data);
+        //             form.reset();
+        //             res();
+        //         }, 2000);
+        //     });
+        // });
+        console.log(data);
+        form.reset();
     };
 
     type FieldName = keyof ClininRegFormDataSchemaType;
@@ -174,26 +183,26 @@ export const ClinicRegForm = () => {
                                 <FormField
                                     control={form.control}
                                     name="gender"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Gender
-                                                </FormLabel>
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                Gender
+                                            </FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
-                                                    <Input
-                                                        className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        autoComplete="sex"
-                                                        type="text"
-                                                        placeholder="Male"
-                                                    />
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select Gender" />
+                                                    </SelectTrigger>
                                                 </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
+                                                <SelectContent>
+                                                    <SelectItem value="MALE">Male</SelectItem>
+                                                    <SelectItem value="FEMALE">Female</SelectItem>
+                                                    <SelectItem value="OTHERS">Others</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
                                 <FormField
                                     control={form.control}
@@ -227,7 +236,6 @@ export const ClinicRegForm = () => {
                             <h2 className="text-base font-semibold leading-7 text-gray-900">Clinqo Information</h2>
                             <p className="mt-1 text-sm leading-6 text-gray-600">Provide details of Clinic.</p>
                             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                {/* ["name", "logo", "gstin", "addressLine1", "addressLine2", "city", "state", "pincode", "country"], */}
                                 <FormField
                                     control={form.control}
                                     name="clinicName"
@@ -261,7 +269,7 @@ export const ClinicRegForm = () => {
                                 {/*                     Select Clinic logo */}
                                 {/*                 </FormLabel> */}
                                 {/*                 <FormControl> */}
-                                {/*                     <Input type="file" accept=".png, .jpg, .jpeg, .webp" {...fileRef} /> */}
+                                {/*                     <Input type="file" accept=".png, .jpg, .jpeg, .webp" {...field} /> */}
                                 {/*                 </FormControl> */}
                                 {/*                 <FormMessage /> */}
                                 {/*             </FormItem> */}
