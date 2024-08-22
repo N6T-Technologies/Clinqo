@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Clinic } from "@/types";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
+import { Card } from "@/components/ui/card";
 
 //TODO: Create Table for listing the clinics associated with the Admin
 
@@ -30,18 +31,24 @@ export default async function AdminClinics() {
 
     return (
         <div className="w-full h-full flex flex-col space-y-6 items-center justify-center">
-            <DataTable columns={columns} data={data} />
-            <form
-                action={async () => {
-                    "use server";
+            <div className="w-full px-16">
+                <Card className="shadow-md">
+                    <DataTable columns={columns} data={data} />
+                </Card>
+            </div>
+            <div>
+                <form
+                    action={async () => {
+                        "use server";
 
-                    redirect("/console/clinics/register");
-                }}
-            >
-                <Button variant="clinqo" type="submit">
-                    Register Clinic
-                </Button>
-            </form>
+                        redirect("/console/clinics/register");
+                    }}
+                >
+                    <Button variant="clinqo" type="submit">
+                        Register Clinic
+                    </Button>
+                </form>
+            </div>
         </div>
     );
 }
