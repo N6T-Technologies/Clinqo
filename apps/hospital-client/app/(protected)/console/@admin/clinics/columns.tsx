@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -13,9 +13,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Clinic } from "@/types";
+import { ReactNode } from "react";
 
-const Header = ({ header }: { header: string }) => {
-    return <div className="font-extrabold text-md text-center">{header}</div>;
+const Header = ({ header, icon }: { header: string; icon?: ReactNode }) => {
+    return (
+        <div className="flex font-extrabold text-md justify-center items-center">
+            {header}
+            {icon && icon}
+        </div>
+    );
 };
 
 const CellStyles = ({ text }: { text: string | number }) => {
@@ -40,7 +46,13 @@ export const columns: ColumnDef<Clinic>[] = [
     },
     {
         accessorKey: "headEmail",
-        header: () => <Header header="Email" />,
+        header: ({ column }) => {
+            return (
+                <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                    <Header header="Email" icon={<ArrowUpDown className="ml-2 h-4 w-4" />} />
+                </Button>
+            );
+        },
         cell: ({ row }) => <CellStyles text={row.getValue("headEmail")} />,
     },
     {
