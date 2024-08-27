@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Clinic } from "@/types";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
+import { RegisterClinicButton } from "@/components/ui/regiseter-clinic-button";
 
 //TODO: Create Table for listing the clinics associated with the Admin
 
@@ -100,19 +101,7 @@ export default async function AdminClinics() {
                     data={data}
                 />
             </div>
-            <div className="mt-6">
-                <form
-                    action={async () => {
-                        "use server";
-
-                        redirect("/console/clinics/register");
-                    }}
-                >
-                    <Button variant="clinqo" type="submit">
-                        Register Clinic
-                    </Button>
-                </form>
-            </div>
+            <RegisterClinicButton />
         </div>
     );
 }
