@@ -17,7 +17,7 @@ async function getData(): Promise<Clinic[]> {
         },
         {
             id: "728ed52f",
-            name: "Clinqo Hospital",
+            name: "Mayur Hospital",
             headName: "Sanat Behera",
             headEmail: "sannyb@gmail.com",
         },
@@ -91,7 +91,14 @@ export default async function AdminClinics() {
     return (
         <div className="w-full h-full flex flex-col items-center ">
             <div className="w-full h-4/5 px-14 pt-14">
-                <DataTable className="bg-white" columns={columns} data={data} />
+                <DataTable
+                    heading="Registered Clinics"
+                    filterField="name"
+                    searchBoxPlaceholder="Fliter Clinics..."
+                    className="bg-white"
+                    columns={columns}
+                    data={data}
+                />
             </div>
             <div className="mt-6">
                 <form
