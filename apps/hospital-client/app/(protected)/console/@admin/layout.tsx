@@ -17,7 +17,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     return (
         <div className="h-full w-full grid grid-cols-12">
             <Sidebar routes={routes} help={false} />
-            <div className="col-span-10 w-full bg-clinqoHover h-full">
+            <div className="w-full col-span-10 bg-clinqoHover h-full">
                 <Appbar pic={"MP"} icon={<EnvelopeClosedIcon className="h-6 w-6" />} />
                 <div className="h-full w-full">{children}</div>
             </div>
