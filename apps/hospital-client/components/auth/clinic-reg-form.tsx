@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
+import Image from "next/image";
 
 const formSteps: StepInfo[] = [
     {
@@ -428,47 +429,67 @@ export const ClinicRegForm = () => {
                             </div>
                         )}
 
-                        {/* TODO:Complete the Logo upload field */}
                         {currentStep === 2 && (
                             <div className="w-full h-full">
                                 <h2 className="text-base font-semibold leading-7 text-gray-900">Clinic Logo</h2>
                                 <p className="mt-1 text-sm leading-6 text-gray-600">Add Clinic Logo</p>
-                                <div className="flex justify-center">
-                                    <div className="flex flex-col justify-center">
-                                        <div className="pb-4">
-                                            <FormField
-                                                control={form.control}
-                                                name="logo"
-                                                render={({ field }) => {
-                                                    return (
-                                                        <FormItem>
-                                                            <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                                Clinic Logo
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                                    {...field}
-                                                                    disabled={isPending}
-                                                                    type="file"
-                                                                    accept=".png, .jpg, .jpeg, .webp"
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    );
-                                                }}
-                                            />
-                                        </div>
-                                        <Button className="">Upload Image</Button>
-                                    </div>
+                                <div className="w-full mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="logo"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Clinic Logo
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative flex flex-col items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-sky-600 hover:bg-gray-50">
+                                                            <Input
+                                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                                {...field}
+                                                                disabled={isPending}
+                                                                id="file-upload"
+                                                                type="file"
+                                                                accept=".png, .jpg, .jpeg, .webp"
+                                                            />
+                                                            <div className="relative z-10 text-center text-black">
+                                                                <p className="text-lg font-medium">
+                                                                    Drag and Drop file
+                                                                </p>
+                                                                <p className="mt-2 text-sm">or</p>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        if (
+                                                                            document.getElementById(
+                                                                                "file-upload"
+                                                                            ) as HTMLInputElement | null
+                                                                        ) {
+                                                                            (
+                                                                                document.getElementById(
+                                                                                    "file-upload"
+                                                                                ) as HTMLInputElement
+                                                                            ).click();
+                                                                        }
+                                                                    }}
+                                                                    className="mt-2 px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-md hover:bg-sky-700"
+                                                                >
+                                                                    Browse
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
                                 </div>
                             </div>
                         )}
                     </form>
                 </Form>
-            </div>
-            <div>
                 {currentStep != formSteps.length - 1 ? (
                     <div className="flex justify-between">
                         <Button variant="clinqo" className="p-2" onClick={() => prev()} disabled={currentStep == 0}>
