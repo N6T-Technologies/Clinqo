@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
+import Image from "next/image";
 
 const formSteps: StepInfo[] = [
     {
@@ -30,7 +31,6 @@ const formSteps: StepInfo[] = [
 
 export const ClinicRegForm = () => {
     const [currentStep, setCurrentStep] = useState<number>(0);
-    const [previousStep, setPreviousStep] = useState<number>(0);
 
     const [isPending, startTransition] = useTransition();
 
@@ -64,377 +64,376 @@ export const ClinicRegForm = () => {
             if (currentStep === formSteps.length - 2) {
                 await form.handleSubmit(processForm)();
             }
-            setPreviousStep(currentStep);
             setCurrentStep((step) => step + 1);
         }
     };
 
     const prev = () => {
         if (currentStep > 0) {
-            setPreviousStep(currentStep);
             setCurrentStep((step) => step - 1);
         }
     };
 
     return (
-        <div className="w-full h-full p-16 space-y-4">
-            <Stepper formSteps={formSteps} currentStep={currentStep} />
-
-            <Form {...form}>
-                <form
-                    className="flex justify-center w-full h-full mt-12 py-12"
-                    onSubmit={form.handleSubmit(processForm)}
-                >
-                    {currentStep === 0 && (
-                        <div>
-                            <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
-                            <p className="mt-1 text-sm leading-6 text-gray-600">Provide details of Clinic Head</p>
-                            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                <FormField
-                                    control={form.control}
-                                    name="firstName"
-                                    render={({ field }) => {
-                                        return (
+        <div className="w-full h-full flex flex-col justify-between pt-16 px-16">
+            <div>
+                <Stepper formSteps={formSteps} currentStep={currentStep} />
+                <Form {...form}>
+                    <form
+                        className="flex justify-center w-full h-full mt-12 py-12"
+                        onSubmit={form.handleSubmit(processForm)}
+                    >
+                        {currentStep === 0 && (
+                            <div>
+                                <h2 className="text-base font-semibold leading-7 text-gray-900">
+                                    Personal Information
+                                </h2>
+                                <p className="mt-1 text-sm leading-6 text-gray-600">Provide details of Clinic Head</p>
+                                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="firstName"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        First name
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            autoComplete="given-name"
+                                                            type="text"
+                                                            placeholder="John"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="lastName"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Last name
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="block text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            autoComplete="family-name"
+                                                            type="text"
+                                                            placeholder="Doe"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="email"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Email
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="block text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            autoComplete="email"
+                                                            type="email"
+                                                            placeholder="johndoe@gmail.com"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="contactNumber"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Phone number
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <PhoneInput {...field} defaultCountry="IN" />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="gender"
+                                        render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    First name
+                                                    Gender
                                                 </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        autoComplete="given-name"
-                                                        type="text"
-                                                        placeholder="John"
-                                                    />
-                                                </FormControl>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select Gender" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="MALE">Male</SelectItem>
+                                                        <SelectItem value="FEMALE">Female</SelectItem>
+                                                        <SelectItem value="OTHERS">Others</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                                 <FormMessage />
                                             </FormItem>
-                                        );
-                                    }}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="lastName"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Last name
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="block text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        autoComplete="family-name"
-                                                        type="text"
-                                                        placeholder="Doe"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Email
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="block text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        autoComplete="email"
-                                                        type="email"
-                                                        placeholder="johndoe@gmail.com"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="contactNumber"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Phone number
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <PhoneInput {...field} defaultCountry="IN" />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="gender"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                Gender
-                                            </FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select Gender" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="MALE">Male</SelectItem>
-                                                    <SelectItem value="FEMALE">Female</SelectItem>
-                                                    <SelectItem value="OTHERS">Others</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="dateOfBirth"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Date of Birth
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        autoComplete="bday"
-                                                        type="date"
-                                                        placeholder="2003/02/28"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="dateOfBirth"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Date of Birth
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            autoComplete="bday"
+                                                            type="date"
+                                                            placeholder="2003/02/28"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    )}
-                    {currentStep === 1 && (
-                        <div>
-                            <h2 className="text-base font-semibold leading-7 text-gray-900">Clinqo Information</h2>
-                            <p className="mt-1 text-sm leading-6 text-gray-600">Provide details of Clinic.</p>
-                            <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                <FormField
-                                    control={form.control}
-                                    name="clinicName"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Clinic Name
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        type="text"
-                                                        placeholder="Clinqo Hospital"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
+                        )}
+                        {currentStep === 1 && (
+                            <div>
+                                <h2 className="text-base font-semibold leading-7 text-gray-900">Clinqo Information</h2>
+                                <p className="mt-1 text-sm leading-6 text-gray-600">Provide details of Clinic.</p>
+                                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="clinicName"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Clinic Name
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            type="text"
+                                                            placeholder="Clinqo Hospital"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
 
-                                <FormField
-                                    control={form.control}
-                                    name="gstin"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    GSTIN
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        type="text"
-                                                        placeholder="22AAAAA0000A1Z5"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="addressLine1"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Address Line 1
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        autoComplete="address-line1"
-                                                        type="text"
-                                                        placeholder="Address"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="addressLine2"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Address Line 2
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        autoComplete="address-line2"
-                                                        type="text"
-                                                        placeholder="Address"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="city"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    City
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        type="text"
-                                                        placeholder="Aurangabad"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="state"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    State
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        autoComplete="country-name"
-                                                        type="text"
-                                                        placeholder="Maharashtra"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="pincode"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Pincode
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="remove-arrow text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        autoComplete="postal-code"
-                                                        type="number"
-                                                        placeholder="431001"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="country"
-                                    render={({ field }) => {
-                                        return (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Country
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                        {...field}
-                                                        disabled={isPending}
-                                                        autoComplete="country"
-                                                        type="text"
-                                                        placeholder="India"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
-                                />
+                                    <FormField
+                                        control={form.control}
+                                        name="gstin"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        GSTIN
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            type="text"
+                                                            placeholder="22AAAAA0000A1Z5"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="addressLine1"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Address Line 1
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            autoComplete="address-line1"
+                                                            type="text"
+                                                            placeholder="Address"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="addressLine2"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Address Line 2
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            autoComplete="address-line2"
+                                                            type="text"
+                                                            placeholder="Address"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="city"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        City
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            type="text"
+                                                            placeholder="Aurangabad"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="state"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        State
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            autoComplete="country-name"
+                                                            type="text"
+                                                            placeholder="Maharashtra"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="pincode"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Pincode
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="remove-arrow text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            autoComplete="postal-code"
+                                                            type="number"
+                                                            placeholder="431001"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="country"
+                                        render={({ field }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
+                                                        Country
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            autoComplete="country"
+                                                            type="text"
+                                                            placeholder="India"
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {currentStep === 2 && (
-                        <div className="w-full h-full">
-                            <h2 className="text-base font-semibold leading-7 text-gray-900">Clinic Logo</h2>
-                            <p className="mt-1 text-sm leading-6 text-gray-600">Add Clinic Logo</p>
-                            <div className="w-full mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                                <div className="flex justify-center">
+                        {currentStep === 2 && (
+                            <div className="w-full h-full">
+                                <h2 className="text-base font-semibold leading-7 text-gray-900">Clinic Logo</h2>
+                                <p className="mt-1 text-sm leading-6 text-gray-600">Add Clinic Logo</p>
+                                <div className="w-full mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-4">
                                     <FormField
                                         control={form.control}
                                         name="logo"
@@ -445,13 +444,41 @@ export const ClinicRegForm = () => {
                                                         Clinic Logo
                                                     </FormLabel>
                                                     <FormControl>
-                                                        <Input
-                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                            {...field}
-                                                            disabled={isPending}
-                                                            type="file"
-                                                            accept=".png, .jpg, .jpeg, .webp"
-                                                        />
+                                                        <div className="relative flex flex-col items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-sky-600 hover:bg-gray-50">
+                                                            <Input
+                                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                                {...field}
+                                                                disabled={isPending}
+                                                                id="file-upload"
+                                                                type="file"
+                                                                accept=".png, .jpg, .jpeg, .webp"
+                                                            />
+                                                            <div className="relative z-10 text-center text-black">
+                                                                <p className="text-lg font-medium">
+                                                                    Drag and Drop file
+                                                                </p>
+                                                                <p className="mt-2 text-sm">or</p>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        if (
+                                                                            document.getElementById(
+                                                                                "file-upload"
+                                                                            ) as HTMLInputElement | null
+                                                                        ) {
+                                                                            (
+                                                                                document.getElementById(
+                                                                                    "file-upload"
+                                                                                ) as HTMLInputElement
+                                                                            ).click();
+                                                                        }
+                                                                    }}
+                                                                    className="mt-2 px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-md hover:bg-sky-700"
+                                                                >
+                                                                    Browse
+                                                                </button>
+                                                            </div>
+                                                        </div>
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -460,28 +487,28 @@ export const ClinicRegForm = () => {
                                     />
                                 </div>
                             </div>
-                        </div>
-                    )}
-                </form>
-            </Form>
-            {currentStep != formSteps.length - 1 ? (
-                <div className="flex justify-between">
-                    <Button variant="clinqo" className="p-2" onClick={() => prev()} disabled={currentStep == 0}>
-                        <BsChevronLeft className="h-6 w-6" />
-                    </Button>
+                        )}
+                    </form>
+                </Form>
+                {currentStep != formSteps.length - 1 ? (
+                    <div className="flex justify-between">
+                        <Button variant="clinqo" className="p-2" onClick={() => prev()} disabled={currentStep == 0}>
+                            <BsChevronLeft className="h-6 w-6" />
+                        </Button>
 
-                    <Button
-                        variant="clinqo"
-                        className="p-2"
-                        onClick={() => next()}
-                        disabled={currentStep == formSteps.length - 1 || isPending}
-                    >
-                        <BsChevronRight className="h-6 w-6" />
-                    </Button>
-                </div>
-            ) : (
-                <div>Form submitted</div>
-            )}
+                        <Button
+                            variant="clinqo"
+                            className="p-2"
+                            onClick={() => next()}
+                            disabled={currentStep == formSteps.length - 1 || isPending}
+                        >
+                            <BsChevronRight className="h-6 w-6" />
+                        </Button>
+                    </div>
+                ) : (
+                    <div>Form submitted</div>
+                )}
+            </div>
         </div>
     );
 };

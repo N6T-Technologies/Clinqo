@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Clinic } from "@/types";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
-import { Card } from "@/components/ui/card";
+import { RegisterClinicButton } from "@/components/ui/regiseter-clinic-button";
 
 //TODO: Create Table for listing the clinics associated with the Admin
 
@@ -18,7 +18,7 @@ async function getData(): Promise<Clinic[]> {
         },
         {
             id: "728ed52f",
-            name: "Clinqo Hospital",
+            name: "Mayur Hospital",
             headName: "Sanat Behera",
             headEmail: "sannyb@gmail.com",
         },
@@ -90,25 +90,18 @@ export default async function AdminClinics() {
     const data = await getData();
 
     return (
-        <div className="w-full h-full flex flex-col space-y-6 items-center justify-center">
-            <div className="w-full px-16">
-                <Card className="shadow-md">
-                    <DataTable columns={columns} data={data} />
-                </Card>
+        <div className="w-full h-full flex flex-col items-center ">
+            <div className="w-full h-4/5 px-14 pt-14">
+                <DataTable
+                    heading="Registered Clinics"
+                    filterField="name"
+                    searchBoxPlaceholder="Fliter Clinics..."
+                    className="bg-white"
+                    columns={columns}
+                    data={data}
+                />
             </div>
-            <div>
-                <form
-                    action={async () => {
-                        "use server";
-
-                        redirect("/console/clinics/register");
-                    }}
-                >
-                    <Button variant="clinqo" type="submit">
-                        Register Clinic
-                    </Button>
-                </form>
-            </div>
+            <RegisterClinicButton />
         </div>
     );
 }
