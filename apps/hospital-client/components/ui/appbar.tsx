@@ -2,8 +2,9 @@
 
 import { ReactNode } from "react";
 import { Button } from "./button";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 
-export function Appbar({ pic, icon }: { pic: string; icon: ReactNode }) {
+export function Appbar({ src, alt, icon }: { src: string; alt?: string; icon: ReactNode }) {
     return (
         <div className="flex justify-between items-center h-16 bg-white shadow-lg">
             <div className="pl-8">
@@ -12,9 +13,10 @@ export function Appbar({ pic, icon }: { pic: string; icon: ReactNode }) {
                 </Button>
             </div>
             <div className="pr-8 flex">
-                <div className="border border-black rounded-full text-white bg-black h-10 w-10 mr-2 flex justify-center items-center">
-                    {pic}
-                </div>
+                <Avatar>
+                    <AvatarImage src={src} />
+                    <AvatarFallback>{alt}</AvatarFallback>
+                </Avatar>
             </div>
         </div>
     );
