@@ -82,6 +82,18 @@ async function getData(): Promise<Clinic[]> {
             headName: "Sanat Behera",
             headEmail: "sannyb@gmail.com",
         },
+        {
+            id: "728ed52f",
+            name: "Clinqo Hospital",
+            headName: "Sanat Behera",
+            headEmail: "sannyb@gmail.com",
+        },
+        {
+            id: "728ed52f",
+            name: "Clinqo Hospital",
+            headName: "Sanat Behera",
+            headEmail: "sannyb@gmail.com",
+        },
         // ...
     ];
 }

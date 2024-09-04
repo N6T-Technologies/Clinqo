@@ -23,7 +23,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                     src="https://github.com/shadcn.png"
                     icon={<EnvelopeClosedIcon className="h-6 w-6" />}
                 />
-                <div className="h-[calc(100%-4rem)] w-full">{children}</div>
+                <div className="h-full w-full">{children}</div>
             </div>
         </div>
     );
