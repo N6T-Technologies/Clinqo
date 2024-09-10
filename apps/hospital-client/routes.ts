@@ -14,7 +14,7 @@ export const DEFAULT_LOGGEDIN_REDIRECT = "/dashboard";
 export const publicRoutes = [
     "/",
     "/auth/new-verification",
-    "/console",
+    "/console/analytics",
     "/console/clinics",
     "/console/doctors",
     "/console/clinics/register",

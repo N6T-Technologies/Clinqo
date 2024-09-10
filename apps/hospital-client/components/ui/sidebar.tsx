@@ -1,8 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { SidebarItem } from "./sidebar-item";
 import { signOut } from "@/auth";
-import { useRouter } from "next/navigation";
 import { Route } from "@/types";
 import { SlLogout } from "react-icons/sl";
 import { SlPhone } from "react-icons/sl";
@@ -21,7 +21,13 @@ export function Sidebar({ routes, help }: { routes: Route[]; help: boolean }) {
                 </div>
                 <div className="mt-16">
                     {routes.map((route) => (
-                        <SidebarItem key={route.href} href={route.href} icon={route.icon} title={route.title} />
+                        <SidebarItem
+                            router={router}
+                            key={route.href}
+                            href={route.href}
+                            icon={route.icon}
+                            title={route.title}
+                        />
                     ))}
                 </div>
             </div>

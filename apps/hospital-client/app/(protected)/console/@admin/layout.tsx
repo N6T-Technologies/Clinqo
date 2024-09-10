@@ -1,6 +1,6 @@
 import { Appbar } from "@/components/ui/appbar";
 import { Route } from "@/types";
-import { FaHome } from "react-icons/fa";
+import { FaChartArea } from "react-icons/fa";
 import { FaHospital } from "react-icons/fa";
 // import { FaUserDoctor } from "react-icons/fa6";
 import { ReactNode } from "react";
@@ -9,7 +9,7 @@ import { Sidebar } from "@/components/ui/sidebar";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
     const routes: Route[] = [
-        { href: "/console", icon: <FaHome className="h-6 w-6" />, title: "Console" },
+        { href: "/console/analytics", icon: <FaChartArea className="h-6 w-6" />, title: "Console" },
         { href: "/console/clinics", icon: <FaHospital className="h-6 w-6" />, title: "Clinics" },
         // { href: "/console/doctors", icon: <FaUserDoctor className="h-6 w-6" />, title: "Doctors" },
     ];

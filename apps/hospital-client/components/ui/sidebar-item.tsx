@@ -1,17 +1,17 @@
 "use client";
 
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
 
 interface SidebarItemProps {
     href: string;
     icon: ReactNode;
     title: string;
+    router: AppRouterInstance;
 }
 
-export const SidebarItem = ({ href, icon, title }: SidebarItemProps) => {
-    const router = useRouter();
+export const SidebarItem = ({ href, icon, title, router }: SidebarItemProps) => {
     const pathname = usePathname();
     const selected = pathname == href;
     return (

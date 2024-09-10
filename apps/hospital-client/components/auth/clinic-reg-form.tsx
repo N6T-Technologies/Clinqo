@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
-import DragAndDrop from "../ui/draganddrop";
+import DragAndDrop from "../ui/drag-and-drop";
 
 const formSteps: StepInfo[] = [
     {

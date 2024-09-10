@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, DragEvent, useRef } from "react";
 import { Input } from "./input";
 
