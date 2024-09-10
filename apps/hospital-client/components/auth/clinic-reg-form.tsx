@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
-import Image from "next/image";
+import DragAndDrop from "../ui/draganddrop";
 
 const formSteps: StepInfo[] = [
     {
@@ -444,41 +444,7 @@ export const ClinicRegForm = () => {
                                                         Clinic Logo
                                                     </FormLabel>
                                                     <FormControl>
-                                                        <div className="relative flex flex-col items-center justify-center h-64 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-sky-600 hover:bg-gray-50">
-                                                            <Input
-                                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                                                {...field}
-                                                                disabled={isPending}
-                                                                id="file-upload"
-                                                                type="file"
-                                                                accept=".png, .jpg, .jpeg, .webp"
-                                                            />
-                                                            <div className="relative z-10 text-center text-black">
-                                                                <p className="text-lg font-medium">
-                                                                    Drag and Drop file
-                                                                </p>
-                                                                <p className="mt-2 text-sm">or</p>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        if (
-                                                                            document.getElementById(
-                                                                                "file-upload"
-                                                                            ) as HTMLInputElement | null
-                                                                        ) {
-                                                                            (
-                                                                                document.getElementById(
-                                                                                    "file-upload"
-                                                                                ) as HTMLInputElement
-                                                                            ).click();
-                                                                        }
-                                                                    }}
-                                                                    className="mt-2 px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-md hover:bg-sky-700"
-                                                                >
-                                                                    Browse
-                                                                </button>
-                                                            </div>
-                                                        </div>
+                                                        <DragAndDrop field={field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -491,7 +457,7 @@ export const ClinicRegForm = () => {
                     </form>
                 </Form>
                 {currentStep != formSteps.length - 1 ? (
-                    <div className="flex justify-between">
+                    <div className="flex justify-between fixed bottom-4 w-9/12">
                         <Button variant="clinqo" className="p-2" onClick={() => prev()} disabled={currentStep == 0}>
                             <BsChevronLeft className="h-6 w-6" />
                         </Button>

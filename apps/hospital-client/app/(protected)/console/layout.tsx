@@ -1,3 +1,3 @@
-export default function ConsoleLayout({ admin }: { admin: React.ReactNode }) {
-    return <div className="h-full w-full">{admin}</div>;
+export default function ConsoleLayout({ admin, clinicHead }: { admin: React.ReactNode; clinicHead: React.ReactNode }) {
+    return <div className="h-full">{clinicHead}</div>
 }
