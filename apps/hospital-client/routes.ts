@@ -18,6 +18,8 @@ export const publicRoutes = [
     "/console/clinics",
     "/console/doctors",
     "/console/clinics/register",
+    "/console/employees",
+    "/console/profile",
 ];
 
 /**
