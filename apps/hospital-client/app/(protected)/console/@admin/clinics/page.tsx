@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Clinic } from "@/types";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
