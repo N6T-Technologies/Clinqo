@@ -457,7 +457,7 @@ export const ClinicRegForm = () => {
                     </form>
                 </Form>
                 {currentStep != formSteps.length - 1 ? (
-                    <div className="flex justify-between">
+                    <div className="flex justify-between fixed bottom-4 w-9/12">
                         <Button variant="clinqo" className="p-2" onClick={() => prev()} disabled={currentStep == 0}>
                             <BsChevronLeft className="h-6 w-6" />
                         </Button>
