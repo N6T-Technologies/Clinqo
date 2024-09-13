@@ -39,17 +39,15 @@ export const ClinicRegForm = () => {
     });
 
     const processForm: SubmitHandler<ClininRegFormDataSchemaType> = (data) => {
-        // startTransition(async () => {
-        //     await new Promise((rej, res) => {
-        //         setTimeout(() => {
-        //             console.log(data);
-        //             form.reset();
-        //             res();
-        //         }, 2000);
-        //     });
-        // });
-        console.log(data);
-        form.reset();
+        startTransition(async () => {
+            await new Promise((rej, res) => {
+                setTimeout(() => {
+                    console.log(data);
+                    form.reset();
+                    res();
+                }, 2000);
+            });
+        });
     };
 
     type FieldName = keyof ClininRegFormDataSchemaType;
@@ -104,7 +102,6 @@ export const ClinicRegForm = () => {
                                                             className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                                                             {...field}
                                                             disabled={isPending}
-                                                            autoComplete="given-name"
                                                             type="text"
                                                             placeholder="John"
                                                         />
@@ -128,7 +125,6 @@ export const ClinicRegForm = () => {
                                                             className="block text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                                                             {...field}
                                                             disabled={isPending}
-                                                            autoComplete="family-name"
                                                             type="text"
                                                             placeholder="Doe"
                                                         />
@@ -152,7 +148,6 @@ export const ClinicRegForm = () => {
                                                             className="block text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                                                             {...field}
                                                             disabled={isPending}
-                                                            autoComplete="email"
                                                             type="email"
                                                             placeholder="johndoe@gmail.com"
                                                         />
@@ -217,7 +212,6 @@ export const ClinicRegForm = () => {
                                                             className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                                                             {...field}
                                                             disabled={isPending}
-                                                            autoComplete="bday"
                                                             type="date"
                                                             placeholder="2003/02/28"
                                                         />
@@ -296,7 +290,6 @@ export const ClinicRegForm = () => {
                                                             className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                                                             {...field}
                                                             disabled={isPending}
-                                                            autoComplete="address-line1"
                                                             type="text"
                                                             placeholder="Address"
                                                         />
@@ -320,7 +313,6 @@ export const ClinicRegForm = () => {
                                                             className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                                                             {...field}
                                                             disabled={isPending}
-                                                            autoComplete="address-line2"
                                                             type="text"
                                                             placeholder="Address"
                                                         />
@@ -367,7 +359,6 @@ export const ClinicRegForm = () => {
                                                             className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                                                             {...field}
                                                             disabled={isPending}
-                                                            autoComplete="country-name"
                                                             type="text"
                                                             placeholder="Maharashtra"
                                                         />
@@ -391,7 +382,6 @@ export const ClinicRegForm = () => {
                                                             className="remove-arrow text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                                                             {...field}
                                                             disabled={isPending}
-                                                            autoComplete="postal-code"
                                                             type="number"
                                                             placeholder="431001"
                                                         />
@@ -415,7 +405,6 @@ export const ClinicRegForm = () => {
                                                             className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                                                             {...field}
                                                             disabled={isPending}
-                                                            autoComplete="country"
                                                             type="text"
                                                             placeholder="India"
                                                         />

@@ -3,8 +3,11 @@
 import { ReactNode } from "react";
 import { Button } from "./button";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
+import { useRouter } from "next/navigation";
 
-export function Appbar({ src, alt, icon }: { src: string; alt?: string; icon: ReactNode }) {
+export function Appbar({ src, alt, icon, href }: { src: string; alt?: string; icon: ReactNode; href?: string }) {
+    const router = useRouter();
+
     return (
         <div className="flex justify-between items-center h-16 bg-white shadow-lg">
             <div className="pl-8">
@@ -13,7 +16,7 @@ export function Appbar({ src, alt, icon }: { src: string; alt?: string; icon: Re
                 </Button>
             </div>
             <div className="pr-8 flex">
-                <Avatar>
+                <Avatar className="cursor-pointer" onClick={() => router.push(href || "")}>
                     <AvatarImage src={src} />
                     <AvatarFallback>{alt}</AvatarFallback>
                 </Avatar>

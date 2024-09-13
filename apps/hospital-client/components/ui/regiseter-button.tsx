@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { Button } from "./button";
 
-export const RegisterClinicButton = () => {
+export const RegisterButton = ({ name, href }: { name: string; href: string }) => {
     return (
         <div className="mt-6">
             <Button variant="clinqo" asChild>
-                <Link href="/console/clinics/register">Register Clinic</Link>
+                <Link href={href}>Register {name}</Link>
             </Button>
         </div>
     );

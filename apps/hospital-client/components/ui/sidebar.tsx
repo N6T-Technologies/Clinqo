@@ -13,7 +13,7 @@ export function Sidebar({ routes, help }: { routes: Route[]; help: boolean }) {
     return (
         <div className="col-span-2 bg-clinqoNormal flex flex-col justify-between">
             <div>
-                <div className="flex items-center ml-12 mt-7">
+                <div className="flex items-center ml-12 mt-7 cursor-default">
                     <div className="border border-black rounded-full text-white bg-black h-10 w-10 mr-2 flex justify-center items-center">
                         logo
                     </div>
