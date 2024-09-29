@@ -1,0 +1,21 @@
+{
+    "name": "clinqo-ws",
+    "version": "1.0.0",
+    "description": "WebSockets server for Clinqo",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc -b",
+        "start": "node dist/index.js",
+        "dev": "yarn run build && yarn run start"
+    },
+    "author": "meru45",
+    "license": "MIT",
+    "dependencies": {
+        "redis": "^4.7.0",
+        "ws": "^8.18.0"
+    },
+    "devDependencies": {
+        "@types/redis": "^4.0.11",
+        "@types/ws": "^8.5.12"
+    }
+}
