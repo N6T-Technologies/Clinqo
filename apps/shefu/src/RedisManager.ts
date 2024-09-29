@@ -1,4 +1,5 @@
 import { createClient, RedisClientType } from "redis";
+import { MessageToApi } from "./types/toApi";
 
 export class RedisManager {
     private static instance: RedisManager;
@@ -27,8 +28,7 @@ export class RedisManager {
         this.client.publish(channel, JSON.stringify(message));
     }
 
-    //TODO: Create MessageToApi Type and replace unknown
-    public sendToApi(clientId: string, message: unknown) {
+    public sendToApi(clientId: string, message: MessageToApi) {
         this.client.publish(clientId, JSON.stringify(message));
     }
 }

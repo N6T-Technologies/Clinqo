@@ -9,8 +9,7 @@ export type MessageFromApi =
     | {
           type: typeof CREATE_RESHIPI;
           data: {
-              doctor: string;
-              clinic: string;
+              clinic_doctor: string;
               patientFirstName: string;
               patientLastName: string;
               patientAge: string;
@@ -18,7 +17,6 @@ export type MessageFromApi =
               phoneNumber: string;
               followup: boolean;
               managerId: string;
-              date: Date;
           };
       }
     | {

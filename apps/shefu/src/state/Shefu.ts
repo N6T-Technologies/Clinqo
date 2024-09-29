@@ -1,5 +1,8 @@
 import fs from "fs";
-import { ReshipiBook } from "./ReshipiBook";
+import { Reshipi, ReshipiBook } from "./ReshipiBook";
+import { CREATE_RESHIPI, MessageFromApi } from "../types/fromApi";
+import { RedisManager } from "../RedisManager";
+import { RESHIPI_CREATED } from "../types/toApi";
 
 export class Shefu {
     private static instance: Shefu;
@@ -24,7 +27,7 @@ export class Shefu {
                     new ReshipiBook(r.clinic, r.doctor, r.reshipies, r.lastReshipiNumber, r.currentReshipiNumber)
             );
         } else {
-            this.reshipieBooks = [new ReshipiBook("Some_Clinic", "Some_Doctor", [], 0, 0)];
+            this.reshipieBooks = [new ReshipiBook("Apollo", "Rakshas", [], 0, 0)];
         }
 
         setInterval(() => {
@@ -48,7 +51,79 @@ export class Shefu {
         fs.writeFileSync("./snapshot.json", JSON.stringify(snapshotObject));
     }
 
-    public process(msg: unknown) {
-        console.log(msg);
+    public process({ message, clientId }: { message: MessageFromApi; clientId: string }) {
+        switch (message.type) {
+            case CREATE_RESHIPI:
+                const { reshipiId, reshipiNumber } = this.createReshipi(
+                    message.data.clinic_doctor,
+                    message.data.patientFirstName,
+                    message.data.patientLastName,
+                    message.data.patientAge,
+                    message.data.symptoms,
+                    message.data.phoneNumber,
+                    message.data.followup,
+                    message.data.managerId
+                );
+
+                console.log(reshipiNumber);
+
+                RedisManager.getInstance().sendToApi(clientId, {
+                    type: RESHIPI_CREATED,
+                    payload: {
+                        reshipiId,
+                        reshipiNumber,
+                    },
+                });
+        }
+    }
+
+    private createReshipi(
+        clinic_doctor: string,
+
+        patientFirstName: string,
+        patientLastName: string,
+        patientAge: string,
+        symptoms: string,
+        phoneNumber: string,
+
+        followup: boolean,
+        managerId: string
+    ): { reshipiId: string; reshipiNumber: number } {
+        const ReshipiBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
+
+        console.log(ReshipiBook);
+
+        if (!ReshipiBook) {
+            throw new Error("No Reshipi Book found");
+        }
+
+        console.log("Reached Create Reshipi");
+
+        type reshipiType = Omit<Reshipi, "reshipiNumber" | "status" | "date">;
+
+        const reshipiId = this.getRandomId();
+
+        const reshipi: reshipiType = {
+            id: reshipiId,
+            patientFirstName: patientFirstName,
+            patientLastName: patientLastName,
+            patientAge: patientAge,
+            symptoms: symptoms,
+            phoneNumber: phoneNumber,
+            followup: followup,
+            managerId: managerId,
+        };
+
+        const reshipiNumber = ReshipiBook.addReshipi(reshipi);
+
+        return { reshipiId: reshipiId, reshipiNumber: reshipiNumber };
+    }
+
+    private getRandomId() {
+        let S4 = function () {
+            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+        };
+
+        return S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4();
     }
 }

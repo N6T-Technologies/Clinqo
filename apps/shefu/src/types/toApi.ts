@@ -1,5 +1,12 @@
-const CREATE_RESHIPI = "CREATE_RESHIPI";
-const START_RESHIPI = "START_RESHIPI";
-const END_RESHIPI = "END_RESHIPI";
-const CANCEL_RESHIPI = "CANCEL_RESHIPI";
-const GET_DEPTH = "GET_DEPTH";
+export const RESHIPI_CREATED = "RESHIPI_CREATED";
+export const RESHIPI_STARTED = "RESHIPI_STARTED";
+export const RESHIPI_ENDED = "RESHIPI_ENDED";
+export const DEPTH = "DEPTH";
+
+export type MessageToApi = {
+    type: typeof RESHIPI_CREATED;
+    payload: {
+        reshipiId: string;
+        reshipiNumber: number;
+    };
+};

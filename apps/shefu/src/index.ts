@@ -11,7 +11,7 @@ async function main() {
 
         if (!message) {
         } else {
-            Shefu.getInstance().process(message);
+            Shefu.getInstance().process(JSON.parse(message));
         }
     }
 }

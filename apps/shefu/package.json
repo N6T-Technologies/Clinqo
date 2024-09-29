@@ -8,7 +8,8 @@
     "scripts": {
         "build": "tsc -b",
         "start": "node dist/index.js",
-        "dev": "yarn run build && yarn run start"
+        "start-with-snapshot": "WITH_SNAPSHOT=true node dist/index.js",
+        "dev": "yarn run build && yarn run start-with-snapshot"
     },
     "dependencies": {
         "redis": "^4.7.0"

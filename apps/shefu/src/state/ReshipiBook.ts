@@ -5,7 +5,7 @@ enum Status {
     "Canceled",
 }
 
-export interface Reshipi {
+export type Reshipi = {
     id: string;
     reshipiNumber: number;
     patientFirstName: string;
@@ -17,7 +17,7 @@ export interface Reshipi {
     managerId: string;
     date: Date;
     status: Status;
-}
+};
 
 export class ReshipiBook {
     private reshipies: Reshipi[];
@@ -40,10 +40,25 @@ export class ReshipiBook {
         this.clinic = clinic;
     }
 
+    public title(): string {
+        return `${this.clinic}_${this.doctor}`;
+    }
+
+    public addReshipi(reshipi: Omit<Reshipi, "reshipiNumber" | "status" | "date">) {
+        const completedReshipi = {
+            ...reshipi,
+            reshipiNumber: this.reshipies.length + 1,
+            status: Status.Created,
+            date: new Date(),
+        };
+        this.reshipies.push(completedReshipi);
+        return this.reshipies.length + 1;
+    }
+
     public getSnapshot() {
         return {
             clinic: this.clinic,
-            doctor: this.clinic,
+            doctor: this.doctor,
             reshipies: this.reshipies,
             lastReshipiNumber: this.lastReshipiNumber,
             currentReshipiNumber: this.currentReshipiNumber,
