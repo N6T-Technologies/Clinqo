@@ -1,8 +1,8 @@
-const CREATE_RESHIPI = "CREATE_RESHIPI";
-const START_RESHIPI = "START_RESHIPI";
-const END_RESHIPI = "END_RESHIPI";
-const CANCEL_RESHIPI = "CANCEL_RESHIPI";
-const GET_DEPTH = "GET_DEPTH";
+export const CREATE_RESHIPI = "CREATE_RESHIPI";
+export const START_RESHIPI = "START_RESHIPI";
+export const END_RESHIPI = "END_RESHIPI";
+export const CANCEL_RESHIPI = "CANCEL_RESHIPI";
+export const GET_DEPTH = "GET_DEPTH";
 
 //What happens if i make this interface instead type
 export type MessageFromApi =

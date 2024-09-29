@@ -1,5 +1,5 @@
 import fs from "fs";
-import { ReshipiBook } from "./Reshipies";
+import { ReshipiBook } from "./ReshipiBook";
 
 export class Shefu {
     private static instance: Shefu;
@@ -32,20 +32,20 @@ export class Shefu {
         }, 1000 * 3);
     }
 
-    private saveSnapshot() {
-        const snapshotObject = {
-            reshipieBooks: this.reshipieBooks.map((r) => r.getSnapshot()),
-        };
-
-        fs.writeFileSync("./snapshot.json", JSON.stringify(snapshotObject));
-    }
-
     public static getInstance() {
         if (!this.instance) {
             this.instance = new Shefu();
         }
 
         return this.instance;
+    }
+
+    private saveSnapshot() {
+        const snapshotObject = {
+            reshipieBooks: this.reshipieBooks.map((r) => r.getSnapshot()),
+        };
+
+        fs.writeFileSync("./snapshot.json", JSON.stringify(snapshotObject));
     }
 
     public process(msg: unknown) {
