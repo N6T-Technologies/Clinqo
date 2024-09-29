@@ -34,19 +34,21 @@ export class SubscriptionManager {
         const currentReverseSubscription = this.reverseSubscriptions.get(channel) || [];
         this.reverseSubscriptions.set(channel, currentReverseSubscription.concat(userId));
 
-        if (this.reverseSubscriptions.get(channel)?.length == 1) {
+        if (this.reverseSubscriptions.get(channel)?.length === 1) {
             this.redisClient.subscribe(channel, this.redisCallbackHandler);
         }
     }
 
     //redisCallbackHandler: Sends message to every user which is on the channel
-    private redisCallbackHandler(message: string, channel: string) {
+    //Using arrow function here is essential or else we'll get error
+    //Make question out of this
+    private redisCallbackHandler = (message: string, channel: string) => {
         const parsedMessage = JSON.parse(message);
 
         this.reverseSubscriptions
             .get(channel)
             ?.forEach((userId) => UserManager.getInstance().getUser(userId)?.sendMessage(parsedMessage));
-    }
+    };
 
     public unsubscribe(userId: string, channel: string) {
         const currentSubscriptions = this.subscriptions.get(userId);
