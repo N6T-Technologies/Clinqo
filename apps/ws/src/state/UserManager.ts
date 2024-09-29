@@ -1,5 +1,6 @@
 import { WebSocket } from "ws";
 import { User } from "./User";
+import { SubscriptionManager } from "./SubscriptionManager";
 
 export class UserManager {
     private static instance: UserManager;
@@ -27,7 +28,7 @@ export class UserManager {
     public registerOnClose(id: string, userSocket: WebSocket) {
         userSocket.on("close", () => {
             this.usersMap.delete(id);
-            console.log(`user with id ${id} left`);
+            SubscriptionManager.getInstance().userLeft(id);
         });
     }
 
