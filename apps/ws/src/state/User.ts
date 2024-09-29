@@ -1,4 +1,6 @@
 import { WebSocket } from "ws";
+import { IncomingMessage, SUBSCRIBE, UNSUBSCRIBE } from "../types/incoming";
+import { SubscriptionManager } from "./SubscriptionManager";
 
 export class User {
     private id: string;
@@ -26,8 +28,13 @@ export class User {
 
     private addListeners() {
         this.userSocket.on("message", (message: string) => {
-            const parsedMessage = JSON.parse(message); //type of parsed message should be Incoming message
-            console.log(`User with id ${this.id} sent message ${parsedMessage}`);
+            const parsedMessage: IncomingMessage = JSON.parse(message); //type of parsed message should be Incoming message
+
+            if (parsedMessage.method === SUBSCRIBE) {
+                parsedMessage.params.forEach((c) => SubscriptionManager.getInstance().subscribe(this.id, c));
+            } else if (parsedMessage.method === UNSUBSCRIBE) {
+                parsedMessage.params.forEach((c) => SubscriptionManager.getInstance().unsubscribe(this.id, c));
+            }
         });
     }
 }
