@@ -2,7 +2,7 @@ import fs from "fs";
 import { Reshipi, ReshipiBook } from "./ReshipiBook";
 import { CREATE_RESHIPI, MessageFromApi } from "../types/fromApi";
 import { RedisManager } from "../RedisManager";
-import { RESHIPI_CREATED } from "../types/toApi";
+import { RESHIPI_CANCELLED, RESHIPI_CREATED } from "../types/toApi";
 
 export class Shefu {
     private static instance: Shefu;
@@ -54,26 +54,38 @@ export class Shefu {
     public process({ message, clientId }: { message: MessageFromApi; clientId: string }) {
         switch (message.type) {
             case CREATE_RESHIPI:
-                const { reshipiId, reshipiNumber } = this.createReshipi(
-                    message.data.clinic_doctor,
-                    message.data.patientFirstName,
-                    message.data.patientLastName,
-                    message.data.patientAge,
-                    message.data.symptoms,
-                    message.data.phoneNumber,
-                    message.data.followup,
-                    message.data.managerId
-                );
+                try {
+                    const { reshipiId, reshipiNumber } = this.createReshipi(
+                        message.data.clinic_doctor,
+                        message.data.patientFirstName,
+                        message.data.patientLastName,
+                        message.data.patientAge,
+                        message.data.symptoms,
+                        message.data.phoneNumber,
+                        message.data.followup,
+                        message.data.managerId
+                    );
 
-                console.log(reshipiNumber);
+                    console.log(reshipiNumber);
 
-                RedisManager.getInstance().sendToApi(clientId, {
-                    type: RESHIPI_CREATED,
-                    payload: {
-                        reshipiId,
-                        reshipiNumber,
-                    },
-                });
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RESHIPI_CREATED,
+                        payload: {
+                            reshipiId,
+                            reshipiNumber,
+                        },
+                    });
+                } catch (e) {
+                    console.log(e);
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RESHIPI_CANCELLED,
+                        payload: {
+                            reshipiId: "",
+                            reshipiNumber: 0,
+                        },
+                    });
+                }
+                break;
         }
     }
 
@@ -91,13 +103,9 @@ export class Shefu {
     ): { reshipiId: string; reshipiNumber: number } {
         const ReshipiBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
-        console.log(ReshipiBook);
-
         if (!ReshipiBook) {
             throw new Error("No Reshipi Book found");
         }
-
-        console.log("Reached Create Reshipi");
 
         type reshipiType = Omit<Reshipi, "reshipiNumber" | "status" | "date">;
 

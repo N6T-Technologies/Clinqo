@@ -7,9 +7,8 @@
     "author": "meru45",
     "scripts": {
         "build": "tsc -b",
-        "start": "node dist/index.js",
-        "start-with-snapshot": "WITH_SNAPSHOT=true node dist/index.js",
-        "dev": "yarn run build && yarn run start-with-snapshot"
+        "start": "WITH_SNAPSHOT=true node dist/index.js",
+        "dev": "yarn run build && yarn run start"
     },
     "dependencies": {
         "redis": "^4.7.0"

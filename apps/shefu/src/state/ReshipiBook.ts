@@ -15,7 +15,7 @@ export type Reshipi = {
     phoneNumber: string;
     followup: boolean;
     managerId: string;
-    date: Date;
+    date: string;
     status: Status;
 };
 
@@ -45,14 +45,16 @@ export class ReshipiBook {
     }
 
     public addReshipi(reshipi: Omit<Reshipi, "reshipiNumber" | "status" | "date">) {
+        const reshipiNumber = this.reshipies.length + 1;
+
         const completedReshipi = {
             ...reshipi,
-            reshipiNumber: this.reshipies.length + 1,
+            reshipiNumber: reshipiNumber,
             status: Status.Created,
-            date: new Date(),
+            date: new Date().toLocaleString(),
         };
         this.reshipies.push(completedReshipi);
-        return this.reshipies.length + 1;
+        return reshipiNumber;
     }
 
     public getSnapshot() {

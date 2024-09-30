@@ -3,11 +3,15 @@ import { Shefu } from "./state/Shefu";
 
 async function main() {
     const redisClient = createClient();
-    redisClient.connect();
-    console.log("Connected to redis");
+    try {
+        redisClient.connect();
+        console.log("Connected to redis");
+    } catch (e) {
+        throw Error("Could not connect to redis");
+    }
 
     while (true) {
-        const message = await redisClient.rPop("message" as string);
+        const message = await redisClient.rPop("messages" as string);
 
         if (!message) {
         } else {
