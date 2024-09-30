@@ -4,6 +4,8 @@ export const RESHIPI_ENDED = "RESHIPI_ENDED";
 export const RESHIPI_CANCELLED = "RESHIPI_CANCELLED";
 export const RETRY_CREATE_RESHIPI = "RETRY_CREATE_RESHIPI";
 export const RETRY_CANCEL_RESHIPI = "RETRY_CANCEL_RESHIPI";
+export const RETRY_START_RESHIPI = "RETRY_START_RESHIPI";
+export const ONGOING_RESHIPI = "ONGOING_RESHIPI";
 export const DEPTH = "DEPTH";
 
 export type MessageToApi =
@@ -11,27 +13,62 @@ export type MessageToApi =
           type: typeof RESHIPI_CREATED;
           payload: {
               reshipiId: string;
-              reshipiNumber: number;
+              reshipiNumber?: number;
+              currentReshipiNumber?: number;
+              msg?: string;
           };
       }
     | {
           type: typeof RESHIPI_CANCELLED;
           payload: {
               reshipiId: string;
-              reshipiNumber: number;
+              reshipiNumber?: number;
+              currentReshipiNumber?: number;
+              msg?: string;
           };
       }
     | {
           type: typeof RETRY_CREATE_RESHIPI;
           payload: {
               reshipiId: string;
-              reshipiNumber: number;
+              reshipiNumber?: number;
+              currentReshipiNumber?: number;
+              msg?: string;
           };
       }
     | {
           type: typeof RETRY_CANCEL_RESHIPI;
           payload: {
               reshipiId: string;
-              reshipiNumber: number;
+              reshipiNumber?: number;
+              currentReshipiNumber?: number;
+              msg?: string;
+          };
+      }
+    | {
+          type: typeof RESHIPI_STARTED;
+          payload: {
+              reshipiId: string;
+              reshipiNumber?: number;
+              currentReshipiNumber?: number;
+              msg?: string;
+          };
+      }
+    | {
+          type: typeof RETRY_START_RESHIPI;
+          payload: {
+              reshipiId: string;
+              reshipiNumber?: number;
+              currentReshipiNumber?: number;
+              msg?: string;
+          };
+      }
+    | {
+          type: typeof ONGOING_RESHIPI;
+          payload: {
+              reshipiId: string;
+              reshipiNumber?: number;
+              currentReshipiNumber?: number;
+              msg?: string;
           };
       };

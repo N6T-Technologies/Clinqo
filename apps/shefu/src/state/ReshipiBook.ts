@@ -25,6 +25,7 @@ export class ReshipiBook {
     private reshipies: Reshipi[];
     private lastReshipiNumber: number;
     private currentReshipiNumber: number;
+    private currentReshipi: Reshipi | null;
     private doctor: string;
     private clinic: string;
 
@@ -38,6 +39,7 @@ export class ReshipiBook {
         this.reshipies = reshipies;
         this.lastReshipiNumber = lastReshipiNumber || 0;
         this.currentReshipiNumber = currentReshipiNumber || 0;
+        this.currentReshipi = null;
         this.doctor = doctor;
         this.clinic = clinic;
     }
@@ -95,6 +97,38 @@ export class ReshipiBook {
         }
 
         return { modifiedReshipies, removedReshipi };
+    }
+
+    public startReshipi(id: string): { currentReshipi: Reshipi | null; currentReshipiNumber: number } {
+        if (this.reshipies.length === 0) {
+            return { currentReshipi: null, currentReshipiNumber: this.currentReshipiNumber };
+        }
+
+        if (this.currentReshipi) {
+            return { currentReshipi: this.currentReshipi, currentReshipiNumber: this.currentReshipiNumber };
+        }
+
+        const currentReshipi = this.reshipies.find((r) => r.id === id);
+
+        if (currentReshipi) {
+            currentReshipi.status = Status.Ongoing;
+            this.reshipies = this.reshipies.map((r) => {
+                if (r.id === id) {
+                    r = currentReshipi;
+                    return r;
+                } else {
+                    return r;
+                }
+            });
+            this.currentReshipiNumber = currentReshipi.reshipiNumber;
+            this.currentReshipi = currentReshipi;
+            console.log(this.reshipies);
+            console.log(this.currentReshipi);
+
+            return { currentReshipi, currentReshipiNumber: this.currentReshipiNumber };
+        }
+
+        return { currentReshipi: null, currentReshipiNumber: this.currentReshipiNumber };
     }
 
     public getSnapshot() {
