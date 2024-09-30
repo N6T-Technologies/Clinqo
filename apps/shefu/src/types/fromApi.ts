@@ -23,30 +23,26 @@ export type MessageFromApi =
           type: typeof CANCEL_RESHIPI;
           data: {
               id: string;
-              doctor: string;
-              clinic: string;
+              clinic_doctor: string;
           };
       }
     | {
           type: typeof START_RESHIPI;
           data: {
               id: string;
-              doctor: string;
-              clinic: string;
+              clinic_doctor: string;
           };
       }
     | {
           type: typeof END_RESHIPI;
           data: {
               id: string;
-              doctor: string;
-              clinic: string;
+              clinic_doctor: string;
           };
       }
     | {
           type: typeof GET_DEPTH;
           data: {
-              doctor: string;
-              clinic: string;
+              clinic_doctor: string;
           };
       };

@@ -1,8 +1,8 @@
 import fs from "fs";
 import { Reshipi, ReshipiBook } from "./ReshipiBook";
-import { CREATE_RESHIPI, MessageFromApi } from "../types/fromApi";
+import { CANCEL_RESHIPI, CREATE_RESHIPI, MessageFromApi } from "../types/fromApi";
 import { RedisManager } from "../RedisManager";
-import { RESHIPI_CANCELLED, RESHIPI_CREATED } from "../types/toApi";
+import { RESHIPI_CANCELLED, RESHIPI_CREATED, RETRY_CANCEL_RESHIPI, RETRY_CREATE_RESHIPI } from "../types/toApi";
 
 export class Shefu {
     private static instance: Shefu;
@@ -66,8 +66,6 @@ export class Shefu {
                         message.data.managerId
                     );
 
-                    console.log(reshipiNumber);
-
                     RedisManager.getInstance().sendToApi(clientId, {
                         type: RESHIPI_CREATED,
                         payload: {
@@ -78,9 +76,41 @@ export class Shefu {
                 } catch (e) {
                     console.log(e);
                     RedisManager.getInstance().sendToApi(clientId, {
-                        type: RESHIPI_CANCELLED,
+                        type: RETRY_CREATE_RESHIPI,
                         payload: {
                             reshipiId: "",
+                            reshipiNumber: 0,
+                        },
+                    });
+                }
+                break;
+            case CANCEL_RESHIPI:
+                try {
+                    const clinic_doctor = message.data.clinic_doctor;
+                    const id = message.data.id;
+
+                    const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
+
+                    if (currentReshipieBook) {
+                        const { modifiedReshipies, removedReshipi } = currentReshipieBook.removeReshipi(id);
+
+                        if (removedReshipi) {
+                            //TODO: publish to db service as well as WS server
+                            RedisManager.getInstance().sendToApi(clientId, {
+                                type: RESHIPI_CANCELLED,
+                                payload: {
+                                    reshipiId: removedReshipi.id,
+                                    reshipiNumber: removedReshipi.reshipiNumber,
+                                },
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.log(e);
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RETRY_CANCEL_RESHIPI,
+                        payload: {
+                            reshipiId: message.data.id,
                             reshipiNumber: 0,
                         },
                     });

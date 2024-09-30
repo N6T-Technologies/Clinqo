@@ -19,6 +19,8 @@ export type Reshipi = {
     status: Status;
 };
 
+export type modifiedReshipi = Pick<Reshipi, "id" | "reshipiNumber">;
+
 export class ReshipiBook {
     private reshipies: Reshipi[];
     private lastReshipiNumber: number;
@@ -45,7 +47,7 @@ export class ReshipiBook {
     }
 
     public addReshipi(reshipi: Omit<Reshipi, "reshipiNumber" | "status" | "date">) {
-        const reshipiNumber = this.reshipies.length + 1;
+        const reshipiNumber = this.lastReshipiNumber + 1;
 
         const completedReshipi = {
             ...reshipi,
@@ -54,7 +56,45 @@ export class ReshipiBook {
             date: new Date().toLocaleString(),
         };
         this.reshipies.push(completedReshipi);
+        this.lastReshipiNumber = reshipiNumber;
         return reshipiNumber;
+    }
+
+    public removeReshipi(id: string): { modifiedReshipies: modifiedReshipi[] | null; removedReshipi: Reshipi | null } {
+        if (this.reshipies.length === 0) {
+            console.log("No Reshipies");
+            return { modifiedReshipies: null, removedReshipi: null };
+        }
+
+        let removedIndex = null;
+        let removedReshipi: Reshipi | null = null;
+
+        this.reshipies = this.reshipies.filter((r, i) => {
+            if (r.id === id) {
+                removedReshipi = r;
+                removedReshipi.status = Status.Canceled;
+                removedIndex = i;
+                return false;
+            } else {
+                return true;
+            }
+        });
+
+        const modifiedReshipies: modifiedReshipi[] = [];
+
+        if (removedIndex) {
+            for (let i = removedIndex; i < this.reshipies.length; i++) {
+                this.reshipies[i].reshipiNumber--;
+                modifiedReshipies.push({
+                    id: this.reshipies[i].id,
+                    reshipiNumber: this.reshipies[i].reshipiNumber,
+                });
+            }
+
+            this.lastReshipiNumber--;
+        }
+
+        return { modifiedReshipies, removedReshipi };
     }
 
     public getSnapshot() {
