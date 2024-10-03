@@ -41,13 +41,15 @@ export class ReshipiBook {
         doctor: string,
         reshipies: Reshipi[],
         lastReshipiNumber: number,
-        currentReshipiNumber: number
+        currentReshipiNumber: number,
+        currentReshipi: Reshipi | null,
+        reshipiToStart: number
     ) {
         this.reshipies = reshipies;
         this.lastReshipiNumber = lastReshipiNumber || 0;
         this.currentReshipiNumber = currentReshipiNumber || 0;
-        this.reshipiToStart = 1;
-        this.currentReshipi = null;
+        this.reshipiToStart = reshipiToStart || 1;
+        this.currentReshipi = currentReshipi || null;
         this.doctor = doctor;
         this.clinic = clinic;
     }
@@ -70,13 +72,20 @@ export class ReshipiBook {
         return reshipiNumber;
     }
 
-    public removeReshipi(id: string): { modifiedReshipies: modifiedReshipi[] | null; removedReshipi: Reshipi | null } {
+    public removeReshipi(id: string): {
+        modifiedReshipies: modifiedReshipi[] | null;
+        removedReshipi: Reshipi | null;
+        error: Errors | null;
+    } {
         if (this.reshipies.length === 0) {
-            console.log("No Reshipies");
-            return { modifiedReshipies: null, removedReshipi: null };
+            return { modifiedReshipies: null, removedReshipi: null, error: Errors.FORBIDDEN };
         }
 
-        let removedIndex = null;
+        if (this.currentReshipi && this.currentReshipi.id === id) {
+            return { modifiedReshipies: null, removedReshipi: null, error: Errors.BAD_REQUEST };
+        }
+
+        let removedIndex: number | null = null;
         let removedReshipi: Reshipi | null = null;
 
         this.reshipies = this.reshipies.filter((r, i) => {
@@ -90,21 +99,22 @@ export class ReshipiBook {
             }
         });
 
-        const modifiedReshipies: modifiedReshipi[] = [];
-
         if (removedIndex) {
-            for (let i = removedIndex; i < this.reshipies.length; i++) {
-                this.reshipies[i].reshipiNumber--;
-                modifiedReshipies.push({
-                    id: this.reshipies[i].id,
-                    reshipiNumber: this.reshipies[i].reshipiNumber,
-                });
-            }
+            this.reshipies = this.reshipies.map((r, i) => {
+                if (removedIndex && i >= removedIndex) {
+                    r.reshipiNumber = r.reshipiNumber - 1;
+                    return r;
+                } else {
+                    return r;
+                }
+            });
 
             this.lastReshipiNumber--;
-        }
 
-        return { modifiedReshipies, removedReshipi };
+            return { modifiedReshipies: this.reshipies, removedReshipi, error: null };
+        } else {
+            return { modifiedReshipies: null, removedReshipi: null, error: Errors.NOT_FOUND };
+        }
     }
 
     public startReshipi(): {
@@ -149,6 +159,7 @@ export class ReshipiBook {
     public endReshipi(): {
         completedReshipi: Reshipi | null;
         currentReshipiNumber: number | null;
+        modifiedReshipies: Reshipi[] | null;
         success: boolean;
         error: Errors | null;
     } {
@@ -156,6 +167,7 @@ export class ReshipiBook {
             return {
                 completedReshipi: null,
                 currentReshipiNumber: this.reshipiToStart,
+                modifiedReshipies: null,
                 success: false,
                 error: Errors.BAD_REQUEST,
             };
@@ -174,12 +186,13 @@ export class ReshipiBook {
         const currentReshipi = this.currentReshipi;
 
         this.currentReshipi = null;
-        console.log(this.reshipies);
-        console.log(this.currentReshipi);
+
+        this.reshipies = this.reshipies.filter((r) => r.id != currentReshipi.id);
 
         return {
             completedReshipi: currentReshipi,
             currentReshipiNumber: this.reshipiToStart,
+            modifiedReshipies: this.reshipies,
             success: true,
             error: null,
         };
@@ -192,6 +205,8 @@ export class ReshipiBook {
             reshipies: this.reshipies,
             lastReshipiNumber: this.lastReshipiNumber,
             currentReshipiNumber: this.currentReshipiNumber,
+            currentReshipi: this.currentReshipi,
+            reshipiToStart: this.reshipiToStart,
         };
     }
 }

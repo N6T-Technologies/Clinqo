@@ -31,13 +31,22 @@ export class Shefu {
         }
 
         if (snapshot) {
+            //TODO: replace any with appropriate type
             const snapshotObject = JSON.parse(snapshot.toString());
             this.reshipieBooks = snapshotObject.reshipieBooks.map(
                 (r: any) =>
-                    new ReshipiBook(r.clinic, r.doctor, r.reshipies, r.lastReshipiNumber, r.currentReshipiNumber)
+                    new ReshipiBook(
+                        r.clinic,
+                        r.doctor,
+                        r.reshipies,
+                        r.lastReshipiNumber,
+                        r.currentReshipiNumber,
+                        r.currentReshipi,
+                        r.reshipiToStart
+                    )
             );
         } else {
-            this.reshipieBooks = [new ReshipiBook("Apollo", "Rakshas", [], 0, 0)];
+            this.reshipieBooks = [new ReshipiBook("Apollo", "Rakshas", [], 0, 0, null, 1)];
         }
 
         setInterval(() => {
@@ -102,7 +111,15 @@ export class Shefu {
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
                     if (currentReshipieBook) {
-                        const { modifiedReshipies, removedReshipi } = currentReshipieBook.removeReshipi(id);
+                        const { modifiedReshipies, removedReshipi, error } = currentReshipieBook.removeReshipi(id);
+
+                        if (error === Errors.FORBIDDEN) {
+                            throw Error("No Reshipies found!");
+                        } else if (error === Errors.BAD_REQUEST) {
+                            throw Error(`Reshipi with id ${id} is already started so it cannot be Cancelled`);
+                        } else if (error === Errors.NOT_FOUND) {
+                            throw Error(`Reshipi with id ${id} does not exist`);
+                        }
 
                         if (removedReshipi) {
                             //TODO: publish to db service as well as WS server
@@ -113,8 +130,6 @@ export class Shefu {
                                     reshipiNumber: removedReshipi.reshipiNumber,
                                 },
                             });
-                        } else {
-                            throw Error(`Reshipi with id ${id} not found`);
                         }
                     } else {
                         throw Error(`Reshipi book with clinic_doctor ${clinic_doctor} not found`);
@@ -180,7 +195,7 @@ export class Shefu {
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
                     if (currentReshipieBook) {
-                        const { completedReshipi, currentReshipiNumber, success, error } =
+                        const { completedReshipi, modifiedReshipies, currentReshipiNumber, success, error } =
                             currentReshipieBook.endReshipi();
 
                         if (success && completedReshipi) {
