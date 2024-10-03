@@ -1,14 +1,16 @@
 import fs from "fs";
-import { Reshipi, ReshipiBook } from "./ReshipiBook";
-import { CANCEL_RESHIPI, CREATE_RESHIPI, MessageFromApi, START_RESHIPI } from "../types/fromApi";
+import { Errors, Reshipi, ReshipiBook } from "./ReshipiBook";
+import { CANCEL_RESHIPI, CREATE_RESHIPI, END_RESHIPI, MessageFromApi, START_RESHIPI } from "../types/fromApi";
 import { RedisManager } from "../RedisManager";
 import {
     ONGOING_RESHIPI,
     RESHIPI_CANCELLED,
     RESHIPI_CREATED,
+    RESHIPI_ENDED,
     RESHIPI_STARTED,
     RETRY_CANCEL_RESHIPI,
     RETRY_CREATE_RESHIPI,
+    RETRY_END_RESHIPI,
     RETRY_START_RESHIPI,
 } from "../types/toApi";
 
@@ -87,7 +89,7 @@ export class Shefu {
                         type: RETRY_CREATE_RESHIPI,
                         payload: {
                             reshipiId: "",
-                            reshipiNumber: 0,
+                            reshipiNumber: null,
                         },
                     });
                 }
@@ -123,7 +125,7 @@ export class Shefu {
                         type: RETRY_CANCEL_RESHIPI,
                         payload: {
                             reshipiId: message.data.id,
-                            reshipiNumber: 0,
+                            reshipiNumber: null,
                         },
                     });
                 }
@@ -132,14 +134,13 @@ export class Shefu {
             case START_RESHIPI:
                 try {
                     const clinic_doctor = message.data.clinic_doctor;
-                    const id = message.data.id;
 
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
                     if (currentReshipieBook) {
-                        const { currentReshipi, currentReshipiNumber } = currentReshipieBook.startReshipi(id);
+                        const { currentReshipi, currentReshipiNumber, error } = currentReshipieBook.startReshipi();
 
-                        if (currentReshipi && currentReshipi.id != id) {
+                        if (currentReshipi && error === Errors.FORBIDDEN) {
                             RedisManager.getInstance().sendToApi(clientId, {
                                 type: ONGOING_RESHIPI,
                                 payload: {
@@ -147,8 +148,7 @@ export class Shefu {
                                     msg: `Reshipi with id ${currentReshipi.id} is already ongoing`,
                                 },
                             });
-                        } else if (currentReshipi && currentReshipi.id === id) {
-                            console.log(currentReshipiNumber);
+                        } else if (currentReshipi && !error) {
                             RedisManager.getInstance().sendToApi(clientId, {
                                 type: RESHIPI_STARTED,
                                 payload: {
@@ -157,7 +157,7 @@ export class Shefu {
                                 },
                             });
                         } else {
-                            throw Error(`Reshipi with id ${id} not found`);
+                            throw Error(`No Reshipies`);
                         }
                     } else {
                         throw Error(`Reshipi book with clinic_doctor ${clinic_doctor} not found`);
@@ -167,12 +167,52 @@ export class Shefu {
                     RedisManager.getInstance().sendToApi(clientId, {
                         type: RETRY_START_RESHIPI,
                         payload: {
-                            reshipiId: message.data.id,
-                            reshipiNumber: 0,
+                            reshipiId: "",
+                            currentReshipiNumber: null,
                         },
                     });
                 }
                 break;
+            case END_RESHIPI:
+                try {
+                    const clinic_doctor = message.data.clinic_doctor;
+
+                    const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
+
+                    if (currentReshipieBook) {
+                        const { completedReshipi, currentReshipiNumber, success, error } =
+                            currentReshipieBook.endReshipi();
+
+                        if (success && completedReshipi) {
+                            //TODO: Send completedReshipi to DB Processor service
+                            RedisManager.getInstance().sendToApi(clientId, {
+                                type: RESHIPI_ENDED,
+                                payload: {
+                                    reshipiId: completedReshipi.id,
+                                    currentReshipiNumber: currentReshipiNumber,
+                                },
+                            });
+                        } else if (error) {
+                            RedisManager.getInstance().sendToApi(clientId, {
+                                type: RETRY_END_RESHIPI,
+                                payload: {
+                                    reshipiId: "",
+                                    msg: "You have to start reshipi before trying to end one",
+                                },
+                            });
+                        }
+                    } else {
+                        throw Error(`Reshipi book with clinic_doctor ${clinic_doctor} not found`);
+                    }
+                } catch (e) {
+                    console.log(e);
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RETRY_END_RESHIPI,
+                        payload: {
+                            reshipiId: "",
+                        },
+                    });
+                }
         }
     }
 

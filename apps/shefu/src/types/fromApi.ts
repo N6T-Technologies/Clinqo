@@ -29,14 +29,12 @@ export type MessageFromApi =
     | {
           type: typeof START_RESHIPI;
           data: {
-              id: string;
               clinic_doctor: string;
           };
       }
     | {
           type: typeof END_RESHIPI;
           data: {
-              id: string;
               clinic_doctor: string;
           };
       }

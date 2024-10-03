@@ -5,6 +5,12 @@ enum Status {
     "Canceled",
 }
 
+export enum Errors {
+    "NOT_FOUND" = 404,
+    "BAD_REQUEST" = 400,
+    "FORBIDDEN" = 403,
+}
+
 export type Reshipi = {
     id: string;
     reshipiNumber: number;
@@ -26,6 +32,7 @@ export class ReshipiBook {
     private lastReshipiNumber: number;
     private currentReshipiNumber: number;
     private currentReshipi: Reshipi | null;
+    private reshipiToStart: number;
     private doctor: string;
     private clinic: string;
 
@@ -39,6 +46,7 @@ export class ReshipiBook {
         this.reshipies = reshipies;
         this.lastReshipiNumber = lastReshipiNumber || 0;
         this.currentReshipiNumber = currentReshipiNumber || 0;
+        this.reshipiToStart = 1;
         this.currentReshipi = null;
         this.doctor = doctor;
         this.clinic = clinic;
@@ -99,21 +107,29 @@ export class ReshipiBook {
         return { modifiedReshipies, removedReshipi };
     }
 
-    public startReshipi(id: string): { currentReshipi: Reshipi | null; currentReshipiNumber: number } {
+    public startReshipi(): {
+        currentReshipi: Reshipi | null;
+        currentReshipiNumber: number;
+        error: Errors | null;
+    } {
         if (this.reshipies.length === 0) {
-            return { currentReshipi: null, currentReshipiNumber: this.currentReshipiNumber };
+            return { currentReshipi: null, currentReshipiNumber: this.currentReshipiNumber, error: Errors.NOT_FOUND };
         }
 
         if (this.currentReshipi) {
-            return { currentReshipi: this.currentReshipi, currentReshipiNumber: this.currentReshipiNumber };
+            return {
+                currentReshipi: this.currentReshipi,
+                currentReshipiNumber: this.currentReshipiNumber,
+                error: Errors.FORBIDDEN,
+            };
         }
 
-        const currentReshipi = this.reshipies.find((r) => r.id === id);
+        const currentReshipi = this.reshipies.find((r) => r.reshipiNumber === this.reshipiToStart);
 
         if (currentReshipi) {
             currentReshipi.status = Status.Ongoing;
             this.reshipies = this.reshipies.map((r) => {
-                if (r.id === id) {
+                if (r.id === currentReshipi.id) {
                     r = currentReshipi;
                     return r;
                 } else {
@@ -122,13 +138,51 @@ export class ReshipiBook {
             });
             this.currentReshipiNumber = currentReshipi.reshipiNumber;
             this.currentReshipi = currentReshipi;
-            console.log(this.reshipies);
-            console.log(this.currentReshipi);
+            this.reshipiToStart++;
 
-            return { currentReshipi, currentReshipiNumber: this.currentReshipiNumber };
+            return { currentReshipi, currentReshipiNumber: this.currentReshipiNumber, error: null };
+        } else {
+            return { currentReshipi: null, currentReshipiNumber: this.reshipiToStart, error: Errors.NOT_FOUND };
+        }
+    }
+
+    public endReshipi(): {
+        completedReshipi: Reshipi | null;
+        currentReshipiNumber: number | null;
+        success: boolean;
+        error: Errors | null;
+    } {
+        if (!this.currentReshipi) {
+            return {
+                completedReshipi: null,
+                currentReshipiNumber: this.reshipiToStart,
+                success: false,
+                error: Errors.BAD_REQUEST,
+            };
         }
 
-        return { currentReshipi: null, currentReshipiNumber: this.currentReshipiNumber };
+        this.currentReshipi.status = Status.Completed;
+        this.reshipies = this.reshipies.map((r) => {
+            if (this.currentReshipi && r.id === this.currentReshipi.id) {
+                r = this.currentReshipi;
+                return r;
+            } else {
+                return r;
+            }
+        });
+
+        const currentReshipi = this.currentReshipi;
+
+        this.currentReshipi = null;
+        console.log(this.reshipies);
+        console.log(this.currentReshipi);
+
+        return {
+            completedReshipi: currentReshipi,
+            currentReshipiNumber: this.reshipiToStart,
+            success: true,
+            error: null,
+        };
     }
 
     public getSnapshot() {
