@@ -126,7 +126,8 @@ export class Shefu {
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
                     if (currentReshipieBook) {
-                        const { modifiedReshipies, removedReshipi, error } = currentReshipieBook.removeReshipi(id);
+                        const { depth, modifiedReshipies, removedReshipi, error } =
+                            currentReshipieBook.removeReshipi(id);
 
                         if (error === Errors.FORBIDDEN) {
                             throw Error("No Reshipies found!");
@@ -149,7 +150,7 @@ export class Shefu {
                             RedisManager.getInstance().publishMessageToWs(`depth@${clinic_doctor}`, {
                                 stream: `depth@${clinic_doctor}`,
                                 data: {
-                                    reshipies: modifiedReshipies,
+                                    reshipies: depth,
                                     cancelledReshipi: removedReshipi,
                                 },
                             });

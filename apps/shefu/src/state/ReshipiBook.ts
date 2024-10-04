@@ -71,31 +71,35 @@ export class ReshipiBook {
     }
 
     public removeReshipi(id: string): {
+        depth: Reshipi[];
         modifiedReshipies: Reshipi[] | null;
         removedReshipi: Reshipi | null;
         error: Errors | null;
     } {
         if (this.reshipies.length === 0) {
-            return { modifiedReshipies: null, removedReshipi: null, error: Errors.FORBIDDEN };
+            return { depth: this.reshipies, modifiedReshipies: null, removedReshipi: null, error: Errors.FORBIDDEN };
         }
 
         if (this.currentReshipi && this.currentReshipi.id === id) {
-            return { modifiedReshipies: null, removedReshipi: null, error: Errors.BAD_REQUEST };
+            return { depth: this.reshipies, modifiedReshipies: null, removedReshipi: null, error: Errors.BAD_REQUEST };
         }
 
         const reshipiToBeRemoved = this.reshipies.find((r) => r.id === id);
 
         if (!reshipiToBeRemoved) {
-            return { modifiedReshipies: null, removedReshipi: null, error: Errors.NOT_FOUND };
+            return { depth: this.reshipies, modifiedReshipies: null, removedReshipi: null, error: Errors.NOT_FOUND };
         }
 
         const removedIndex = this.reshipies.findIndex((r) => r.id === reshipiToBeRemoved.id);
 
         this.reshipies = this.reshipies.filter((r) => r.id != reshipiToBeRemoved.id);
 
+        const modifiedReshipies: Reshipi[] = [];
+
         this.reshipies = this.reshipies.map((r, i) => {
             if (i >= removedIndex) {
                 r.reshipiNumber = r.reshipiNumber - 1;
+                modifiedReshipies.push(r);
                 return r;
             } else {
                 return r;
@@ -104,7 +108,12 @@ export class ReshipiBook {
 
         this.lastReshipiNumber--;
 
-        return { modifiedReshipies: this.reshipies, removedReshipi: reshipiToBeRemoved, error: null };
+        return {
+            depth: this.reshipies,
+            modifiedReshipies: modifiedReshipies,
+            removedReshipi: reshipiToBeRemoved,
+            error: null,
+        };
     }
 
     public startReshipi(): {
