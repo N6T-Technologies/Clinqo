@@ -136,7 +136,7 @@ export class Shefu {
                             throw Error(`Reshipi with id ${id} does not exist`);
                         }
 
-                        if (removedReshipi) {
+                        if (removedReshipi && modifiedReshipies) {
                             //TODO: publish to db service as well as WS server
                             RedisManager.getInstance().sendToApi(clientId, {
                                 type: RESHIPI_CANCELLED,
@@ -144,6 +144,23 @@ export class Shefu {
                                     reshipiId: removedReshipi.id,
                                     reshipiNumber: removedReshipi.reshipiNumber,
                                 },
+                            });
+
+                            RedisManager.getInstance().publishMessageToWs(`depth@${clinic_doctor}`, {
+                                stream: `depth@${clinic_doctor}`,
+                                data: {
+                                    reshipies: modifiedReshipies,
+                                    cancelledReshipi: removedReshipi,
+                                },
+                            });
+
+                            modifiedReshipies.forEach((r) => {
+                                RedisManager.getInstance().publishMessageToWs(`number@${r.id}`, {
+                                    stream: `number@${r.id}`,
+                                    data: {
+                                        newNumber: r.reshipiNumber,
+                                    },
+                                });
                             });
                         }
                     } else {
@@ -186,6 +203,13 @@ export class Shefu {
                                 payload: {
                                     reshipiId: currentReshipi.id,
                                     currentReshipiNumber: currentReshipiNumber,
+                                },
+                            });
+
+                            RedisManager.getInstance().publishMessageToWs(`ongoing@${clinic_doctor}`, {
+                                stream: `ongoing@${clinic_doctor}`,
+                                data: {
+                                    number: currentReshipi.reshipiNumber,
                                 },
                             });
                         } else {

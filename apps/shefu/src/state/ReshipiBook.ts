@@ -25,8 +25,6 @@ export type Reshipi = {
     status: Status;
 };
 
-export type modifiedReshipi = Pick<Reshipi, "id" | "reshipiNumber">;
-
 export class ReshipiBook {
     private reshipies: Reshipi[];
     private lastReshipiNumber: number;
@@ -73,7 +71,7 @@ export class ReshipiBook {
     }
 
     public removeReshipi(id: string): {
-        modifiedReshipies: modifiedReshipi[] | null;
+        modifiedReshipies: Reshipi[] | null;
         removedReshipi: Reshipi | null;
         error: Errors | null;
     } {
@@ -85,36 +83,28 @@ export class ReshipiBook {
             return { modifiedReshipies: null, removedReshipi: null, error: Errors.BAD_REQUEST };
         }
 
-        let removedIndex: number | null = null;
-        let removedReshipi: Reshipi | null = null;
+        const reshipiToBeRemoved = this.reshipies.find((r) => r.id === id);
 
-        this.reshipies = this.reshipies.filter((r, i) => {
-            if (r.id === id) {
-                removedReshipi = r;
-                removedReshipi.status = Status.Canceled;
-                removedIndex = i;
-                return false;
+        if (!reshipiToBeRemoved) {
+            return { modifiedReshipies: null, removedReshipi: null, error: Errors.NOT_FOUND };
+        }
+
+        const removedIndex = this.reshipies.findIndex((r) => r.id === reshipiToBeRemoved.id);
+
+        this.reshipies = this.reshipies.filter((r) => r.id != reshipiToBeRemoved.id);
+
+        this.reshipies = this.reshipies.map((r, i) => {
+            if (i >= removedIndex) {
+                r.reshipiNumber = r.reshipiNumber - 1;
+                return r;
             } else {
-                return true;
+                return r;
             }
         });
 
-        if (removedIndex) {
-            this.reshipies = this.reshipies.map((r, i) => {
-                if (removedIndex && i >= removedIndex) {
-                    r.reshipiNumber = r.reshipiNumber - 1;
-                    return r;
-                } else {
-                    return r;
-                }
-            });
+        this.lastReshipiNumber--;
 
-            this.lastReshipiNumber--;
-
-            return { modifiedReshipies: this.reshipies, removedReshipi, error: null };
-        } else {
-            return { modifiedReshipies: null, removedReshipi: null, error: Errors.NOT_FOUND };
-        }
+        return { modifiedReshipies: this.reshipies, removedReshipi: reshipiToBeRemoved, error: null };
     }
 
     public startReshipi(): {

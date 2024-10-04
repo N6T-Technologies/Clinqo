@@ -1,5 +1,6 @@
 import { createClient, RedisClientType } from "redis";
 import { MessageToApi } from "./types/toApi";
+import { WsMessage } from "./types/toWs";
 
 export class RedisManager {
     private static instance: RedisManager;
@@ -23,8 +24,7 @@ export class RedisManager {
         this.client.lPush("db_processor", JSON.stringify(message));
     }
 
-    //TODO: Create WsMessage Type and replace unknown
-    public publishMessageToWs(channel: string, message: unknown) {
+    public publishMessageToWs(channel: string, message: WsMessage) {
         this.client.publish(channel, JSON.stringify(message));
     }
 
