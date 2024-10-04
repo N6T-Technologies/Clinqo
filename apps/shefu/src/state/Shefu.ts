@@ -1,6 +1,13 @@
 import fs from "fs";
 import { Errors, Reshipi, ReshipiBook } from "./ReshipiBook";
-import { CANCEL_RESHIPI, CREATE_RESHIPI, END_RESHIPI, MessageFromApi, START_RESHIPI } from "../types/fromApi";
+import {
+    CANCEL_RESHIPI,
+    CREATE_RESHIPI,
+    END_RESHIPI,
+    GET_DEPTH,
+    MessageFromApi,
+    START_RESHIPI,
+} from "../types/fromApi";
 import { RedisManager } from "../RedisManager";
 import {
     ONGOING_RESHIPI,
@@ -99,6 +106,8 @@ export class Shefu {
                         payload: {
                             reshipiId: "",
                             reshipiNumber: null,
+                            //@ts-ignore
+                            msg: e?.message,
                         },
                     });
                 }
@@ -141,6 +150,8 @@ export class Shefu {
                         payload: {
                             reshipiId: message.data.id,
                             reshipiNumber: null,
+                            //@ts-ignore
+                            msg: e?.message,
                         },
                     });
                 }
@@ -184,6 +195,8 @@ export class Shefu {
                         payload: {
                             reshipiId: "",
                             currentReshipiNumber: null,
+                            //@ts-ignore
+                            msg: e?.message,
                         },
                     });
                 }
@@ -225,9 +238,39 @@ export class Shefu {
                         type: RETRY_END_RESHIPI,
                         payload: {
                             reshipiId: "",
+                            //@ts-ignore
+                            msg: e?.message,
                         },
                     });
                 }
+                break;
+            case GET_DEPTH:
+                try {
+                    const clinic_doctor = message.data.clinic_doctor;
+                    const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
+
+                    if (!currentReshipieBook) {
+                        throw Error(`Reshipi book with title ${clinic_doctor} does not exist`);
+                    }
+
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: "DEPTH",
+                        payload: {
+                            reshipies: currentReshipieBook.getDepth(),
+                        },
+                    });
+                } catch (e) {
+                    console.log(e);
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: "RETRY_DEPTH",
+                        payload: {
+                            reshipies: null,
+                            //@ts-ignore
+                            msg: e?.message,
+                        },
+                    });
+                }
+                break;
         }
     }
 

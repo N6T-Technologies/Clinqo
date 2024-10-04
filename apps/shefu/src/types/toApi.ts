@@ -1,3 +1,5 @@
+import { Reshipi } from "../state/ReshipiBook";
+
 export const RESHIPI_CREATED = "RESHIPI_CREATED";
 export const RESHIPI_STARTED = "RESHIPI_STARTED";
 export const RESHIPI_ENDED = "RESHIPI_ENDED";
@@ -8,6 +10,7 @@ export const RETRY_START_RESHIPI = "RETRY_START_RESHIPI";
 export const RETRY_END_RESHIPI = "RETRY_END_RESHIPI";
 export const ONGOING_RESHIPI = "ONGOING_RESHIPI";
 export const DEPTH = "DEPTH";
+export const RETRY_DEPTH = "RETRY_DEPTH";
 
 export type MessageToApi =
     | {
@@ -89,5 +92,18 @@ export type MessageToApi =
               reshipiNumber?: number | null;
               currentReshipiNumber?: number | null;
               msg?: string;
+          };
+      }
+    | {
+          type: typeof DEPTH;
+          payload: {
+              reshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber"> }[];
+          };
+      }
+    | {
+          type: typeof RETRY_DEPTH;
+          payload: {
+              reshipies: null;
+              msg: string;
           };
       };

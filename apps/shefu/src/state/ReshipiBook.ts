@@ -198,6 +198,30 @@ export class ReshipiBook {
         };
     }
 
+    public getDepth() {
+        const allReshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber"> }[] = [];
+
+        this.reshipies.forEach((r) => {
+            allReshipies.push({
+                reshipiNumber: r.reshipiNumber,
+                reshipiInfo: {
+                    id: r.id,
+                    patientFirstName: r.patientFirstName,
+                    patientLastName: r.patientLastName,
+                    patientAge: r.patientAge,
+                    symptoms: r.symptoms,
+                    phoneNumber: r.phoneNumber,
+                    followup: r.followup,
+                    managerId: r.managerId,
+                    date: r.date,
+                    status: r.status,
+                },
+            });
+        });
+
+        return allReshipies;
+    }
+
     public getSnapshot() {
         return {
             clinic: this.clinic,
