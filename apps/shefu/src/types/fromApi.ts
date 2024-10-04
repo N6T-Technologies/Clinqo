@@ -4,6 +4,7 @@ export const END_RESHIPI = "END_RESHIPI";
 export const CANCEL_RESHIPI = "CANCEL_RESHIPI";
 export const GET_DEPTH = "GET_DEPTH";
 export const START_RESHIPI_BOOK = "START_RESHIPI_BOOK";
+export const END_RESHIPI_BOOK = "END_RESHIPI_BOOK";
 
 //What happens if i make this interface instead type
 export type MessageFromApi =
@@ -47,6 +48,12 @@ export type MessageFromApi =
       }
     | {
           type: typeof START_RESHIPI_BOOK;
+          data: {
+              clinic_doctor: string;
+          };
+      }
+    | {
+          type: typeof END_RESHIPI_BOOK;
           data: {
               clinic_doctor: string;
           };

@@ -222,6 +222,14 @@ export class ReshipiBook {
         return allReshipies;
     }
 
+    public getCurrentReshipi() {
+        return this.currentReshipi;
+    }
+
+    public getNumberOfReshipies() {
+        return this.reshipies.length;
+    }
+
     public getSnapshot() {
         return {
             clinic: this.clinic,

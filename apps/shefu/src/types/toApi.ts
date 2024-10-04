@@ -13,6 +13,8 @@ export const DEPTH = "DEPTH";
 export const RETRY_DEPTH = "RETRY_DEPTH";
 export const RESHIPI_BOOK_STARTED = "RESHIPI_BOOK_STARTED";
 export const RETRY_RESHIPI_BOOK_START = "RETRY_RESHIPI_BOOK_START";
+export const RESHIPI_BOOK_ENDED = "RESHIPI_BOOK_ENDED";
+export const RETRY_END_RESHIPI_BOOK = "RETRY_END_RESHIPI_BOOK";
 
 export type MessageToApi =
     | {
@@ -119,6 +121,22 @@ export type MessageToApi =
     | {
           type: typeof RETRY_RESHIPI_BOOK_START;
           payload: {
+              ok: boolean;
+              error: Errors;
+              msg: string;
+          };
+      }
+    | {
+          type: typeof RESHIPI_BOOK_ENDED;
+          payload: {
+              ok: boolean;
+              msg: string;
+          };
+      }
+    | {
+          type: typeof RETRY_END_RESHIPI_BOOK;
+          payload: {
+              ok: boolean;
               error: Errors;
               msg: string;
           };

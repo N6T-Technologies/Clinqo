@@ -4,6 +4,7 @@ import {
     CANCEL_RESHIPI,
     CREATE_RESHIPI,
     END_RESHIPI,
+    END_RESHIPI_BOOK,
     GET_DEPTH,
     MessageFromApi,
     START_RESHIPI,
@@ -12,6 +13,7 @@ import {
 import { RedisManager } from "../RedisManager";
 import {
     ONGOING_RESHIPI,
+    RESHIPI_BOOK_ENDED,
     RESHIPI_BOOK_STARTED,
     RESHIPI_CANCELLED,
     RESHIPI_CREATED,
@@ -20,6 +22,7 @@ import {
     RETRY_CANCEL_RESHIPI,
     RETRY_CREATE_RESHIPI,
     RETRY_END_RESHIPI,
+    RETRY_END_RESHIPI_BOOK,
     RETRY_RESHIPI_BOOK_START,
     RETRY_START_RESHIPI,
 } from "../types/toApi";
@@ -301,9 +304,63 @@ export class Shefu {
                     RedisManager.getInstance().sendToApi(clientId, {
                         type: RETRY_RESHIPI_BOOK_START,
                         payload: {
+                            ok: false,
                             error: Errors.BAD_REQUEST,
                             //@ts-ignore
                             msg: e.message,
+                        },
+                    });
+                }
+                break;
+            case END_RESHIPI_BOOK:
+                try {
+                    const clinic_doctor = message.data.clinic_doctor;
+
+                    const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
+
+                    if (!currentReshipieBook) {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: RETRY_END_RESHIPI_BOOK,
+                            payload: {
+                                ok: false,
+                                error: Errors.NOT_FOUND,
+                                msg: `Reshipi book with title ${clinic_doctor} does not exist`,
+                            },
+                        });
+                        return;
+                    }
+
+                    const currentReshipi = currentReshipieBook.getCurrentReshipi();
+                    const numberOfReshipes = currentReshipieBook.getNumberOfReshipies();
+
+                    if (currentReshipi) {
+                        throw Error(`End current Reshipi with id ${currentReshipi.id} before ending the book`);
+                    } else if (numberOfReshipes > 0) {
+                        throw Error(
+                            `There are still remaining reshipies in the book with title ${clinic_doctor} either remove them or try to end forcefully`
+                        );
+                    }
+
+                    if (!currentReshipi && numberOfReshipes === 0) {
+                        this.reshipieBooks = this.reshipieBooks.filter((r) => r.title() != clinic_doctor);
+
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: RESHIPI_BOOK_ENDED,
+                            payload: {
+                                ok: true,
+                                msg: `Reshipi book with title ${clinic_doctor} ended`,
+                            },
+                        });
+                    }
+                } catch (e) {
+                    console.log(e);
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RETRY_END_RESHIPI_BOOK,
+                        payload: {
+                            ok: false,
+                            error: Errors.BAD_REQUEST,
+                            //@ts-ignore
+                            msg: e?.message,
                         },
                     });
                 }
