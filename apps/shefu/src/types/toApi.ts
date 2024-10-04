@@ -20,9 +20,8 @@ export type MessageToApi =
     | {
           type: typeof RESHIPI_CREATED;
           payload: {
-              reshipiId: string;
-              reshipiNumber?: number | null;
-              currentReshipiNumber?: number | null;
+              newReshipi: Reshipi;
+              ok: boolean;
               msg?: string;
           };
       }
@@ -38,10 +37,8 @@ export type MessageToApi =
     | {
           type: typeof RETRY_CREATE_RESHIPI;
           payload: {
-              reshipiId: string;
-              reshipiNumber?: number | null;
-              currentReshipiNumber?: number | null;
-              msg?: string;
+              ok: boolean;
+              msg: string;
           };
       }
     | {

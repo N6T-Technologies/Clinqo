@@ -87,7 +87,7 @@ export class Shefu {
         switch (message.type) {
             case CREATE_RESHIPI:
                 try {
-                    const { reshipiId, reshipiNumber } = this.createReshipi(
+                    const { newReshipi, allReshipies, success, error } = this.createReshipi(
                         message.data.clinic_doctor,
                         message.data.patientFirstName,
                         message.data.patientLastName,
@@ -98,20 +98,32 @@ export class Shefu {
                         message.data.managerId
                     );
 
-                    RedisManager.getInstance().sendToApi(clientId, {
-                        type: RESHIPI_CREATED,
-                        payload: {
-                            reshipiId,
-                            reshipiNumber,
-                        },
-                    });
+                    if (error) {
+                        throw Error(`Reshipi Book wih title ${message.data.clinic_doctor} not found`);
+                    }
+
+                    if (newReshipi && allReshipies) {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: RESHIPI_CREATED,
+                            payload: {
+                                newReshipi: newReshipi,
+                                ok: true,
+                            },
+                        });
+
+                        RedisManager.getInstance().publishMessageToWs(`new@${message.data.clinic_doctor}`, {
+                            stream: `new@${message.data.clinic_doctor}`,
+                            data: {
+                                depth: allReshipies,
+                            },
+                        });
+                    }
                 } catch (e) {
                     console.log(e);
                     RedisManager.getInstance().sendToApi(clientId, {
                         type: RETRY_CREATE_RESHIPI,
                         payload: {
-                            reshipiId: "",
-                            reshipiNumber: null,
+                            ok: false,
                             //@ts-ignore
                             msg: e?.message,
                         },
@@ -404,11 +416,11 @@ export class Shefu {
 
         followup: boolean,
         managerId: string
-    ): { reshipiId: string; reshipiNumber: number } {
+    ): { newReshipi: Reshipi | null; allReshipies: Reshipi[] | null; success?: boolean; error?: Errors } {
         const ReshipiBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
         if (!ReshipiBook) {
-            throw new Error("No Reshipi Book found");
+            return { newReshipi: null, allReshipies: null, error: Errors.NOT_FOUND };
         }
 
         type reshipiType = Omit<Reshipi, "reshipiNumber" | "status" | "date">;
@@ -426,9 +438,9 @@ export class Shefu {
             managerId: managerId,
         };
 
-        const reshipiNumber = ReshipiBook.addReshipi(reshipi);
+        const { newReshipi, allReshipies } = ReshipiBook.addReshipi(reshipi);
 
-        return { reshipiId: reshipiId, reshipiNumber: reshipiNumber };
+        return { newReshipi: newReshipi, allReshipies: allReshipies, success: true };
     }
 
     private getRandomId() {

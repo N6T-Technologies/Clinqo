@@ -67,7 +67,7 @@ export class ReshipiBook {
         };
         this.reshipies.push(completedReshipi);
         this.lastReshipiNumber = reshipiNumber;
-        return reshipiNumber;
+        return { newReshipi: completedReshipi, allReshipies: this.reshipies };
     }
 
     public removeReshipi(id: string): {

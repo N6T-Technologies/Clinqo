@@ -2,7 +2,9 @@ import { Reshipi } from "../state/ReshipiBook";
 
 export type ReshipiAddedMessage = {
     stream: string;
-    reshipi: Reshipi;
+    data: {
+        depth: Reshipi[];
+    };
 };
 
 export type DepthUpdateMessage = {
