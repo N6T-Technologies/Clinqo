@@ -7,10 +7,12 @@ import {
     GET_DEPTH,
     MessageFromApi,
     START_RESHIPI,
+    START_RESHIPI_BOOK,
 } from "../types/fromApi";
 import { RedisManager } from "../RedisManager";
 import {
     ONGOING_RESHIPI,
+    RESHIPI_BOOK_STARTED,
     RESHIPI_CANCELLED,
     RESHIPI_CREATED,
     RESHIPI_ENDED,
@@ -18,6 +20,7 @@ import {
     RETRY_CANCEL_RESHIPI,
     RETRY_CREATE_RESHIPI,
     RETRY_END_RESHIPI,
+    RETRY_RESHIPI_BOOK_START,
     RETRY_START_RESHIPI,
 } from "../types/toApi";
 
@@ -267,6 +270,40 @@ export class Shefu {
                             reshipies: null,
                             //@ts-ignore
                             msg: e?.message,
+                        },
+                    });
+                }
+                break;
+
+            case START_RESHIPI_BOOK:
+                try {
+                    const clinic_doctor = message.data.clinic_doctor;
+                    const clinic = clinic_doctor.split("_")[0];
+                    const doctor = clinic_doctor.split("_")[1];
+
+                    const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
+                    if (currentReshipieBook) {
+                        throw Error(`Reshipi book with title ${clinic_doctor} already exist`);
+                    }
+
+                    const newReshipiBook = new ReshipiBook(clinic, doctor, [], 0, 0, null, 1);
+                    this.reshipieBooks.push(newReshipiBook);
+
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RESHIPI_BOOK_STARTED,
+                        payload: {
+                            ok: true,
+                            msg: `Reshipi book with title ${newReshipiBook.title()} started`,
+                        },
+                    });
+                } catch (e) {
+                    console.log(e);
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RETRY_RESHIPI_BOOK_START,
+                        payload: {
+                            error: Errors.BAD_REQUEST,
+                            //@ts-ignore
+                            msg: e.message,
                         },
                     });
                 }

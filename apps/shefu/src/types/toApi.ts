@@ -1,4 +1,4 @@
-import { Reshipi } from "../state/ReshipiBook";
+import { Errors, Reshipi } from "../state/ReshipiBook";
 
 export const RESHIPI_CREATED = "RESHIPI_CREATED";
 export const RESHIPI_STARTED = "RESHIPI_STARTED";
@@ -11,6 +11,8 @@ export const RETRY_END_RESHIPI = "RETRY_END_RESHIPI";
 export const ONGOING_RESHIPI = "ONGOING_RESHIPI";
 export const DEPTH = "DEPTH";
 export const RETRY_DEPTH = "RETRY_DEPTH";
+export const RESHIPI_BOOK_STARTED = "RESHIPI_BOOK_STARTED";
+export const RETRY_RESHIPI_BOOK_START = "RETRY_RESHIPI_BOOK_START";
 
 export type MessageToApi =
     | {
@@ -104,6 +106,20 @@ export type MessageToApi =
           type: typeof RETRY_DEPTH;
           payload: {
               reshipies: null;
+              msg: string;
+          };
+      }
+    | {
+          type: typeof RESHIPI_BOOK_STARTED;
+          payload: {
+              ok: boolean;
+              msg: string;
+          };
+      }
+    | {
+          type: typeof RETRY_RESHIPI_BOOK_START;
+          payload: {
+              error: Errors;
               msg: string;
           };
       };
