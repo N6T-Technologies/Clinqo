@@ -64,19 +64,19 @@ enum RecordFormat {
 
 model User {
     id            String      @id @default(cuid())
-    firstName     String
-    lastName      String
-    dateOfBirth   DateTime
+    firstName     String      @map("first_name")
+    lastName      String      @map("last_name")
+    dateOfBirth   DateTime    @map("date_of_birth")
     image         String?
     gender        Genders
     email         String      @unique
-    contactNumber String
-    countryCode   String
+    contactNumber String      @map("contact_number")
+    countryCode   String      @map("country_code")
     password      String
     role          Roles
     accounts      Account[]
-    createdAt     DateTime    @default(now())
-    updatedAt     DateTime    @updatedAt
+    createdAt     DateTime    @default(now()) @map("created_at")
+    updatedAt     DateTime    @updatedAt @map("updated_at")
     ClinicHead    ClinicHead?
     Employee      Employee?
     Doctor        Doctor?
@@ -92,13 +92,13 @@ model Account {
     type              String
     provider          String  @default("credentials")
     providerAccountId String  @map("provider_account_id")
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
-    expires_at        Int?
-    token_type        String?
+    refreshToken      String? @map("refresh_token") @db.Text
+    accessToken       String? @map("access_token") @db.Text
+    expiresAt         Int?    @map("expires_at")
+    tokenType         String? @map("token_type")
     scope             String?
-    id_token          String? @db.Text
-    session_state     String?
+    idToken           String? @map("id_token") @db.Text
+    sessionState      String? @map("session_state")
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -127,9 +127,9 @@ model Clinic {
     clinicHeads           ClinicHead[]
     doctorSchedules       DoctorSchedule[]
     completedAppointments Appointment[]
-    createdAt             DateTime         @default(now())
-    updatedAt             DateTime         @updatedAt
-    adminId               String
+    createdAt             DateTime         @default(now()) @map("created_at")
+    updatedAt             DateTime         @updatedAt @map("updated_at")
+    adminId               String           @map("admin_id")
     admin                 Admin            @relation(fields: [adminId], references: [id])
 
     @@map("clinics")
@@ -137,21 +137,21 @@ model Clinic {
 
 model ClinicAddress {
     id           Int     @id @default(autoincrement())
-    addressLine1 String
-    addressLine2 String?
+    addressLine1 String  @map("address_line_1")
+    addressLine2 String? @map("address_line_2")
     city         String
     state        String
     pincode      String
     country      String
     clinic       Clinic  @relation(fields: [clinicId], references: [id])
-    clinicId     String  @unique
+    clinicId     String  @unique @map("clinic_id")
 
     @@map("clinic_addresses")
 }
 
 model Admin {
     id      String   @id @default(cuid())
-    userId  String   @unique
+    userId  String   @unique @map("user_id")
     user    User     @relation(fields: [userId], references: [id])
     clinics Clinic[]
 
@@ -160,8 +160,8 @@ model Admin {
 
 model ClinicHead {
     id       Int    @id @default(autoincrement())
-    userId   String @unique
-    clinicId String
+    userId   String @unique @map("user_id")
+    clinicId String @map("clinic_id")
     user     User   @relation(fields: [userId], references: [id])
     clinic   Clinic @relation(fields: [clinicId], references: [id])
 
@@ -170,9 +170,9 @@ model ClinicHead {
 
 model Employee {
     id             String         @id @default(cuid())
-    userId         String         @unique
-    clinicId       String
-    employeeStatus EmployeeStatus
+    userId         String         @unique @map("user_id")
+    clinicId       String         @map("clinic_id")
+    employeeStatus EmployeeStatus @map("employee_status")
     user           User           @relation(fields: [userId], references: [id])
     clinic         Clinic         @relation(fields: [clinicId], references: [id])
 
@@ -181,9 +181,9 @@ model Employee {
 
 model Doctor {
     id                    String           @id @default(cuid())
-    userId                String           @unique
+    userId                String           @unique @map("user_id")
     specialisation        String
-    mciNumber             String
+    mciNumber             String           @map("mci_number")
     user                  User             @relation(fields: [userId], references: [id])
     createdRecords        PatientRecord[]
     clinics               Clinic[]
@@ -195,11 +195,11 @@ model Doctor {
 }
 
 model DoctorSchedule {
-    doctorId  String
-    clinicId  String
-    dayOfWeek WeekDays
-    startTime DateTime
-    endTime   DateTime
+    doctorId  String   @map("doctor_id")
+    clinicId  String   @map("clinic_id")
+    dayOfWeek WeekDays @map("day_of_week")
+    startTime DateTime @map("start_time")
+    endTime   DateTime @map("end_time")
     doctor    Doctor   @relation(fields: [doctorId], references: [id])
     clinic    Clinic   @relation(fields: [clinicId], references: [id])
 
@@ -212,7 +212,7 @@ model Patient {
     appointment Appointment[]
     records     PatientRecord[]
     address     PatientAddress[]
-    userId      String           @unique
+    userId      String           @unique @map("user_id")
     user        User             @relation(fields: [userId], references: [id])
 
     @@map("patients")
@@ -220,13 +220,13 @@ model Patient {
 
 model PatientAddress {
     id           Int     @id @default(autoincrement())
-    addressLine1 String?
-    addressLine2 String?
+    addressLine1 String? @map("address_line_2")
+    addressLine2 String? @map("address_line_1")
     city         String
     state        String
     pincode      String
     country      String
-    patientId    String
+    patientId    String  @map("patient_id")
     Patient      Patient @relation(fields: [patientId], references: [id])
 
     @@map("patient_addresses")
@@ -234,12 +234,12 @@ model PatientAddress {
 
 model PatientRecord {
     id           Int          @id @default(autoincrement())
-    recordType   RecordType
-    recordFormat RecordFormat
-    recordLink   String
-    patientId    String?
+    recordType   RecordType   @map("record_type")
+    recordFormat RecordFormat @map("record_format")
+    recordLink   String       @map("record_link")
+    patientId    String?      @map("patient_id")
     Patient      Patient?     @relation(fields: [patientId], references: [id])
-    doctorId     String?
+    doctorId     String?      @map("doctor_id")
     Doctor       Doctor?      @relation(fields: [doctorId], references: [id])
 
     @@map("patient_records")
@@ -247,15 +247,15 @@ model PatientRecord {
 
 model Appointment {
     id                Int               @id @default(autoincrement())
-    doctorId          String
-    clinicId          String
-    patientId         String
-    bookTime          DateTime
-    startTime         DateTime
-    endTime           DateTime
+    doctorId          String            @map("doctor_id")
+    clinicId          String            @map("clinic_id")
+    patientId         String            @map("patient_id")
+    bookTime          DateTime          @map("book_time")
+    startTime         DateTime          @map("start_time")
+    endTime           DateTime          @map("end_time")
     symptoms          String
-    paymentMethod     PaymentMethods
-    appointmentStatus AppointmentStatus
+    paymentMethod     PaymentMethods    @map("payment_method")
+    appointmentStatus AppointmentStatus @map("appointment_status")
     prescription      String
     doctor            Doctor            @relation(fields: [doctorId], references: [id])
     clinic            Clinic            @relation(fields: [clinicId], references: [id])

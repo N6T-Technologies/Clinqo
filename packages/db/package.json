@@ -11,10 +11,11 @@
     "license": "MIT",
     "description": "",
     "dependencies": {
-        "@prisma/client": "5.17.0"
+        "@prisma/client": "5.17.0",
+        "ts-node": "^10.9.2"
     },
     "prisma": {
-        "seed": "ts-node src/seed.ts"
+        "seed": "ts-node prisma/seed.ts"
     },
     "exports": {
         "./client": "./src/index.ts"
