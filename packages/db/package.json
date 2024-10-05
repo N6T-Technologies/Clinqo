@@ -18,7 +18,8 @@
         "seed": "ts-node prisma/seed.ts"
     },
     "exports": {
-        "./client": "./src/index.ts"
+        "./client": "./src/index.ts",
+        "./types": "../../node_modules/.prisma/client"
     },
     "devDependencies": {
         "prisma": "^5.18.0"

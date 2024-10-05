@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import prisma, { type UserRole } from "@repo/db/client";
+import prisma, { UserRoles } from "@repo/db/client";
 import authConfig from "./auth.config";
 import { getUserById } from "./data/user";
 
@@ -30,9 +30,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             }
 
             if (token.role && session.user) {
-                session.user.role = token.role as UserRole;
+                session.user.role = token.role as UserRoles;
             }
-            console.log({ Session_token: token, Session: session });
             return session;
         },
         async jwt({ token }) {

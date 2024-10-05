@@ -3,7 +3,7 @@
  * @type {string}
  */
 
-export const DEFAULT_LOGGEDIN_REDIRECT = "/dashboard";
+export const DEFAULT_LOGGEDIN_REDIRECT = "/console/analytics";
 
 /**
  * An array of routes that are accessible to the public.
@@ -14,12 +14,12 @@ export const DEFAULT_LOGGEDIN_REDIRECT = "/dashboard";
 export const publicRoutes = [
     "/",
     "/auth/new-verification",
-    "/console/analytics",
-    "/console/clinics",
-    "/console/doctors",
-    "/console/clinics/register",
-    "/console/employees",
-    "/console/profile",
+    // "/console/analytics",
+    // "/console/clinics",
+    // "/console/doctors",
+    // "/console/clinics/register",
+    // "/console/employees",
+    // "/console/profile",
 ];
 
 /**

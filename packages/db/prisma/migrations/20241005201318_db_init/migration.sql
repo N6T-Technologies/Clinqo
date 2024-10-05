@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Roles" AS ENUM ('DOCTOR', 'PATIENT', 'CLINICHEAD', 'EMPLOYEE', 'ADMIN');
+CREATE TYPE "Roles" AS ENUM ('DOCTOR', 'PATIENT', 'CLINIC_HEAD', 'EMPLOYEE', 'ADMIN');
 
 -- CreateEnum
 CREATE TYPE "WeekDays" AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THRUSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
@@ -11,7 +11,10 @@ CREATE TYPE "Genders" AS ENUM ('MALE', 'FEMALE', 'OTHER');
 CREATE TYPE "EmployeeStatus" AS ENUM ('ACTIVE', 'INACTIVE');
 
 -- CreateEnum
-CREATE TYPE "PaymentMethods" AS ENUM ('UPI', 'DEBITCARD', 'CREDITCARD', 'CASH');
+CREATE TYPE "EmployeeDesignation" AS ENUM ('FRONT_DESK_MANAGER');
+
+-- CreateEnum
+CREATE TYPE "PaymentMethods" AS ENUM ('UPI', 'DEBIT_CARD', 'CREDIT_CARD', 'CASH');
 
 -- CreateEnum
 CREATE TYPE "AppointmentStatus" AS ENUM ('COMPLETED', 'CANCELED');
@@ -43,7 +46,7 @@ CREATE TABLE "users" (
 
 -- CreateTable
 CREATE TABLE "accounts" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "user_id" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "provider" TEXT NOT NULL DEFAULT 'credentials',
@@ -106,7 +109,7 @@ CREATE TABLE "admins" (
 
 -- CreateTable
 CREATE TABLE "clinic_heads" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "clinic_id" TEXT NOT NULL,
 
@@ -118,6 +121,7 @@ CREATE TABLE "employees" (
     "id" TEXT NOT NULL,
     "user_id" TEXT NOT NULL,
     "clinic_id" TEXT NOT NULL,
+    "employee_designation" "EmployeeDesignation" NOT NULL,
     "employee_status" "EmployeeStatus" NOT NULL,
 
     CONSTRAINT "employees_pkey" PRIMARY KEY ("id")
@@ -135,6 +139,7 @@ CREATE TABLE "doctors" (
 
 -- CreateTable
 CREATE TABLE "doctor_schedules" (
+    "serial_no" SERIAL NOT NULL,
     "doctor_id" TEXT NOT NULL,
     "clinic_id" TEXT NOT NULL,
     "day_of_week" "WeekDays" NOT NULL,
@@ -180,7 +185,7 @@ CREATE TABLE "patient_records" (
 
 -- CreateTable
 CREATE TABLE "appointments" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "doctor_id" TEXT NOT NULL,
     "clinic_id" TEXT NOT NULL,
     "patient_id" TEXT NOT NULL,
@@ -192,7 +197,7 @@ CREATE TABLE "appointments" (
     "appointment_status" "AppointmentStatus" NOT NULL,
     "prescription" TEXT NOT NULL,
 
-    CONSTRAINT "appointments_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "appointments_pkey" PRIMARY KEY ("doctor_id","clinic_id","patient_id")
 );
 
 -- CreateTable
@@ -233,6 +238,9 @@ CREATE INDEX "doctors_mci_number_idx" ON "doctors"("mci_number");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "patients_user_id_key" ON "patients"("user_id");
+
+-- CreateIndex
+CREATE INDEX "appointments_id_idx" ON "appointments"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_ClinicToDoctor_AB_unique" ON "_ClinicToDoctor"("A", "B");

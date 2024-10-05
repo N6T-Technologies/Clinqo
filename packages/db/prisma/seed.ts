@@ -1,38 +1,32 @@
+import { Genders, Roles } from "@prisma/client";
 import db from "../src";
 import seedsData from "./seedsData";
 
 async function main() {
     try {
-        for (const user of seedsData.users) {
-            await db.user.upsert({
-                where: { email: user.email },
-                update: {},
-                create: user,
+        for (const admin of seedsData.admins) {
+            const createdUser = await db.user.create({
+                data: admin,
+            });
+
+            await db.admin.create({
+                data: {
+                    userId: createdUser.id,
+                },
             });
         }
 
-        for (const clinic of seedsData.clinics) {
-            await db.clinic.upsert({
-                where: { id: clinic.id },
-                update: {},
-                create: clinic,
-            });
-        }
-
-        for (const employee of seedsData.employees) {
-            await db.employee.upsert({
-                where: { id: employee.id },
-                update: {},
-                create: employee,
-            });
-        }
-
-        for (const appointment of seedsData.appointments) {
-            await db.appointment.create({
-                data: appointment,
-            });
-        }
-
+        // for (const clinicHead of seedsData.clinicHeads) {
+        //     const createdUser = await db.user.create({
+        //         data: clinicHead,
+        //     });
+        //
+        //     await db.clinicHead.create({
+        //         data: {
+        //             userId: createdUser.id,
+        //         },
+        //     });
+        // }
         console.log("Database has been seeded successfully.");
     } catch (error) {
         console.error("Error seeding database: ", error);

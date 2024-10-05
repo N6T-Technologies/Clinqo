@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { SidebarItem } from "./sidebar-item";
-import { signOut } from "@/auth";
+import { signOut } from "next-auth/react";
 import { Route } from "@/types";
 import { SlLogout } from "react-icons/sl";
 import { SlPhone } from "react-icons/sl";
@@ -45,8 +45,8 @@ export function Sidebar({ routes, help }: { routes: Route[]; help: boolean }) {
                 ) : null}
                 <div
                     className="flex items-center space-x-2"
-                    onClick={async () => {
-                        await signOut();
+                    onClick={() => {
+                        signOut();
                         router.push("/auth/login");
                     }}
                 >

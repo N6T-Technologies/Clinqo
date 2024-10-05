@@ -16,7 +16,7 @@ datasource db {
 enum Roles {
     DOCTOR
     PATIENT
-    CLINICHEAD
+    CLINIC_HEAD
     EMPLOYEE
     ADMIN
 }
@@ -42,10 +42,14 @@ enum EmployeeStatus {
     INACTIVE
 }
 
+enum EmployeeDesignation {
+    FRONT_DESK_MANAGER
+}
+
 enum PaymentMethods {
     UPI
-    DEBITCARD
-    CREDITCARD
+    DEBIT_CARD
+    CREDIT_CARD
     CASH
 }
 
@@ -77,17 +81,17 @@ model User {
     accounts      Account[]
     createdAt     DateTime    @default(now()) @map("created_at")
     updatedAt     DateTime    @updatedAt @map("updated_at")
+    Admin         Admin?
     ClinicHead    ClinicHead?
     Employee      Employee?
     Doctor        Doctor?
     Patient       Patient?
-    Admin         Admin?
 
     @@map("users")
 }
 
 model Account {
-    id                String  @id @default(cuid())
+    id                Int     @id @default(autoincrement())
     userId            String  @map("user_id")
     type              String
     provider          String  @default("credentials")
@@ -159,7 +163,7 @@ model Admin {
 }
 
 model ClinicHead {
-    id       Int    @id @default(autoincrement())
+    id       String @id @default(cuid())
     userId   String @unique @map("user_id")
     clinicId String @map("clinic_id")
     user     User   @relation(fields: [userId], references: [id])
@@ -169,12 +173,13 @@ model ClinicHead {
 }
 
 model Employee {
-    id             String         @id @default(cuid())
-    userId         String         @unique @map("user_id")
-    clinicId       String         @map("clinic_id")
-    employeeStatus EmployeeStatus @map("employee_status")
-    user           User           @relation(fields: [userId], references: [id])
-    clinic         Clinic         @relation(fields: [clinicId], references: [id])
+    id                  String              @id @default(cuid())
+    userId              String              @unique @map("user_id")
+    clinicId            String              @map("clinic_id")
+    employeeDesignation EmployeeDesignation @map("employee_designation")
+    employeeStatus      EmployeeStatus      @map("employee_status")
+    user                User                @relation(fields: [userId], references: [id])
+    clinic              Clinic              @relation(fields: [clinicId], references: [id])
 
     @@map("employees")
 }
@@ -195,6 +200,7 @@ model Doctor {
 }
 
 model DoctorSchedule {
+    serialNo  Int      @default(autoincrement()) @map("serial_no")
     doctorId  String   @map("doctor_id")
     clinicId  String   @map("clinic_id")
     dayOfWeek WeekDays @map("day_of_week")
@@ -246,7 +252,7 @@ model PatientRecord {
 }
 
 model Appointment {
-    id                Int               @id @default(autoincrement())
+    id                String            @default(cuid())
     doctorId          String            @map("doctor_id")
     clinicId          String            @map("clinic_id")
     patientId         String            @map("patient_id")
@@ -261,5 +267,7 @@ model Appointment {
     clinic            Clinic            @relation(fields: [clinicId], references: [id])
     patient           Patient           @relation(fields: [patientId], references: [id])
 
+    @@id([doctorId, clinicId, patientId])
+    @@index([id])
     @@map("appointments")
 }
