@@ -108,7 +108,7 @@ export default async function AdminEmployees() {
                     data={data}
                 />
             </div>
-            <RegisterButton name="Employee" href="/console/employees" />
+            <RegisterButton name="Employee" href="/console/employees/register" />
         </div>
     );
 }

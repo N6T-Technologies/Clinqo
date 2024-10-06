@@ -32,11 +32,10 @@ const formSteps: StepInfo[] = [
 
 export const ClinicRegForm = () => {
     const [currentStep, setCurrentStep] = useState<number>(0);
-
-    const [isPending, startTransition] = useTransition();
-
     const [success, setSuccess] = useState<string | undefined>(undefined);
     const [error, setError] = useState<ClinicRegError | undefined>(undefined);
+
+    const [isPending, startTransition] = useTransition();
 
     const form = useForm<CliniqRegSchemaType>({
         resolver: zodResolver(CliniqRegSchema),

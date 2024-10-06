@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import bcrypt from "bcryptjs";
 import { getClinicByGSTIN } from "@/data/clinic";
-import { getUserByEmial } from "@/data/user";
+import { createUser, getUserByEmial } from "@/data/user";
 import { generatePass } from "@/lib/utils";
 import { ClinicRegError, CliniqRegSchema, CliniqRegSchemaType } from "@/types";
 import prisma, { EmployeeDesignation, EmployeeStatus, UserRoles } from "@repo/db/client";
@@ -11,32 +11,6 @@ import prisma, { EmployeeDesignation, EmployeeStatus, UserRoles } from "@repo/db
 export async function registerClinic(
     data: CliniqRegSchemaType
 ): Promise<{ ok: boolean; error?: ClinicRegError; msg?: string }> {
-    const validatedFields = CliniqRegSchema.safeParse(data);
-
-    if (!validatedFields.success) {
-        return { ok: false, error: ClinicRegError.Invalid_Fields };
-    }
-
-    const {
-        firstName,
-        lastName,
-        email,
-        dateOfBirth,
-        gender,
-        contactNumber,
-        clinicName,
-        logo,
-        gstin,
-        country,
-        addressLine1,
-        addressLine2,
-        city,
-        state,
-        pincode,
-    } = validatedFields.data;
-
-    const countryCode = contactNumber.slice(0, 3);
-    const number = contactNumber.slice(3);
     const session = await auth();
 
     if (!session || !session.user) {
@@ -56,6 +30,15 @@ export async function registerClinic(
         return { ok: false, error: ClinicRegError.Admin_Not_Found };
     }
 
+    const validatedFields = CliniqRegSchema.safeParse(data);
+
+    if (!validatedFields.success) {
+        return { ok: false, error: ClinicRegError.Invalid_Fields };
+    }
+
+    const { email, clinicName, logo, gstin, country, addressLine1, addressLine2, city, state, pincode } =
+        validatedFields.data;
+
     const existingUser = await getUserByEmial(email);
 
     if (existingUser) {
@@ -71,20 +54,11 @@ export async function registerClinic(
     const password = generatePass();
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await prisma.user.create({
-        data: {
-            firstName: firstName,
-            lastName: lastName,
-            dateOfBirth: new Date(dateOfBirth),
-            email: email,
-            contactNumber: number,
-            countryCode: countryCode,
-            password: hashedPassword,
-            role: UserRoles.CLINIC_HEAD,
-            //@ts-ignore
-            gender: gender,
-        },
-    });
+    const newUser = await createUser(validatedFields.data, hashedPassword, UserRoles.CLINIC_HEAD);
+
+    if (!newUser) {
+        return { ok: false, error: ClinicRegError.Something_Went_Wrong };
+    }
 
     const newClinic = await prisma.clinic.create({
         data: {
@@ -122,6 +96,8 @@ export async function registerClinic(
             },
         },
     });
+
+    //TODO: Mail email and password
 
     console.log(password);
 

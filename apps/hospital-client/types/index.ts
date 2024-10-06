@@ -36,6 +36,20 @@ export const CliniqRegSchema = z.object({
     pincode: z.string().min(1, "Pincode is required").length(6, "Pincode is required"),
 });
 
+export const EmployeeRegSchema = z.object({
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    email: z.string().min(1, "Email is required").email("Invalid email address"),
+    dateOfBirth: z.string().date(),
+    gender: z.custom<Genders>(),
+    contactNumber: z
+        .string()
+        .min(1, "Contact number is required")
+        .length(13, "Invalid contact number")
+        .startsWith("+", "Country code is required"),
+});
+
+export type EmployeeRegSchemaType = z.infer<typeof EmployeeRegSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type CliniqRegSchemaType = z.infer<typeof CliniqRegSchema>;
 
@@ -54,6 +68,15 @@ export enum ClinicRegError {
     Unauthorized = "Unauthorized",
     No_Creadentials = "No Credentials",
     Admin_Not_Found = "Admin not found",
+}
+
+export enum EmployeeRegError {
+    Invalid_Fields = "Invalid fields",
+    Employee_Already_Exists = "Employee already exits",
+    Something_Went_Wrong = "Something went wrong",
+    Unauthorized = "Unauthorized",
+    No_Creadentials = "No Credentials",
+    Clinic_Head_Not_Cound = "Clinic-Head not found",
 }
 
 export interface Route {
