@@ -74,20 +74,39 @@ export class ReshipiBook {
         depth: Reshipi[];
         modifiedReshipies: Reshipi[] | null;
         removedReshipi: Reshipi | null;
+        lastReshipiNumber: number;
         error: Errors | null;
     } {
         if (this.reshipies.length === 0) {
-            return { depth: this.reshipies, modifiedReshipies: null, removedReshipi: null, error: Errors.FORBIDDEN };
+            return {
+                depth: this.reshipies,
+                modifiedReshipies: null,
+                removedReshipi: null,
+                lastReshipiNumber: this.lastReshipiNumber,
+                error: Errors.FORBIDDEN,
+            };
         }
 
         if (this.currentReshipi && this.currentReshipi.id === id) {
-            return { depth: this.reshipies, modifiedReshipies: null, removedReshipi: null, error: Errors.BAD_REQUEST };
+            return {
+                depth: this.reshipies,
+                modifiedReshipies: null,
+                removedReshipi: null,
+                lastReshipiNumber: this.lastReshipiNumber,
+                error: Errors.BAD_REQUEST,
+            };
         }
 
         const reshipiToBeRemoved = this.reshipies.find((r) => r.id === id);
 
         if (!reshipiToBeRemoved) {
-            return { depth: this.reshipies, modifiedReshipies: null, removedReshipi: null, error: Errors.NOT_FOUND };
+            return {
+                depth: this.reshipies,
+                modifiedReshipies: null,
+                removedReshipi: null,
+                lastReshipiNumber: this.lastReshipiNumber,
+                error: Errors.NOT_FOUND,
+            };
         }
 
         const removedIndex = this.reshipies.findIndex((r) => r.id === reshipiToBeRemoved.id);
@@ -112,6 +131,7 @@ export class ReshipiBook {
             depth: this.reshipies,
             modifiedReshipies: modifiedReshipies,
             removedReshipi: reshipiToBeRemoved,
+            lastReshipiNumber: this.lastReshipiNumber,
             error: null,
         };
     }

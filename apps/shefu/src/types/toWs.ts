@@ -29,4 +29,11 @@ export type NumberUpdate = {
     };
 };
 
-export type WsMessage = ReshipiAddedMessage | DepthUpdateMessage | CurrentNumber | NumberUpdate;
+export type TotalUpdate = {
+    stream: string;
+    data: {
+        totalNumber: number;
+    };
+};
+
+export type WsMessage = ReshipiAddedMessage | DepthUpdateMessage | CurrentNumber | NumberUpdate | TotalUpdate;

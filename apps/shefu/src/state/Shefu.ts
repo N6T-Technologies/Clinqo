@@ -117,6 +117,13 @@ export class Shefu {
                                 depth: allReshipies,
                             },
                         });
+
+                        RedisManager.getInstance().publishMessageToWs(`total@${message.data.clinic_doctor}`, {
+                            stream: `total@${message.data.clinic_doctor}`,
+                            data: {
+                                totalNumber: allReshipies.length,
+                            },
+                        });
                     }
                 } catch (e) {
                     console.log(e);
@@ -138,7 +145,7 @@ export class Shefu {
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
                     if (currentReshipieBook) {
-                        const { depth, modifiedReshipies, removedReshipi, error } =
+                        const { depth, modifiedReshipies, removedReshipi, lastReshipiNumber, error } =
                             currentReshipieBook.removeReshipi(id);
 
                         if (error === Errors.FORBIDDEN) {
@@ -164,6 +171,13 @@ export class Shefu {
                                 data: {
                                     reshipies: depth,
                                     cancelledReshipi: removedReshipi,
+                                },
+                            });
+
+                            RedisManager.getInstance().publishMessageToWs(`total@${clinic_doctor}`, {
+                                stream: `total@${clinic_doctor}`,
+                                data: {
+                                    totalNumber: lastReshipiNumber,
                                 },
                             });
 
