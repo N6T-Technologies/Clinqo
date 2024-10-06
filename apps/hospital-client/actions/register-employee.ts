@@ -28,7 +28,7 @@ export async function registerEmployee(data: EmployeeRegSchemaType): Promise<{
     });
 
     if (!clinicHead) {
-        return { ok: false, error: EmployeeRegError.Clinic_Head_Not_Cound };
+        return { ok: false, error: EmployeeRegError.Clinic_Head_Not_Found };
     }
 
     const validatedFields = EmployeeRegSchema.safeParse(data);

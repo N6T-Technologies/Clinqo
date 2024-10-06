@@ -16,7 +16,7 @@ const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 export enum UserRoles {
-    DOCTRO = "DOCTOR",
+    DOCTOR = "DOCTOR",
     PATIENT = "PATIENT",
     CLINIC_HEAD = "CLINIC_HEAD",
     EMPLOYEE = "EMPLOYEE",

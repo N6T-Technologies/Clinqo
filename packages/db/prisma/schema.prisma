@@ -190,7 +190,7 @@ model Doctor {
     id                    String           @id @default(cuid())
     userId                String           @unique @map("user_id")
     specialisation        String
-    mciNumber             String           @map("mci_number")
+    mciNumber             String           @unique @map("mci_number")
     user                  User             @relation(fields: [userId], references: [id])
     createdRecords        PatientRecord[]
     clinics               Clinic[]

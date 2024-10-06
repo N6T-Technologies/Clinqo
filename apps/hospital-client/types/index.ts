@@ -49,6 +49,23 @@ export const EmployeeRegSchema = z.object({
         .startsWith("+", "Country code is required"),
 });
 
+export const DoctorRegSchema = z.object({
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    email: z.string().min(1, "Email is required").email("Invalid email address"),
+    dateOfBirth: z.string().date(),
+    gender: z.custom<Genders>(),
+    contactNumber: z
+        .string()
+        .min(1, "Contact number is required")
+        .length(13, "Invalid contact number")
+        .startsWith("+", "Country code is required"),
+    //TODO: Replace this with a Enum
+    specialisation: z.string().min(1, "Specialisation is required"),
+    mciNumber: z.string().min(1, "MCI Registration Number is required"),
+});
+
+export type DoctorRegSchemaType = z.infer<typeof DoctorRegSchema>;
 export type EmployeeRegSchemaType = z.infer<typeof EmployeeRegSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type CliniqRegSchemaType = z.infer<typeof CliniqRegSchema>;
@@ -76,7 +93,17 @@ export enum EmployeeRegError {
     Something_Went_Wrong = "Something went wrong",
     Unauthorized = "Unauthorized",
     No_Creadentials = "No Credentials",
-    Clinic_Head_Not_Cound = "Clinic-Head not found",
+    Clinic_Head_Not_Found = "Clinic-Head not found",
+}
+
+export enum DoctorRegError {
+    Invalid_Fields = "Invalid fields",
+    Employee_Already_Exists = "Employee already exits",
+    Something_Went_Wrong = "Something went wrong",
+    Unauthorized = "Unauthorized",
+    No_Creadentials = "No Credentials",
+    Clinic_Head_Not_Found = "Clinic-Head not found",
+    Clinic_Not_Found = "Clinic Not Found",
 }
 
 export interface Route {
