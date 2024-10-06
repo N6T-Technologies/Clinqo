@@ -5,14 +5,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useTransition } from "react";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 
-import { ClininRegFormDataSchema, type ClininRegFormDataSchemaType, StepInfo } from "@/types";
+import { ClinicRegError, CliniqRegSchema, type CliniqRegSchemaType, StepInfo } from "@/types";
 import { Stepper } from "../ui/stepper";
 import { Button } from "../ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
-import DragAndDrop from "../ui/drag-and-drop";
+import { registerClinic } from "@/actions/register-clinic";
+// import DragAndDrop from "../ui/drag-and-drop";
 
 const formSteps: StepInfo[] = [
     {
@@ -34,23 +35,25 @@ export const ClinicRegForm = () => {
 
     const [isPending, startTransition] = useTransition();
 
-    const form = useForm<ClininRegFormDataSchemaType>({
-        resolver: zodResolver(ClininRegFormDataSchema),
+    const [success, setSuccess] = useState<string | undefined>(undefined);
+    const [error, setError] = useState<ClinicRegError | undefined>(undefined);
+
+    const form = useForm<CliniqRegSchemaType>({
+        resolver: zodResolver(CliniqRegSchema),
     });
 
-    const processForm: SubmitHandler<ClininRegFormDataSchemaType> = (data) => {
+    const processForm: SubmitHandler<CliniqRegSchemaType> = (data) => {
         startTransition(async () => {
-            await new Promise((rej, res) => {
-                setTimeout(() => {
-                    console.log(data);
-                    form.reset();
-                    res();
-                }, 2000);
-            });
+            const res = await registerClinic(data);
+            if (res.ok) {
+                setSuccess(res.msg);
+            } else {
+                setError(res.error);
+            }
         });
     };
 
-    type FieldName = keyof ClininRegFormDataSchemaType;
+    type FieldName = keyof CliniqRegSchemaType;
 
     const next = async () => {
         const fields = formSteps[currentStep]?.fields;
@@ -433,7 +436,15 @@ export const ClinicRegForm = () => {
                                                         Clinic Logo
                                                     </FormLabel>
                                                     <FormControl>
-                                                        <DragAndDrop field={field} />
+                                                        {/* <DragAndDrop field={field} /> */}
+                                                        {/* enable DragAndDrop when S3 upload is available */}
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            type="text"
+                                                            placeholder="/img/clinic.png"
+                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -461,7 +472,7 @@ export const ClinicRegForm = () => {
                         </Button>
                     </div>
                 ) : (
-                    <div>Form submitted</div>
+                    <div>{success ? success : error}</div>
                 )}
             </div>
         </div>

@@ -1,0 +1,129 @@
+"use server";
+
+import { auth } from "@/auth";
+import bcrypt from "bcryptjs";
+import { getClinicByGSTIN } from "@/data/clinic";
+import { getUserByEmial } from "@/data/user";
+import { generatePass } from "@/lib/utils";
+import { ClinicRegError, CliniqRegSchema, CliniqRegSchemaType } from "@/types";
+import prisma, { EmployeeDesignation, EmployeeStatus, UserRoles } from "@repo/db/client";
+
+export async function registerClinic(
+    data: CliniqRegSchemaType
+): Promise<{ ok: boolean; error?: ClinicRegError; msg?: string }> {
+    const validatedFields = CliniqRegSchema.safeParse(data);
+
+    if (!validatedFields.success) {
+        return { ok: false, error: ClinicRegError.Invalid_Fields };
+    }
+
+    const {
+        firstName,
+        lastName,
+        email,
+        dateOfBirth,
+        gender,
+        contactNumber,
+        clinicName,
+        logo,
+        gstin,
+        country,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        pincode,
+    } = validatedFields.data;
+
+    const countryCode = contactNumber.slice(0, 3);
+    const number = contactNumber.slice(3);
+    const session = await auth();
+
+    if (!session || !session.user) {
+        return { ok: false, error: ClinicRegError.No_Creadentials };
+    }
+
+    //@ts-ignore
+    if (session.user.role != UserRoles.ADMIN) {
+        return { ok: false, error: ClinicRegError.Unauthorized };
+    }
+
+    const admin = await prisma.admin.findUnique({
+        where: { userId: session.user.id },
+    });
+
+    if (!admin) {
+        return { ok: false, error: ClinicRegError.Admin_Not_Found };
+    }
+
+    const existingUser = await getUserByEmial(email);
+
+    if (existingUser) {
+        return { ok: false, error: ClinicRegError.Clinic_Head_Already_Exits };
+    }
+
+    const clinic = await getClinicByGSTIN(gstin);
+
+    if (clinic) {
+        return { ok: false, error: ClinicRegError.Clinic_Already_Exits };
+    }
+
+    const password = generatePass();
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await prisma.user.create({
+        data: {
+            firstName: firstName,
+            lastName: lastName,
+            dateOfBirth: new Date(dateOfBirth),
+            email: email,
+            contactNumber: number,
+            countryCode: countryCode,
+            password: hashedPassword,
+            role: UserRoles.CLINIC_HEAD,
+            //@ts-ignore
+            gender: gender,
+        },
+    });
+
+    const newClinic = await prisma.clinic.create({
+        data: {
+            name: clinicName,
+            logo: logo,
+            clinicHeads: {
+                create: [
+                    {
+                        userId: newUser.id,
+                    },
+                ],
+            },
+            gstin: gstin,
+            admin: {
+                connect: admin,
+            },
+            employees: {
+                create: [
+                    {
+                        userId: newUser.id,
+                        employeeDesignation: EmployeeDesignation.CLINIC_HEAD,
+                        employeeStatus: EmployeeStatus.ACTIVE,
+                    },
+                ],
+            },
+            address: {
+                create: {
+                    addressLine1: addressLine1,
+                    addressLine2: addressLine2,
+                    city: city,
+                    state: state,
+                    pincode: pincode,
+                    country: country,
+                },
+            },
+        },
+    });
+
+    console.log(password);
+
+    return { ok: true, msg: `The clinic with id ${newClinic.id} created` };
+}

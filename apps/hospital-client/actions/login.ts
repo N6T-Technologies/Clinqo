@@ -13,7 +13,7 @@ export const login = async (
     const validatedFields = LoginSchema.safeParse(values);
 
     if (!validatedFields.success) {
-        return { ok: false, error: LoginActionsError["Invalid fields"] };
+        return { ok: false, error: LoginActionsError.Invalid_Fields };
     }
 
     const { email, password } = validatedFields.data;
@@ -21,7 +21,7 @@ export const login = async (
     const existingUser = await getUserByEmial(email);
 
     if (!existingUser) {
-        return { ok: false, error: LoginActionsError["User not found"] };
+        return { ok: false, error: LoginActionsError.User_Not_Found };
     }
 
     try {
@@ -35,9 +35,9 @@ export const login = async (
         if (error instanceof AuthError) {
             switch (error.type) {
                 case "CredentialsSignin":
-                    return { ok: false, error: LoginActionsError["Invalid credentials"] };
+                    return { ok: false, error: LoginActionsError.Invalid_Credentials };
                 default:
-                    return { ok: false, error: LoginActionsError["Something went wrong"] };
+                    return { ok: false, error: LoginActionsError.Something_Went_Wrong };
             }
         }
 

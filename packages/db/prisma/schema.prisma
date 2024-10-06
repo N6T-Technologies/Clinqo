@@ -44,6 +44,7 @@ enum EmployeeStatus {
 
 enum EmployeeDesignation {
     FRONT_DESK_MANAGER
+    CLINIC_HEAD
 }
 
 enum PaymentMethods {
@@ -121,21 +122,22 @@ model PasswordResetToken {
 }
 
 model Clinic {
-    id                    String           @id @default(cuid())
-    name                  String
-    logo                  String
-    gstin                 String
-    address               ClinicAddress?
-    employees             Employee[]
-    doctors               Doctor[]
-    clinicHeads           ClinicHead[]
-    doctorSchedules       DoctorSchedule[]
-    completedAppointments Appointment[]
-    createdAt             DateTime         @default(now()) @map("created_at")
-    updatedAt             DateTime         @updatedAt @map("updated_at")
-    adminId               String           @map("admin_id")
-    admin                 Admin            @relation(fields: [adminId], references: [id])
+    id              String           @id @default(cuid())
+    name            String
+    logo            String
+    gstin           String           @unique
+    address         ClinicAddress?
+    employees       Employee[]
+    doctors         Doctor[]
+    clinicHeads     ClinicHead[]
+    doctorSchedules DoctorSchedule[]
+    appointments    Appointment[]
+    createdAt       DateTime         @default(now()) @map("created_at")
+    updatedAt       DateTime         @updatedAt @map("updated_at")
+    adminId         String           @map("admin_id")
+    admin           Admin            @relation(fields: [adminId], references: [id])
 
+    @@index([gstin])
     @@map("clinics")
 }
 
