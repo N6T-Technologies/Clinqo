@@ -1,4 +1,5 @@
 import { Reshipi } from "../state/ReshipiBook";
+import { AvailableDoctor } from "../state/Shefu";
 
 export type ReshipiAddedMessage = {
     stream: string;
@@ -36,4 +37,17 @@ export type TotalUpdate = {
     };
 };
 
-export type WsMessage = ReshipiAddedMessage | DepthUpdateMessage | CurrentNumber | NumberUpdate | TotalUpdate;
+export type StartReshipiBook = {
+    stream: string;
+    data: {
+        availableDoctors: AvailableDoctor[];
+    };
+};
+
+export type WsMessage =
+    | ReshipiAddedMessage
+    | DepthUpdateMessage
+    | CurrentNumber
+    | NumberUpdate
+    | TotalUpdate
+    | StartReshipiBook;

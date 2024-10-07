@@ -29,6 +29,15 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                 session.user.id = token.sub;
             }
 
+            //TODO: Add more role based ids like this
+            if (token.role === UserRoles.EMPLOYEE) {
+                const employee = await prisma.employee.findUnique({
+                    where: { userId: session.user.id },
+                });
+                session.user.employeeId = employee?.id;
+                session.user.clinicId = employee?.clinicId;
+            }
+
             if (token.role && session.user) {
                 session.user.role = token.role as UserRoles;
             }

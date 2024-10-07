@@ -9,7 +9,7 @@ import { Sidebar } from "@/components/ui/sidebar";
 
 export default function clinicHeadLayout({ children }: { children: ReactNode }) {
     const routes: Route[] = [
-        { href: "/console/analytics", icon: <FaChartArea className="h-6 w-6" />, title: "Analysis" },
+        { href: "/console/dashboard", icon: <FaChartArea className="h-6 w-6" />, title: "dashboard" },
         { href: "/console/employees", icon: <FaUsers className="h-6 w-6" />, title: "Employees" },
         { href: "/console/doctors", icon: <FaUserDoctor className="h-6 w-6" />, title: "Doctors" },
     ];

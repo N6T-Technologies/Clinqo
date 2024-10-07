@@ -3,7 +3,7 @@
  * @type {string}
  */
 
-export const DEFAULT_LOGGEDIN_REDIRECT = "/console/analytics";
+export const DEFAULT_LOGGEDIN_REDIRECT = "/console/dashboard";
 
 /**
  * An array of routes that are accessible to the public.

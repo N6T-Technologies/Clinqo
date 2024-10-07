@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-export default function Console() {
+export default function Dashboard() {
     return (
         <div className="h-[calc(100%-4rem)] w-full grid grid-cols-2 p-4 space-x-4">
             <div className="h-full space-y-4">

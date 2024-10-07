@@ -27,11 +27,15 @@ import {
     RETRY_RESHIPI_BOOK_START,
     RETRY_START_RESHIPI,
 } from "../types/toApi";
+import { Genders, PaymentMethod } from "@repo/db/src";
+
+export type AvailableDoctor = { doctor: string; doctorName: string; clinic: string };
 
 export class Shefu {
     private static instance: Shefu;
 
     private reshipieBooks: ReshipiBook[] = [];
+    private availableDoctors: AvailableDoctor[] = [];
 
     private constructor() {
         let snapshot = null;
@@ -59,10 +63,8 @@ export class Shefu {
                         r.reshipiToStart
                     )
             );
-        } else {
-            this.reshipieBooks = [new ReshipiBook("Apollo", "Rakshas", [], 0, 0, null, 1)];
+            this.availableDoctors = snapshotObject.availableDoctors;
         }
-
         setInterval(() => {
             this.saveSnapshot();
         }, 1000 * 3);
@@ -79,6 +81,7 @@ export class Shefu {
     private saveSnapshot() {
         const snapshotObject = {
             reshipieBooks: this.reshipieBooks.map((r) => r.getSnapshot()),
+            availableDoctors: this.availableDoctors,
         };
 
         fs.writeFileSync("./snapshot.json", JSON.stringify(snapshotObject));
@@ -92,9 +95,11 @@ export class Shefu {
                         message.data.clinic_doctor,
                         message.data.patientFirstName,
                         message.data.patientLastName,
-                        message.data.patientAge,
+                        message.data.patientDateOfBirth,
+                        message.data.gender,
                         message.data.symptoms,
                         message.data.phoneNumber,
+                        message.data.paymentMethod,
                         message.data.followup,
                         message.data.managerId
                     );
@@ -333,6 +338,7 @@ export class Shefu {
             case START_RESHIPI_BOOK:
                 try {
                     const clinic_doctor = message.data.clinic_doctor;
+                    const doctorName = message.data.doctorName;
                     const clinic = clinic_doctor.split("_")[0];
                     const doctor = clinic_doctor.split("_")[1];
 
@@ -343,12 +349,20 @@ export class Shefu {
 
                     const newReshipiBook = new ReshipiBook(clinic, doctor, [], 0, 0, null, 1);
                     this.reshipieBooks.push(newReshipiBook);
+                    this.availableDoctors.push({ doctor, doctorName, clinic });
 
                     RedisManager.getInstance().sendToApi(clientId, {
                         type: RESHIPI_BOOK_STARTED,
                         payload: {
                             ok: true,
                             msg: `Reshipi book with title ${newReshipiBook.title()} started`,
+                        },
+                    });
+
+                    RedisManager.getInstance().publishMessageToWs(`doctors@${clinic}`, {
+                        stream: `doctors@${clinic}`,
+                        data: {
+                            availableDoctors: this.availableDoctors,
                         },
                     });
                 } catch (e) {
@@ -367,6 +381,7 @@ export class Shefu {
             case END_RESHIPI_BOOK:
                 try {
                     const clinic_doctor = message.data.clinic_doctor;
+                    const clinic = clinic_doctor.split("_")[0];
 
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
@@ -395,12 +410,25 @@ export class Shefu {
 
                     if (!currentReshipi && numberOfReshipes === 0) {
                         this.reshipieBooks = this.reshipieBooks.filter((r) => r.title() != clinic_doctor);
-
+                        this.availableDoctors = this.availableDoctors.filter((r) => {
+                            if (`${r.clinic}_${r.doctor}` === clinic_doctor) {
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        });
                         RedisManager.getInstance().sendToApi(clientId, {
                             type: RESHIPI_BOOK_ENDED,
                             payload: {
                                 ok: true,
                                 msg: `Reshipi book with title ${clinic_doctor} ended`,
+                            },
+                        });
+
+                        RedisManager.getInstance().publishMessageToWs(`doctors@${clinic}`, {
+                            stream: `doctors${clinic}`,
+                            data: {
+                                availableDoctors: this.availableDoctors,
                             },
                         });
                     }
@@ -425,10 +453,11 @@ export class Shefu {
 
         patientFirstName: string,
         patientLastName: string,
-        patientAge: string,
+        patientDateOfBirth: Date,
+        gender: Genders,
         symptoms: string,
         phoneNumber: string,
-
+        paymentMethod: PaymentMethod,
         followup: boolean,
         managerId: string
     ): { newReshipi: Reshipi | null; allReshipies: Reshipi[] | null; success?: boolean; error?: Errors } {
@@ -446,8 +475,10 @@ export class Shefu {
             id: reshipiId,
             patientFirstName: patientFirstName,
             patientLastName: patientLastName,
-            patientAge: patientAge,
+            patientDateOfBirth: patientDateOfBirth,
+            gender: gender,
             symptoms: symptoms,
+            paymentMethod: paymentMethod,
             phoneNumber: phoneNumber,
             followup: followup,
             managerId: managerId,

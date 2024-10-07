@@ -34,12 +34,18 @@ export enum EmployeeStatus {
 }
 
 export enum Genders {
-    MALE = " MALE",
-    FEMALE = " FEMALE",
-    OTHER = " OTHER",
+    MALE = "MALE",
+    FEMALE = "FEMALE",
+    OTHER = "OTHER",
+}
+
+export enum PaymentMethod {
+    UPI = "UPI",
+    DEBIT_CARD = "DEBIT_CARD",
+    CREDIT_CARD = "CREDIT_CARD",
+    CASH = "CASH",
 }
 
 export type UserType = User;
 export type ClinicType = Clinic;
-
 export default prisma;

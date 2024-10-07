@@ -1,3 +1,5 @@
+import { Genders, PaymentMethod } from "@repo/db/src";
+
 export const CREATE_RESHIPI = "CREATE_RESHIPI";
 export const START_RESHIPI = "START_RESHIPI";
 export const END_RESHIPI = "END_RESHIPI";
@@ -7,19 +9,24 @@ export const START_RESHIPI_BOOK = "START_RESHIPI_BOOK";
 export const END_RESHIPI_BOOK = "END_RESHIPI_BOOK";
 
 //What happens if i make this interface instead type
+
+export type CreateAppointmentData = {
+    clinic_doctor: string;
+    patientFirstName: string;
+    patientLastName: string;
+    patientDateOfBirth: Date;
+    gender: Genders;
+    symptoms: string;
+    phoneNumber: string;
+    paymentMethod: PaymentMethod;
+    followup: boolean;
+    managerId: string;
+};
+
 export type MessageFromApi =
     | {
           type: typeof CREATE_RESHIPI;
-          data: {
-              clinic_doctor: string;
-              patientFirstName: string;
-              patientLastName: string;
-              patientAge: string;
-              symptoms: string;
-              phoneNumber: string;
-              followup: boolean;
-              managerId: string;
-          };
+          data: CreateAppointmentData;
       }
     | {
           type: typeof CANCEL_RESHIPI;
@@ -50,6 +57,7 @@ export type MessageFromApi =
           type: typeof START_RESHIPI_BOOK;
           data: {
               clinic_doctor: string;
+              doctorName: string;
           };
       }
     | {

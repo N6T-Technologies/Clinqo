@@ -1,3 +1,5 @@
+import { Genders, PaymentMethod } from "@repo/db/src/index";
+
 export enum Status {
     Ongoing = "Ongoing",
     Created = "Created",
@@ -10,10 +12,12 @@ export type Reshipi = {
     reshipiNumber: number;
     patientFirstName: string;
     patientLastName: string;
-    patientAge: string;
+    patientDateOfBirth: Date;
+    gender: Genders;
     symptoms: string;
     phoneNumber: string;
     followup: boolean;
+    paymentMethod: PaymentMethod;
     managerId: string;
     date: string;
     status: Status;

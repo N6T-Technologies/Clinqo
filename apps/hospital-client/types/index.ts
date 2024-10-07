@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { ReactNode } from "react";
-import { Genders } from "@repo/db/client";
+import { Genders, PaymentMethod } from "@repo/db/client";
 import { Status } from "shefu/appointments";
 
 export const LoginSchema = z.object({
@@ -66,6 +66,23 @@ export const DoctorRegSchema = z.object({
     mciNumber: z.string().min(1, "MCI Registration Number is required"),
 });
 
+export const CreateAppointmentSchema = z.object({
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    dateOfBirth: z.string().date(),
+    gender: z.custom<Genders>(),
+    contactNumber: z
+        .string()
+        .min(1, "Contact number is required")
+        .length(13, "Invalid contact number")
+        .startsWith("+", "Country code is required"),
+    symptoms: z.string().min(1, "Symptoms is required"),
+    doctor: z.string().min(1, "Doctor is required"),
+    followup: z.boolean({ message: "followup is required" }),
+    paymentMethod: z.custom<PaymentMethod>(),
+});
+
+export type CreateAppointmentSchemaType = z.infer<typeof CreateAppointmentSchema>;
 export type DoctorRegSchemaType = z.infer<typeof DoctorRegSchema>;
 export type EmployeeRegSchemaType = z.infer<typeof EmployeeRegSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
@@ -104,6 +121,15 @@ export enum DoctorRegError {
     Unauthorized = "Unauthorized",
     No_Creadentials = "No Credentials",
     Clinic_Head_Not_Found = "Clinic-Head not found",
+    Clinic_Not_Found = "Clinic Not Found",
+}
+
+export enum CreateAppointmentError {
+    Invalid_Fields = "Invalid fields",
+    Something_Went_Wrong = "Something went wrong",
+    Unauthorized = "Unauthorized",
+    No_Creadentials = "No Credentials",
+    Doctor_Not_Found = "Doctor not found",
     Clinic_Not_Found = "Clinic Not Found",
 }
 

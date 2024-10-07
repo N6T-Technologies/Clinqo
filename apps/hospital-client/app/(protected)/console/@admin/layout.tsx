@@ -8,7 +8,7 @@ import { Sidebar } from "@/components/ui/sidebar";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
     const routes: Route[] = [
-        { href: "/console/analytics", icon: <FaChartArea className="h-6 w-6" />, title: "Console" },
+        { href: "/console/dashboard", icon: <FaChartArea className="h-6 w-6" />, title: "Dashboard" },
         { href: "/console/clinics", icon: <FaHospital className="h-6 w-6" />, title: "Clinics" },
         // { href: "/console/doctors", icon: <FaUserDoctor className="h-6 w-6" />, title: "Doctors" },
     ];

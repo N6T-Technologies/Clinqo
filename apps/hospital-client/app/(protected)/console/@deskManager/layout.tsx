@@ -9,7 +9,7 @@ import { FaUserDoctor } from "react-icons/fa6";
 
 export default function DeskMangerLayout({ children }: { children: ReactNode }) {
     const routes: Route[] = [
-        { href: "/console/analytics", icon: <FaChartArea className="h-6 w-6" />, title: "Console" },
+        { href: "/console/dashboard", icon: <FaChartArea className="h-6 w-6" />, title: "Dashboard" },
         { href: "/console/appointments", icon: <FaClipboardList className="h-6 w-6" />, title: "Appointments" },
         { href: "/console/doctors", icon: <FaUserDoctor className="h-6 w-6" />, title: "Doctors" },
     ];
