@@ -11,16 +11,7 @@ export const DEFAULT_LOGGEDIN_REDIRECT = "/console/analytics";
  * @type {string[]}
  */
 
-export const publicRoutes = [
-    "/",
-    "/auth/new-verification",
-    // "/console/analytics",
-    // "/console/clinics",
-    // "/console/doctors",
-    // "/console/clinics/register",
-    // "/console/employees",
-    // "/console/profile",
-];
+export const publicRoutes = ["/", "/auth/new-verification"];
 
 /**
  * An array of routes that are used for authentication.

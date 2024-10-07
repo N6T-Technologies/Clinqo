@@ -13,6 +13,9 @@
     "dependencies": {
         "redis": "^4.7.0"
     },
+    "exports": {
+        "./appointments": "./src/types/reshipiTypes.ts"
+    },
     "devDependencies": {
         "@types/redis": "^4.0.11"
     }

@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { ReactNode } from "react";
 import { Genders } from "@repo/db/client";
+import { Status } from "shefu/appointments";
 
 export const LoginSchema = z.object({
     email: z.string().email({
@@ -129,4 +130,12 @@ export type Clinic = {
     name: string;
     headName: string;
     headEmail: string;
+};
+
+export type Appointment = {
+    id: string;
+    number: number;
+    name: string;
+    doctorName: string;
+    status: Status;
 };

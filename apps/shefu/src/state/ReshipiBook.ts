@@ -1,29 +1,10 @@
-enum Status {
-    "Created",
-    "Ongoing",
-    "Completed",
-    "Canceled",
-}
+import { Reshipi, Status } from "../types/reshipiTypes";
 
 export enum Errors {
     "NOT_FOUND" = 404,
     "BAD_REQUEST" = 400,
     "FORBIDDEN" = 403,
 }
-
-export type Reshipi = {
-    id: string;
-    reshipiNumber: number;
-    patientFirstName: string;
-    patientLastName: string;
-    patientAge: string;
-    symptoms: string;
-    phoneNumber: string;
-    followup: boolean;
-    managerId: string;
-    date: string;
-    status: Status;
-};
 
 export class ReshipiBook {
     private reshipies: Reshipi[];

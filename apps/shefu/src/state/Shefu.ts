@@ -1,5 +1,6 @@
 import fs from "fs";
-import { Errors, Reshipi, ReshipiBook } from "./ReshipiBook";
+import { Errors, ReshipiBook } from "./ReshipiBook";
+import { Reshipi } from "../types/reshipiTypes";
 import {
     CANCEL_RESHIPI,
     CREATE_RESHIPI,
