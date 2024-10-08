@@ -1,16 +1,16 @@
 import {
-    CurrentNumber,
     DepthUpdateMessage,
     NumberUpdate,
-    ReshipiAddedMessage,
-    StartReshipiBook,
     TotalUpdate,
+    CurrentNumberUpdate,
+    ReshipiUpdate,
+    ReshipiBooksUpdate,
 } from "shefu/src/types/toWs";
 
 export type OutgoingMessages =
-    | ReshipiAddedMessage
     | DepthUpdateMessage
-    | CurrentNumber
     | NumberUpdate
     | TotalUpdate
-    | StartReshipiBook;
+    | CurrentNumberUpdate
+    | ReshipiBooksUpdate
+    | ReshipiUpdate;

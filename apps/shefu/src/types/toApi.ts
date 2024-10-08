@@ -106,8 +106,11 @@ export type MessageToApi =
           payload: {
               ok: boolean;
               doctorReshipies: {
-                  doctor: string;
-                  reshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctor"> }[];
+                  doctorName: string;
+                  reshipies: {
+                      reshipiNumber: number;
+                      reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctor">;
+                  }[];
               }[];
           };
       }

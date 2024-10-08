@@ -41,19 +41,28 @@ export class WsManger {
                 this.callbacks[stream].forEach(({ callback }) => {
                     //TODO: Can we convert below if checks in to swith case
                     if (stream === "depth") {
-                        callback(data.reshipies);
+                        callback(data.depth);
                     }
                     if (stream === "new") {
-                        callback(data.depth);
+                        callback(data.reshipi);
+                    }
+                    if (stream === "ongoing") {
+                        callback(data.currentReshipi);
+                    }
+                    if (stream === "cancellation") {
+                        callback(data.reshipi);
+                    }
+                    if (stream === "completed") {
+                        callback(data.reshipi);
+                    }
+                    if (stream === "current") {
+                        callback(data.currentNumber);
                     }
                     if (stream === "total") {
                         callback(data.totalNumber);
                     }
                     if (stream === "number") {
                         callback(data.newNumber);
-                    }
-                    if (stream === "ongoing") {
-                        callback(data.number);
                     }
                     if (stream === "doctors") {
                         callback(data.availableDoctors);

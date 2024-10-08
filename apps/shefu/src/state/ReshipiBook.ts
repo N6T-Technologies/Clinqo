@@ -13,6 +13,7 @@ export class ReshipiBook {
     private currentReshipi: Reshipi | null;
     private reshipiToStart: number;
     private doctor: string;
+    private doctorName: string;
     private clinic: string;
 
     public constructor(
@@ -22,7 +23,8 @@ export class ReshipiBook {
         lastReshipiNumber: number,
         currentReshipiNumber: number,
         currentReshipi: Reshipi | null,
-        reshipiToStart: number
+        reshipiToStart: number,
+        doctorName: string
     ) {
         this.reshipies = reshipies;
         this.lastReshipiNumber = lastReshipiNumber || 0;
@@ -30,6 +32,7 @@ export class ReshipiBook {
         this.reshipiToStart = reshipiToStart || 1;
         this.currentReshipi = currentReshipi || null;
         this.doctor = doctor;
+        this.doctorName = doctorName;
         this.clinic = clinic;
     }
 
@@ -231,10 +234,15 @@ export class ReshipiBook {
         return this.reshipies.length;
     }
 
+    public getDoctorName() {
+        return this.doctorName;
+    }
+
     public getSnapshot() {
         return {
             clinic: this.clinic,
             doctor: this.doctor,
+            doctorName: this.doctorName,
             reshipies: this.reshipies,
             lastReshipiNumber: this.lastReshipiNumber,
             currentReshipiNumber: this.currentReshipiNumber,

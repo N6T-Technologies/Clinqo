@@ -61,7 +61,8 @@ export class Shefu {
                         r.lastReshipiNumber,
                         r.currentReshipiNumber,
                         r.currentReshipi,
-                        r.reshipiToStart
+                        r.reshipiToStart,
+                        r.doctorName
                     )
             );
             this.availableDoctors = snapshotObject.availableDoctors;
@@ -373,14 +374,14 @@ export class Shefu {
                     });
 
                     const data: {
-                        doctor: string;
+                        doctorName: string;
                         reshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctor"> }[];
                     }[] = [];
 
                     clinicReshipiBooks.forEach((rb) => {
-                        const doctor = rb.title().split("_")[0];
+                        const doctorName = rb.getDoctorName();
                         const doctorReshipi = {
-                            doctor: doctor,
+                            doctorName: doctorName,
                             reshipies: rb.getDepth(),
                         };
 
@@ -420,7 +421,7 @@ export class Shefu {
                         throw Error(`Reshipi book with title ${clinic_doctor} already exist`);
                     }
 
-                    const newReshipiBook = new ReshipiBook(clinic, doctor, [], 0, 0, null, 1);
+                    const newReshipiBook = new ReshipiBook(clinic, doctor, [], 0, 0, null, 1, doctorName);
                     this.reshipieBooks.push(newReshipiBook);
                     this.availableDoctors.push({ doctor, doctorName, clinic });
 

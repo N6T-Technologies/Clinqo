@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { RedisManger } from "@/lib/RedisManager";
 import { CreateAppointmentError, CreateAppointmentSchema, CreateAppointmentSchemaType } from "@/types";
-import { MessageFromEngine } from "@/types/fromEngine";
+import { MessageFromEngine, ReshipiCreatedData } from "@/types/fromEngine";
 import { CREATE_RESHIPI, CreateAppointmentData } from "shefu/from-api";
 
 export async function createAppointment(data: CreateAppointmentSchemaType): Promise<{
