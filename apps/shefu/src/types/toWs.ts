@@ -1,5 +1,5 @@
-import { Reshipi } from "../state/ReshipiBook";
 import { AvailableDoctor } from "../state/Shefu";
+import { Reshipi } from "./reshipiTypes";
 
 export type ReshipiAddedMessage = {
     stream: string;
