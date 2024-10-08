@@ -1,4 +1,5 @@
-import { Errors, Reshipi } from "../state/ReshipiBook";
+import { Errors } from "../state/ReshipiBook";
+import { Reshipi } from "./reshipiTypes";
 
 export const RESHIPI_CREATED = "RESHIPI_CREATED";
 export const RESHIPI_STARTED = "RESHIPI_STARTED";
@@ -21,6 +22,7 @@ export type MessageToApi =
           type: typeof RESHIPI_CREATED;
           payload: {
               newReshipi: Reshipi;
+              depth: Reshipi[];
               ok: boolean;
               msg?: string;
           };

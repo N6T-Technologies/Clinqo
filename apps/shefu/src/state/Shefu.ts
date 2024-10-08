@@ -113,6 +113,7 @@ export class Shefu {
                             type: RESHIPI_CREATED,
                             payload: {
                                 newReshipi: newReshipi,
+                                depth: allReshipies,
                                 ok: true,
                             },
                         });
