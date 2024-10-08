@@ -10,8 +10,10 @@ export const RETRY_CANCEL_RESHIPI = "RETRY_CANCEL_RESHIPI";
 export const RETRY_START_RESHIPI = "RETRY_START_RESHIPI";
 export const RETRY_END_RESHIPI = "RETRY_END_RESHIPI";
 export const ONGOING_RESHIPI = "ONGOING_RESHIPI";
-export const DEPTH = "DEPTH";
-export const RETRY_DEPTH = "RETRY_DEPTH";
+export const DEPTH_DOCTOR = "DEPTH_DOCTOR";
+export const RETRY_DEPTH_DOCTOR = "RETRY_DEPTH_DOCTOR";
+export const DEPTH_CLINIC = "DEPTH_CLINIC";
+export const RETRY_DEPTH_CLINIC = "RETRY_DEPTH_CLINIC";
 export const RESHIPI_BOOK_STARTED = "RESHIPI_BOOK_STARTED";
 export const RETRY_RESHIPI_BOOK_START = "RETRY_RESHIPI_BOOK_START";
 export const RESHIPI_BOOK_ENDED = "RESHIPI_BOOK_ENDED";
@@ -24,16 +26,13 @@ export type MessageToApi =
               newReshipi: Reshipi;
               depth: Reshipi[];
               ok: boolean;
-              msg?: string;
           };
       }
     | {
           type: typeof RESHIPI_CANCELLED;
           payload: {
-              reshipiId: string;
-              reshipiNumber?: number | null;
-              currentReshipiNumber?: number | null;
-              msg?: string;
+              ok: boolean;
+              id: string;
           };
       }
     | {
@@ -46,67 +45,77 @@ export type MessageToApi =
     | {
           type: typeof RETRY_CANCEL_RESHIPI;
           payload: {
-              reshipiId: string;
-              reshipiNumber?: number | null;
-              currentReshipiNumber?: number | null;
+              ok: boolean;
               msg?: string;
           };
       }
     | {
           type: typeof RESHIPI_STARTED;
           payload: {
+              ok: boolean;
               reshipiId: string;
-              reshipiNumber?: number | null;
-              currentReshipiNumber?: number | null;
-              msg?: string;
           };
       }
     | {
           type: typeof RETRY_START_RESHIPI;
           payload: {
-              reshipiId: string;
-              reshipiNumber?: number | null;
-              currentReshipiNumber?: number | null;
-              msg?: string;
+              ok: boolean;
+              msg: string;
           };
       }
     | {
           type: typeof ONGOING_RESHIPI;
           payload: {
+              ok: boolean;
               reshipiId: string;
-              reshipiNumber?: number | null;
-              currentReshipiNumber?: number | null;
-              msg?: string;
+              msg: string;
           };
       }
     | {
           type: typeof RESHIPI_ENDED;
           payload: {
+              ok: boolean;
               reshipiId: string;
-              reshipiNumber?: number | null;
-              currentReshipiNumber?: number | null;
-              msg?: string;
+              currentReshipiNumber: number | null;
           };
       }
     | {
           type: typeof RETRY_END_RESHIPI;
           payload: {
-              reshipiId: string;
-              reshipiNumber?: number | null;
-              currentReshipiNumber?: number | null;
-              msg?: string;
+              ok: boolean;
+              msg: string;
           };
       }
     | {
-          type: typeof DEPTH;
+          type: typeof DEPTH_DOCTOR;
           payload: {
+              ok: boolean;
               reshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber"> }[];
           };
       }
     | {
-          type: typeof RETRY_DEPTH;
+          type: typeof RETRY_DEPTH_DOCTOR;
           payload: {
+              ok: boolean;
               reshipies: null;
+              msg: string;
+          };
+      }
+    | {
+          type: typeof DEPTH_CLINIC;
+          payload: {
+              ok: boolean;
+              doctorReshipies: {
+                  doctor: string;
+                  reshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctor"> }[];
+              }[];
+          };
+      }
+    | {
+          type: typeof RETRY_DEPTH_CLINIC;
+          payload: {
+              ok: boolean;
+              doctorReshipies: null;
               msg: string;
           };
       }

@@ -52,7 +52,6 @@ export class ReshipiBook {
     }
 
     public removeReshipi(id: string): {
-        depth: Reshipi[];
         modifiedReshipies: Reshipi[] | null;
         removedReshipi: Reshipi | null;
         lastReshipiNumber: number;
@@ -60,7 +59,6 @@ export class ReshipiBook {
     } {
         if (this.reshipies.length === 0) {
             return {
-                depth: this.reshipies,
                 modifiedReshipies: null,
                 removedReshipi: null,
                 lastReshipiNumber: this.lastReshipiNumber,
@@ -70,7 +68,6 @@ export class ReshipiBook {
 
         if (this.currentReshipi && this.currentReshipi.id === id) {
             return {
-                depth: this.reshipies,
                 modifiedReshipies: null,
                 removedReshipi: null,
                 lastReshipiNumber: this.lastReshipiNumber,
@@ -82,7 +79,6 @@ export class ReshipiBook {
 
         if (!reshipiToBeRemoved) {
             return {
-                depth: this.reshipies,
                 modifiedReshipies: null,
                 removedReshipi: null,
                 lastReshipiNumber: this.lastReshipiNumber,
@@ -109,7 +105,6 @@ export class ReshipiBook {
         this.lastReshipiNumber--;
 
         return {
-            depth: this.reshipies,
             modifiedReshipies: modifiedReshipies,
             removedReshipi: reshipiToBeRemoved,
             lastReshipiNumber: this.lastReshipiNumber,
@@ -119,17 +114,18 @@ export class ReshipiBook {
 
     public startReshipi(): {
         currentReshipi: Reshipi | null;
-        currentReshipiNumber: number;
         error: Errors | null;
     } {
         if (this.reshipies.length === 0) {
-            return { currentReshipi: null, currentReshipiNumber: this.currentReshipiNumber, error: Errors.NOT_FOUND };
+            return {
+                currentReshipi: null,
+                error: Errors.NOT_FOUND,
+            };
         }
 
         if (this.currentReshipi) {
             return {
                 currentReshipi: this.currentReshipi,
-                currentReshipiNumber: this.currentReshipiNumber,
                 error: Errors.FORBIDDEN,
             };
         }
@@ -150,16 +146,21 @@ export class ReshipiBook {
             this.currentReshipi = currentReshipi;
             this.reshipiToStart++;
 
-            return { currentReshipi, currentReshipiNumber: this.currentReshipiNumber, error: null };
+            return {
+                currentReshipi,
+                error: null,
+            };
         } else {
-            return { currentReshipi: null, currentReshipiNumber: this.reshipiToStart, error: Errors.NOT_FOUND };
+            return {
+                currentReshipi: null,
+                error: Errors.NOT_FOUND,
+            };
         }
     }
 
     public endReshipi(): {
         completedReshipi: Reshipi | null;
         currentReshipiNumber: number | null;
-        modifiedReshipies: Reshipi[] | null;
         success: boolean;
         error: Errors | null;
     } {
@@ -167,7 +168,6 @@ export class ReshipiBook {
             return {
                 completedReshipi: null,
                 currentReshipiNumber: this.reshipiToStart,
-                modifiedReshipies: null,
                 success: false,
                 error: Errors.BAD_REQUEST,
             };
@@ -192,7 +192,6 @@ export class ReshipiBook {
         return {
             completedReshipi: currentReshipi,
             currentReshipiNumber: this.reshipiToStart,
-            modifiedReshipies: this.reshipies,
             success: true,
             error: null,
         };

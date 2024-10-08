@@ -6,7 +6,8 @@ import {
     CREATE_RESHIPI,
     END_RESHIPI,
     END_RESHIPI_BOOK,
-    GET_DEPTH,
+    GET_DEPTH_CLINIC,
+    GET_DEPTH_DOCTOR,
     MessageFromApi,
     START_RESHIPI,
     START_RESHIPI_BOOK,
@@ -91,7 +92,7 @@ export class Shefu {
         switch (message.type) {
             case CREATE_RESHIPI:
                 try {
-                    const { newReshipi, allReshipies, success, error } = this.createReshipi(
+                    const { newReshipi, allReshipies, error } = this.createReshipi(
                         message.data.clinic_doctor,
                         message.data.patientFirstName,
                         message.data.patientLastName,
@@ -120,6 +121,13 @@ export class Shefu {
 
                         RedisManager.getInstance().publishMessageToWs(`new@${message.data.clinic_doctor}`, {
                             stream: `new@${message.data.clinic_doctor}`,
+                            data: {
+                                reshipi: newReshipi,
+                            },
+                        });
+
+                        RedisManager.getInstance().publishMessageToWs(`depth@${message.data.clinic_doctor}`, {
+                            stream: `depth@${message.data.clinic_doctor}`,
                             data: {
                                 depth: allReshipies,
                             },
@@ -152,7 +160,7 @@ export class Shefu {
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
                     if (currentReshipieBook) {
-                        const { depth, modifiedReshipies, removedReshipi, lastReshipiNumber, error } =
+                        const { modifiedReshipies, removedReshipi, lastReshipiNumber, error } =
                             currentReshipieBook.removeReshipi(id);
 
                         if (error === Errors.FORBIDDEN) {
@@ -168,16 +176,15 @@ export class Shefu {
                             RedisManager.getInstance().sendToApi(clientId, {
                                 type: RESHIPI_CANCELLED,
                                 payload: {
-                                    reshipiId: removedReshipi.id,
-                                    reshipiNumber: removedReshipi.reshipiNumber,
+                                    ok: true,
+                                    id: removedReshipi.id,
                                 },
                             });
 
-                            RedisManager.getInstance().publishMessageToWs(`depth@${clinic_doctor}`, {
-                                stream: `depth@${clinic_doctor}`,
+                            RedisManager.getInstance().publishMessageToWs(`cancellation@${clinic_doctor}`, {
+                                stream: `cancellation@${clinic_doctor}`,
                                 data: {
-                                    reshipies: depth,
-                                    cancelledReshipi: removedReshipi,
+                                    reshipi: removedReshipi,
                                 },
                             });
 
@@ -205,8 +212,7 @@ export class Shefu {
                     RedisManager.getInstance().sendToApi(clientId, {
                         type: RETRY_CANCEL_RESHIPI,
                         payload: {
-                            reshipiId: message.data.id,
-                            reshipiNumber: null,
+                            ok: false,
                             //@ts-ignore
                             msg: e?.message,
                         },
@@ -221,12 +227,13 @@ export class Shefu {
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
                     if (currentReshipieBook) {
-                        const { currentReshipi, currentReshipiNumber, error } = currentReshipieBook.startReshipi();
+                        const { currentReshipi, error } = currentReshipieBook.startReshipi();
 
                         if (currentReshipi && error === Errors.FORBIDDEN) {
                             RedisManager.getInstance().sendToApi(clientId, {
                                 type: ONGOING_RESHIPI,
                                 payload: {
+                                    ok: false,
                                     reshipiId: currentReshipi.id,
                                     msg: `Reshipi with id ${currentReshipi.id} is already ongoing`,
                                 },
@@ -235,15 +242,22 @@ export class Shefu {
                             RedisManager.getInstance().sendToApi(clientId, {
                                 type: RESHIPI_STARTED,
                                 payload: {
+                                    ok: true,
                                     reshipiId: currentReshipi.id,
-                                    currentReshipiNumber: currentReshipiNumber,
+                                },
+                            });
+
+                            RedisManager.getInstance().publishMessageToWs(`current@${clinic_doctor}`, {
+                                stream: `current@${clinic_doctor}`,
+                                data: {
+                                    currentNumber: currentReshipi.reshipiNumber,
                                 },
                             });
 
                             RedisManager.getInstance().publishMessageToWs(`ongoing@${clinic_doctor}`, {
                                 stream: `ongoing@${clinic_doctor}`,
                                 data: {
-                                    number: currentReshipi.reshipiNumber,
+                                    reshipi: currentReshipi,
                                 },
                             });
                         } else {
@@ -257,8 +271,7 @@ export class Shefu {
                     RedisManager.getInstance().sendToApi(clientId, {
                         type: RETRY_START_RESHIPI,
                         payload: {
-                            reshipiId: "",
-                            currentReshipiNumber: null,
+                            ok: false,
                             //@ts-ignore
                             msg: e?.message,
                         },
@@ -272,7 +285,7 @@ export class Shefu {
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
                     if (currentReshipieBook) {
-                        const { completedReshipi, modifiedReshipies, currentReshipiNumber, success, error } =
+                        const { completedReshipi, currentReshipiNumber, success, error } =
                             currentReshipieBook.endReshipi();
 
                         if (success && completedReshipi) {
@@ -280,15 +293,23 @@ export class Shefu {
                             RedisManager.getInstance().sendToApi(clientId, {
                                 type: RESHIPI_ENDED,
                                 payload: {
+                                    ok: true,
                                     reshipiId: completedReshipi.id,
                                     currentReshipiNumber: currentReshipiNumber,
+                                },
+                            });
+
+                            RedisManager.getInstance().publishMessageToWs(`completed@${clinic_doctor}`, {
+                                stream: `completed@${clinic_doctor}`,
+                                data: {
+                                    reshipi: completedReshipi,
                                 },
                             });
                         } else if (error) {
                             RedisManager.getInstance().sendToApi(clientId, {
                                 type: RETRY_END_RESHIPI,
                                 payload: {
-                                    reshipiId: "",
+                                    ok: false,
                                     msg: "You have to start reshipi before trying to end one",
                                 },
                             });
@@ -301,14 +322,14 @@ export class Shefu {
                     RedisManager.getInstance().sendToApi(clientId, {
                         type: RETRY_END_RESHIPI,
                         payload: {
-                            reshipiId: "",
+                            ok: false,
                             //@ts-ignore
                             msg: e?.message,
                         },
                     });
                 }
                 break;
-            case GET_DEPTH:
+            case GET_DEPTH_DOCTOR:
                 try {
                     const clinic_doctor = message.data.clinic_doctor;
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
@@ -318,17 +339,68 @@ export class Shefu {
                     }
 
                     RedisManager.getInstance().sendToApi(clientId, {
-                        type: "DEPTH",
+                        type: "DEPTH_DOCTOR",
                         payload: {
+                            ok: true,
                             reshipies: currentReshipieBook.getDepth(),
                         },
                     });
                 } catch (e) {
                     console.log(e);
                     RedisManager.getInstance().sendToApi(clientId, {
-                        type: "RETRY_DEPTH",
+                        type: "RETRY_DEPTH_DOCTOR",
                         payload: {
+                            ok: false,
                             reshipies: null,
+                            //@ts-ignore
+                            msg: e?.message,
+                        },
+                    });
+                }
+                break;
+
+            case GET_DEPTH_CLINIC:
+                try {
+                    const clinic = message.data.clinic;
+
+                    const clinicReshipiBooks = this.reshipieBooks.filter((r) => {
+                        const clinicId = r.title().split("_")[0];
+                        if (clinicId === clinic) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+
+                    const data: {
+                        doctor: string;
+                        reshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctor"> }[];
+                    }[] = [];
+
+                    clinicReshipiBooks.forEach((rb) => {
+                        const doctor = rb.title().split("_")[0];
+                        const doctorReshipi = {
+                            doctor: doctor,
+                            reshipies: rb.getDepth(),
+                        };
+
+                        data.push(doctorReshipi);
+                    });
+
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: "DEPTH_CLINIC",
+                        payload: {
+                            ok: true,
+                            doctorReshipies: data,
+                        },
+                    });
+                } catch (e) {
+                    console.log(e);
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: "RETRY_DEPTH_CLINIC",
+                        payload: {
+                            doctorReshipies: null,
+                            ok: false,
                             //@ts-ignore
                             msg: e?.message,
                         },
@@ -461,7 +533,7 @@ export class Shefu {
         paymentMethod: PaymentMethod,
         followup: boolean,
         managerId: string
-    ): { newReshipi: Reshipi | null; allReshipies: Reshipi[] | null; success?: boolean; error?: Errors } {
+    ): { newReshipi: Reshipi | null; allReshipies: Reshipi[] | null; error?: Errors } {
         const ReshipiBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
         if (!ReshipiBook) {
@@ -487,7 +559,7 @@ export class Shefu {
 
         const { newReshipi, allReshipies } = ReshipiBook.addReshipi(reshipi);
 
-        return { newReshipi: newReshipi, allReshipies: allReshipies, success: true };
+        return { newReshipi: newReshipi, allReshipies: allReshipies };
     }
 
     private getRandomId() {

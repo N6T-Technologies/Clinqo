@@ -1,25 +1,24 @@
 import { AvailableDoctor } from "../state/Shefu";
 import { Reshipi } from "./reshipiTypes";
 
-export type ReshipiAddedMessage = {
+export type ReshipiUpdate = {
     stream: string;
     data: {
-        depth: Reshipi[];
+        reshipi: Reshipi;
     };
 };
 
 export type DepthUpdateMessage = {
     stream: string;
     data: {
-        reshipies: Reshipi[];
-        cancelledReshipi: Reshipi;
+        depth: Reshipi[];
     };
 };
 
-export type CurrentNumber = {
+export type CurrentNumberUpdate = {
     stream: string;
     data: {
-        number: number;
+        currentNumber: number;
     };
 };
 
@@ -37,7 +36,7 @@ export type TotalUpdate = {
     };
 };
 
-export type StartReshipiBook = {
+export type ReshipiBooksUpdate = {
     stream: string;
     data: {
         availableDoctors: AvailableDoctor[];
@@ -45,9 +44,9 @@ export type StartReshipiBook = {
 };
 
 export type WsMessage =
-    | ReshipiAddedMessage
     | DepthUpdateMessage
-    | CurrentNumber
     | NumberUpdate
     | TotalUpdate
-    | StartReshipiBook;
+    | ReshipiBooksUpdate
+    | ReshipiUpdate
+    | CurrentNumberUpdate;

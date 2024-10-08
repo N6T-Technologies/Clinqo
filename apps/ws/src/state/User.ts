@@ -1,6 +1,7 @@
 import { WebSocket } from "ws";
 import { IncomingMessage, SUBSCRIBE, UNSUBSCRIBE } from "../types/incoming";
 import { SubscriptionManager } from "./SubscriptionManager";
+import { OutgoingMessages } from "../types/outgoing";
 
 export class User {
     private id: string;
@@ -21,8 +22,7 @@ export class User {
         this.subscriptions.filter((c) => c != channel);
     }
 
-    public sendMessage(message: unknown) {
-        //the type of message should be outgoing message
+    public sendMessage(message: OutgoingMessages) {
         this.userSocket.send(JSON.stringify(message));
     }
 

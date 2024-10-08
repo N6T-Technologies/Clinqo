@@ -8,6 +8,10 @@
         "start": "node dist/index.js",
         "dev": "yarn run build && yarn run start"
     },
+    "exports": {
+        "./incoming": "./src/types/incoming.ts",
+        "./outgoing": "./src/types/outgoing.ts"
+    },
     "author": "meru45",
     "license": "MIT",
     "dependencies": {

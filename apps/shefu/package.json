@@ -17,7 +17,8 @@
     "exports": {
         "./appointments": "./src/types/reshipiTypes.ts",
         "./from-api": "./src/types/fromApi.ts",
-        "./to-api": "./src/types/toApi.ts"
+        "./to-api": "./src/types/toApi.ts",
+        "./to-ws": "./src/types/toWs.ts"
     },
     "devDependencies": {
         "@types/redis": "^4.0.11"
