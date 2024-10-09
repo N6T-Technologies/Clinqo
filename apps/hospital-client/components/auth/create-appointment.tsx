@@ -16,6 +16,7 @@ import { Checkbox } from "../ui/checkbox";
 import { PaymentMethod } from "@repo/db/client";
 import { WsManger } from "@/lib/WsManager";
 import { Errors } from "../../../shefu/src/state/ReshipiBook";
+import { useRouter } from "next/navigation";
 
 const formSteps: StepInfo[] = [
     {
@@ -55,6 +56,8 @@ export default function CreateAppointment({
 
     const [isPending, startTransition] = useTransition();
 
+    const router = useRouter();
+
     useEffect(() => {
         setNewAvailableDoctor(availableDoctors);
         WsManger.getInstance().registerCallback(
@@ -82,6 +85,8 @@ export default function CreateAppointment({
             } else {
                 setError(res.error);
             }
+
+            router.push("/console/appointments");
         });
     };
 

@@ -1,10 +1,17 @@
-import { AvailableDoctor } from "../state/Shefu";
 import { Reshipi } from "./reshipiTypes";
 
 export type ReshipiUpdate = {
     stream: string;
     data: {
         reshipi: Reshipi;
+    };
+};
+
+export type CancellationUpdate = {
+    stream: string;
+    data: {
+        reshipies: Reshipi[];
+        removedReshipi: Reshipi;
     };
 };
 
@@ -52,4 +59,5 @@ export type WsMessage =
     | TotalUpdate
     | ReshipiBooksUpdate
     | ReshipiUpdate
-    | CurrentNumberUpdate;
+    | CurrentNumberUpdate
+    | CancellationUpdate;

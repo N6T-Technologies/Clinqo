@@ -5,7 +5,7 @@ import { columns } from "@/app/(protected)/console/@deskManager/appointments/col
 import { Appointment } from "@/types";
 import { useEffect, useState } from "react";
 import { WsManger } from "@/lib/WsManager";
-import { Reshipi } from "shefu/appointments";
+import { Reshipi, Status } from "shefu/appointments";
 
 export default function AppointmentsTable({ data, clinicId }: { data: Appointment[]; clinicId: string }) {
     const [depth, setDepth] = useState<Appointment[]>([]);
@@ -36,11 +36,49 @@ export default function AppointmentsTable({ data, clinicId }: { data: Appointmen
             `new_clinic@${clinicId}`
         );
 
-        WsManger.getInstance().sendMessage({ method: "SUBSCRIBE", params: [`new_clinic@${clinicId}`] });
+        WsManger.getInstance().registerCallback(
+            "cancellation_clinic",
+            (data: { reshipies: Reshipi[]; removedReshipi: Reshipi }) => {
+                setDepth((depth) => {
+                    return depth.map((r) => {
+                        if (r.id === data.removedReshipi.id) {
+                            r.status = Status.Canceled;
+                            r.number = 0;
+                            return r;
+                        }
+                        return r;
+                    });
+                });
+
+                setDepth((depth) => {
+                    let j = 0;
+                    return depth.map((r) => {
+                        if (j < data.reshipies.length && r.id === data.reshipies[j]?.id) {
+                            r.number = data.reshipies[j]?.reshipiNumber || r.number;
+                            j++;
+                            return r;
+                        }
+
+                        return r;
+                    });
+                });
+            },
+            `cancellation_clinic@${clinicId}`
+        );
+
+        WsManger.getInstance().sendMessage({
+            method: "SUBSCRIBE",
+            params: [`new_clinic@${clinicId}`, `cancellation_clinic@${clinicId}`],
+        });
 
         return () => {
-            WsManger.getInstance().sendMessage({ method: "UNSUBSCRIBE", params: [`new_clinic@${clinicId}`] });
-            WsManger.getInstance().deRegisterCallback("new_clinic", `new_clinic@${clinicId}`);
+            //TODO: We want that the user gets unsubscribe when they leave the page, but it is creating some sort of problem with navigation in the sense that the user is not getting re subscribed even when we get back to this page
+            // WsManger.getInstance().sendMessage({
+            //     method: "UNSUBSCRIBE",
+            //     params: [`new_clinic@${clinicId}`, `cancellation_clinic@${clinicId}`],
+            // });
+            // WsManger.getInstance().deRegisterCallback("new_clinic", `new_clinic@${clinicId}`);
+            // WsManger.getInstance().deRegisterCallback("cancellation_clinic", `cancellation_clinic@${clinicId}`);
         };
     }, []);
 

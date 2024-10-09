@@ -122,8 +122,8 @@ export class Shefu {
                             },
                         });
 
-                        RedisManager.getInstance().publishMessageToWs(`new@${message.data.clinic_doctor}`, {
-                            stream: `new@${message.data.clinic_doctor}`,
+                        RedisManager.getInstance().publishMessageToWs(`new_doctor@${message.data.clinic_doctor}`, {
+                            stream: `new_doctor@${message.data.clinic_doctor}`,
                             data: {
                                 reshipi: newReshipi,
                             },
@@ -194,12 +194,24 @@ export class Shefu {
                                 },
                             });
 
-                            RedisManager.getInstance().publishMessageToWs(`cancellation@${clinic_doctor}`, {
-                                stream: `cancellation@${clinic_doctor}`,
+                            RedisManager.getInstance().publishMessageToWs(`cancellation_doctor@${clinic_doctor}`, {
+                                stream: `cancellation_doctor@${clinic_doctor}`,
                                 data: {
-                                    reshipi: removedReshipi,
+                                    reshipies: modifiedReshipies,
+                                    removedReshipi: removedReshipi,
                                 },
                             });
+
+                            RedisManager.getInstance().publishMessageToWs(
+                                `cancellation_clinic@${clinic_doctor.split("_")[0]}`,
+                                {
+                                    stream: `cancellation_clinic@${clinic_doctor.split("_")[0]}`,
+                                    data: {
+                                        reshipies: modifiedReshipies,
+                                        removedReshipi: removedReshipi,
+                                    },
+                                }
+                            );
 
                             RedisManager.getInstance().publishMessageToWs(`total@${clinic_doctor}`, {
                                 stream: `total@${clinic_doctor}`,

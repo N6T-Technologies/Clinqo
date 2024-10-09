@@ -48,7 +48,7 @@ export class WsManger {
                     if (stream === "depth") {
                         callback(data.depth);
                     }
-                    if (stream === "new") {
+                    if (stream === "new_doctor") {
                         callback(data.reshipi);
                     }
                     if (stream === "new_clinic") {
@@ -57,8 +57,11 @@ export class WsManger {
                     if (stream === "ongoing") {
                         callback(data.currentReshipi);
                     }
-                    if (stream === "cancellation") {
-                        callback(data.reshipi);
+                    if (stream === "cancellation_clinic") {
+                        callback(data);
+                    }
+                    if (stream === "cancellation_doctor") {
+                        callback(data);
                     }
                     if (stream === "completed") {
                         callback(data.reshipi);
