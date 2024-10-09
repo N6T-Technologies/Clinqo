@@ -16,9 +16,7 @@ export default function AppointmentsTable({ data, clinicId }: { data: Appointmen
         WsManger.getInstance().registerCallback(
             "new_clinic",
             (data: Reshipi) => {
-                console.log("New appointment added");
-                console.log(data);
-
+                console.log("Reached here");
                 setDepth((depth) => {
                     const newDepth = [
                         ...depth,
@@ -66,9 +64,26 @@ export default function AppointmentsTable({ data, clinicId }: { data: Appointmen
             `cancellation_clinic@${clinicId}`
         );
 
+        WsManger.getInstance().registerCallback(
+            "ongoing_clinic",
+            (data: Reshipi) => {
+                setDepth((depth) => {
+                    return depth.map((r) => {
+                        if (r.id === data.id) {
+                            r.status = Status.Ongoing;
+                            return r;
+                        }
+
+                        return r;
+                    });
+                });
+            },
+            `ongoing_clinic@${clinicId}`
+        );
+
         WsManger.getInstance().sendMessage({
             method: "SUBSCRIBE",
-            params: [`new_clinic@${clinicId}`, `cancellation_clinic@${clinicId}`],
+            params: [`new_clinic@${clinicId}`, `cancellation_clinic@${clinicId}`, `ongoing_clinic@${clinicId}`],
         });
 
         return () => {

@@ -3,7 +3,7 @@ import CreateAppointment from "@/components/auth/create-appointment";
 import { RedisManger } from "@/lib/RedisManager";
 import { GET_AVAILABLE_DOCTORS } from "shefu/from-api";
 
-async function getDoctors(clinicId: string) {
+export async function getDoctors(clinicId: string) {
     const availableDoctors = await RedisManger.getInstance().sendAndAwait({
         type: GET_AVAILABLE_DOCTORS,
         data: {

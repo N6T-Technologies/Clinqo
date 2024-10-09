@@ -54,8 +54,12 @@ export class WsManger {
                     if (stream === "new_clinic") {
                         callback(data.reshipi);
                     }
-                    if (stream === "ongoing") {
-                        callback(data.currentReshipi);
+                    if (stream === "ongoing_clinic") {
+                        console.log("Reached in Ongoing");
+                        callback(data.reshipi);
+                    }
+                    if (stream === "ongoing_doctor") {
+                        callback(data.reshipi);
                     }
                     if (stream === "cancellation_clinic") {
                         callback(data);

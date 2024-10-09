@@ -279,12 +279,22 @@ export class Shefu {
                                 },
                             });
 
-                            RedisManager.getInstance().publishMessageToWs(`ongoing@${clinic_doctor}`, {
-                                stream: `ongoing@${clinic_doctor}`,
+                            RedisManager.getInstance().publishMessageToWs(`ongoing_doctor@${clinic_doctor}`, {
+                                stream: `ongoing_doctor@${clinic_doctor}`,
                                 data: {
                                     reshipi: currentReshipi,
                                 },
                             });
+
+                            RedisManager.getInstance().publishMessageToWs(
+                                `ongoing_clinic@${clinic_doctor.split("_")[0]}`,
+                                {
+                                    stream: `ongoing_clinic@${clinic_doctor.split("_")[0]}`,
+                                    data: {
+                                        reshipi: currentReshipi,
+                                    },
+                                }
+                            );
                         } else {
                             throw Error(`No Reshipies`);
                         }
