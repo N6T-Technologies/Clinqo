@@ -14,8 +14,9 @@ export type Reshipi = {
     patientLastName: string;
     patientDateOfBirth: Date;
     gender: Genders;
-    symptoms: string;
     phoneNumber: string;
+    doctorName: string;
+    symptoms: string;
     followup: boolean;
     paymentMethod: PaymentMethod;
     managerId: string;

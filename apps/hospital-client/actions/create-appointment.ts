@@ -36,15 +36,20 @@ export async function createAppointment(data: CreateAppointmentSchemaType): Prom
     const { firstName, lastName, dateOfBirth, gender, contactNumber, symptoms, doctor, followup, paymentMethod } =
         validatedFields.data;
 
+    const doctorName = doctor.split("_")[0];
+    const doctorId = doctor.split("_")[1];
+
     const appointmentData: CreateAppointmentData = {
         patientFirstName: firstName,
         patientLastName: lastName,
         patientDateOfBirth: new Date(dateOfBirth),
+        //@ts-ignore
+        doctorName: doctorName,
         gender: gender,
         phoneNumber: contactNumber,
         symptoms: symptoms,
         //@ts-ignore
-        clinic_doctor: `${session.user.clinicId}_${doctor}`,
+        clinic_doctor: `${session.user.clinicId}_${doctorId}`,
         followup: followup,
         paymentMethod: paymentMethod,
         //@ts-ignore

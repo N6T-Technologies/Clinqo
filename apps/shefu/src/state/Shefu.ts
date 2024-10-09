@@ -100,6 +100,7 @@ export class Shefu {
                         message.data.patientLastName,
                         message.data.patientDateOfBirth,
                         message.data.gender,
+                        message.data.doctorName,
                         message.data.symptoms,
                         message.data.phoneNumber,
                         message.data.paymentMethod,
@@ -127,6 +128,16 @@ export class Shefu {
                                 reshipi: newReshipi,
                             },
                         });
+
+                        RedisManager.getInstance().publishMessageToWs(
+                            `new_clinic@${message.data.clinic_doctor.split("_")[0]}`,
+                            {
+                                stream: `new_clinic@${message.data.clinic_doctor.split("_")[0]}`,
+                                data: {
+                                    reshipi: newReshipi,
+                                },
+                            }
+                        );
 
                         RedisManager.getInstance().publishMessageToWs(`depth@${message.data.clinic_doctor}`, {
                             stream: `depth@${message.data.clinic_doctor}`,
@@ -589,6 +600,7 @@ export class Shefu {
         patientLastName: string,
         patientDateOfBirth: Date,
         gender: Genders,
+        doctorName: string,
         symptoms: string,
         phoneNumber: string,
         paymentMethod: PaymentMethod,
@@ -610,6 +622,7 @@ export class Shefu {
             patientFirstName: patientFirstName,
             patientLastName: patientLastName,
             patientDateOfBirth: patientDateOfBirth,
+            doctorName: doctorName,
             gender: gender,
             symptoms: symptoms,
             paymentMethod: paymentMethod,

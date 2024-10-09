@@ -273,22 +273,33 @@ export default function CreateAppointment({
                                                     <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
                                                         Doctor
                                                     </FormLabel>
-                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                        <FormControl>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select Doctor" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {newAvailableDoctors.map((ad) => {
-                                                                return (
-                                                                    <SelectItem value={ad.doctorId}>
-                                                                        {ad.doctorName}
-                                                                    </SelectItem>
-                                                                );
-                                                            })}
-                                                        </SelectContent>
-                                                    </Select>
+                                                    {newAvailableDoctors === Errors.NOT_FOUND ||
+                                                    newAvailableDoctors === Errors.FORBIDDEN ||
+                                                    newAvailableDoctors === Errors.BAD_REQUEST ? (
+                                                        <div>No Doctors Found</div>
+                                                    ) : (
+                                                        <Select
+                                                            onValueChange={field.onChange}
+                                                            defaultValue={field.value}
+                                                        >
+                                                            <FormControl>
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Select Doctor" />
+                                                                </SelectTrigger>
+                                                            </FormControl>
+                                                            <SelectContent>
+                                                                {newAvailableDoctors.map((ad: AvailableDoctor) => {
+                                                                    return (
+                                                                        <SelectItem
+                                                                            value={`${ad.doctorName}_${ad.doctorId}`}
+                                                                        >
+                                                                            {ad.doctorName}
+                                                                        </SelectItem>
+                                                                    );
+                                                                })}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    )}
                                                     <FormMessage />
                                                 </FormItem>
                                             );

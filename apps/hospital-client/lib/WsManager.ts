@@ -51,6 +51,9 @@ export class WsManger {
                     if (stream === "new") {
                         callback(data.reshipi);
                     }
+                    if (stream === "new_clinic") {
+                        callback(data.reshipi);
+                    }
                     if (stream === "ongoing") {
                         callback(data.currentReshipi);
                     }

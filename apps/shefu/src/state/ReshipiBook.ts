@@ -211,6 +211,7 @@ export class ReshipiBook {
                     patientFirstName: r.patientFirstName,
                     patientLastName: r.patientLastName,
                     patientDateOfBirth: r.patientDateOfBirth,
+                    doctorName: r.doctorName,
                     gender: r.gender,
                     paymentMethod: r.paymentMethod,
                     symptoms: r.symptoms,

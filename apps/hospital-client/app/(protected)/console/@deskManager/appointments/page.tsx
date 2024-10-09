@@ -1,11 +1,10 @@
 import { Appointment } from "@/types";
-import { DataTable } from "@/components/ui/data-table";
-import { columns } from "./columns";
 import { RegisterButton } from "@/components/ui/regiseter-button";
 import { MessageFromEngine } from "@/types/fromEngine";
 import { RedisManger } from "@/lib/RedisManager";
 import { GET_DEPTH_CLINIC } from "shefu/from-api";
 import { auth } from "@/auth";
+import AppointmentsTable from "@/components/ui/appointmets-table";
 
 async function getData(clinicId: string): Promise<Appointment[]> {
     // Fetch data from your API here.
@@ -43,20 +42,12 @@ export default async function DeskManagerAppointments() {
     const session = await auth();
 
     //@ts-ignore
-    const data = await getData(session?.user.clinicId);
+    const clinicId = session?.user.clinicId;
+    const data = await getData(clinicId);
 
     return (
         <div className="w-full h-full flex flex-col items-center ">
-            <div className="w-full h-4/5 px-14 pt-14">
-                <DataTable
-                    heading="Appointments"
-                    filterField="name"
-                    searchBoxPlaceholder="Fliter Patients..."
-                    className="bg-white"
-                    columns={columns}
-                    data={data}
-                />
-            </div>
+            <AppointmentsTable data={data} clinicId={clinicId} />
             <RegisterButton name="Appointment" href="/console/appointments/create" />
         </div>
     );

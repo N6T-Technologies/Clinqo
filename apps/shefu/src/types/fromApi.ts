@@ -14,6 +14,7 @@ export const END_RESHIPI_BOOK = "END_RESHIPI_BOOK";
 
 export type CreateAppointmentData = {
     clinic_doctor: string;
+    doctorName: string;
     patientFirstName: string;
     patientLastName: string;
     patientDateOfBirth: Date;
