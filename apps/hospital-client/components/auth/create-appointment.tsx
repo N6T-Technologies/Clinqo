@@ -1,7 +1,7 @@
 "use client";
 
 import { CreateAppointmentError, CreateAppointmentSchema, CreateAppointmentSchemaType, StepInfo } from "@/types";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createAppointment } from "@/actions/create-appointment";
@@ -14,6 +14,8 @@ import { Button } from "../ui/button";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { Checkbox } from "../ui/checkbox";
 import { PaymentMethod } from "@repo/db/client";
+import { WsManger } from "@/lib/WsManager";
+import { Errors } from "../../../shefu/src/state/ReshipiBook";
 
 const formSteps: StepInfo[] = [
     {
@@ -34,16 +36,39 @@ const formSteps: StepInfo[] = [
     { id: "Step 4", name: "Complete" },
 ];
 
+export type AvailableDoctor = {
+    doctorId: string;
+    doctorName: string;
+};
+
 export default function CreateAppointment({
     availableDoctors,
+    clinicId,
 }: {
-    availableDoctors: { doctorName: string; doctorId: string }[];
+    availableDoctors: AvailableDoctor[] | Errors;
+    clinicId: string;
 }) {
     const [currentStep, setCurrentStep] = useState<number>(0);
     const [success, setSuccess] = useState<string | undefined>(undefined);
     const [error, setError] = useState<CreateAppointmentError | undefined>(undefined);
+    const [newAvailableDoctors, setNewAvailableDoctor] = useState<AvailableDoctor[] | Errors>([]);
 
     const [isPending, startTransition] = useTransition();
+
+    useEffect(() => {
+        setNewAvailableDoctor(availableDoctors);
+        WsManger.getInstance().registerCallback(
+            "doctors",
+            (data: AvailableDoctor[]) => setNewAvailableDoctor(data),
+            `doctors@${clinicId}`
+        );
+
+        WsManger.getInstance().sendMessage({ method: "SUBSCRIBE", params: [`doctors@${clinicId}`] });
+        return () => {
+            WsManger.getInstance().deRegisterCallback("doctors", `doctors@${clinicId}`);
+            WsManger.getInstance().sendMessage({ method: "UNSUBSCRIBE", params: [`doctors@${clinicId}`] });
+        };
+    }, []);
 
     const form = useForm<CreateAppointmentSchemaType>({
         resolver: zodResolver(CreateAppointmentSchema),
@@ -255,7 +280,7 @@ export default function CreateAppointment({
                                                             </SelectTrigger>
                                                         </FormControl>
                                                         <SelectContent>
-                                                            {availableDoctors.map((ad) => {
+                                                            {newAvailableDoctors.map((ad) => {
                                                                 return (
                                                                     <SelectItem value={ad.doctorId}>
                                                                         {ad.doctorName}

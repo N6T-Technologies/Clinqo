@@ -1,17 +1,38 @@
+import { auth } from "@/auth";
 import CreateAppointment from "@/components/auth/create-appointment";
+import { RedisManger } from "@/lib/RedisManager";
+import { GET_AVAILABLE_DOCTORS } from "shefu/from-api";
+
+async function getDoctors(clinicId: string) {
+    const availableDoctors = await RedisManger.getInstance().sendAndAwait({
+        type: GET_AVAILABLE_DOCTORS,
+        data: {
+            //@ts-ignore
+            clinic: clinicId,
+        },
+    });
+    if (availableDoctors.payload.ok && availableDoctors.type === "AVAILABLE_DOCTORS") {
+        return availableDoctors.payload.doctors;
+    } else if (availableDoctors.type === "RETRY_AVAILABLE_DOCTORS") {
+        return availableDoctors.payload.error;
+    }
+}
 
 export default async function CreateAppointments() {
-    //TODO: get this available doctors from ws server form Subscribing to doctors@{clinic_id}
-    const availableDoctors = [
-        {
-            doctorName: "Mayur Pachpor",
-            doctorId: "cm1y2kvew0000127ceirm0jr4",
-        },
-    ];
+    const session = await auth();
+    //@ts-ignore
+    const clinicId = session.user.clinicId;
+
+    const res = await getDoctors(clinicId);
+    if (!res) {
+        return <div>RETRY</div>;
+    }
+
+    console.log(session);
 
     return (
         <div className="w-full">
-            <CreateAppointment availableDoctors={availableDoctors} />
+            <CreateAppointment availableDoctors={res} clinicId={clinicId} />
         </div>
     );
 }

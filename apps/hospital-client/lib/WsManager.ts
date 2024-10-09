@@ -1,4 +1,4 @@
-import { OutgoingMessages } from "clinqo-ws/outgoing";
+import { IncomingMessage } from "clinqo-ws/incoming";
 
 export const WS_BASE_URL = "ws://localhost:8000";
 
@@ -13,6 +13,9 @@ export class WsManger {
 
     private constructor() {
         this.ws = new WebSocket(WS_BASE_URL);
+        this.bufferedMessages = [];
+        this.id = 1;
+        this.init();
     }
 
     public static getInstance() {
@@ -26,14 +29,16 @@ export class WsManger {
     public init() {
         this.ws.onopen = () => {
             this.initialized = true;
-            this.bufferedMessages.forEach((message) => {
-                this.ws.send(JSON.stringify(message));
-            });
-            this.bufferedMessages = [];
+            if (this.bufferedMessages) {
+                this.bufferedMessages.forEach((message) => {
+                    this.ws.send(JSON.stringify(message));
+                });
+                this.bufferedMessages = [];
+            }
         };
 
-        this.ws.onmessage = (event: OutgoingMessages) => {
-            const message = JSON.parse(event);
+        this.ws.onmessage = (event) => {
+            const message = JSON.parse(event.data);
             const stream = message.stream.split("@")[0];
             const data = message.data;
 
@@ -70,6 +75,18 @@ export class WsManger {
                 });
             }
         };
+    }
+
+    public sendMessage(message: Omit<IncomingMessage, "id">) {
+        const messageToSend = {
+            ...message,
+            id: this.id++,
+        };
+        if (!this.initialized) {
+            this.bufferedMessages.push(messageToSend);
+        } else {
+            this.ws.send(JSON.stringify(messageToSend));
+        }
     }
 
     public async registerCallback(type: string, callback: any, id: string) {

@@ -6,6 +6,7 @@ import {
     CREATE_RESHIPI,
     END_RESHIPI,
     END_RESHIPI_BOOK,
+    GET_AVAILABLE_DOCTORS,
     GET_DEPTH_CLINIC,
     GET_DEPTH_DOCTOR,
     MessageFromApi,
@@ -409,6 +410,48 @@ export class Shefu {
                 }
                 break;
 
+            case GET_AVAILABLE_DOCTORS:
+                try {
+                    const clinic = message.data.clinic;
+
+                    const availableDoctors: { doctorId: string; doctorName: string }[] = [];
+
+                    this.availableDoctors.forEach((ad) => {
+                        if (ad.clinic === clinic) {
+                            availableDoctors.push({ doctorId: ad.doctor, doctorName: ad.doctorName });
+                        }
+                    });
+
+                    if (!availableDoctors) {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: "RETRY_AVAILABLE_DOCTORS",
+                            payload: {
+                                ok: false,
+                                error: Errors.NOT_FOUND,
+                            },
+                        });
+                    }
+
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: "AVAILABLE_DOCTORS",
+                        payload: {
+                            ok: true,
+                            doctors: availableDoctors,
+                        },
+                    });
+                } catch (e) {
+                    console.log(e);
+
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: "RETRY_AVAILABLE_DOCTORS",
+                        payload: {
+                            ok: false,
+                            error: Errors.BAD_REQUEST,
+                        },
+                    });
+                }
+                break;
+
             case START_RESHIPI_BOOK:
                 try {
                     const clinic_doctor = message.data.clinic_doctor;
@@ -425,6 +468,14 @@ export class Shefu {
                     this.reshipieBooks.push(newReshipiBook);
                     this.availableDoctors.push({ doctor, doctorName, clinic });
 
+                    const availableDoctors: { doctorId: string; doctorName: string }[] = [];
+
+                    this.availableDoctors.forEach((ad) => {
+                        if (ad.clinic === clinic) {
+                            availableDoctors.push({ doctorId: ad.doctor, doctorName: ad.doctorName });
+                        }
+                    });
+
                     RedisManager.getInstance().sendToApi(clientId, {
                         type: RESHIPI_BOOK_STARTED,
                         payload: {
@@ -436,7 +487,7 @@ export class Shefu {
                     RedisManager.getInstance().publishMessageToWs(`doctors@${clinic}`, {
                         stream: `doctors@${clinic}`,
                         data: {
-                            availableDoctors: this.availableDoctors,
+                            availableDoctors: availableDoctors,
                         },
                     });
                 } catch (e) {
@@ -491,6 +542,15 @@ export class Shefu {
                                 return true;
                             }
                         });
+
+                        const availableDoctors: { doctorId: string; doctorName: string }[] = [];
+
+                        this.availableDoctors.forEach((ad) => {
+                            if (ad.clinic === clinic) {
+                                availableDoctors.push({ doctorId: ad.doctor, doctorName: ad.doctorName });
+                            }
+                        });
+
                         RedisManager.getInstance().sendToApi(clientId, {
                             type: RESHIPI_BOOK_ENDED,
                             payload: {
@@ -500,9 +560,9 @@ export class Shefu {
                         });
 
                         RedisManager.getInstance().publishMessageToWs(`doctors@${clinic}`, {
-                            stream: `doctors${clinic}`,
+                            stream: `doctors@${clinic}`,
                             data: {
-                                availableDoctors: this.availableDoctors,
+                                availableDoctors: availableDoctors,
                             },
                         });
                     }

@@ -18,6 +18,8 @@ export const RESHIPI_BOOK_STARTED = "RESHIPI_BOOK_STARTED";
 export const RETRY_RESHIPI_BOOK_START = "RETRY_RESHIPI_BOOK_START";
 export const RESHIPI_BOOK_ENDED = "RESHIPI_BOOK_ENDED";
 export const RETRY_END_RESHIPI_BOOK = "RETRY_END_RESHIPI_BOOK";
+export const AVAILABLE_DOCTORS = "AVAILABLE_DOCTORS";
+export const RETRY_AVAILABLE_DOCTORS = "RETRY_AVAILABLE_DOCTORS";
 
 export type MessageToApi =
     | {
@@ -150,5 +152,19 @@ export type MessageToApi =
               ok: boolean;
               error: Errors;
               msg: string;
+          };
+      }
+    | {
+          type: typeof AVAILABLE_DOCTORS;
+          payload: {
+              ok: boolean;
+              doctors: { doctorId: string; doctorName: string }[];
+          };
+      }
+    | {
+          type: typeof RETRY_AVAILABLE_DOCTORS;
+          payload: {
+              ok: boolean;
+              error: Errors;
           };
       };

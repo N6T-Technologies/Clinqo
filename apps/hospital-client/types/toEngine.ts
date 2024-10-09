@@ -1,4 +1,4 @@
-import { CreateAppointmentData, CREATE_RESHIPI, GET_DEPTH_CLINIC } from "shefu/from-api";
+import { CreateAppointmentData, CREATE_RESHIPI, GET_DEPTH_CLINIC, GET_AVAILABLE_DOCTORS } from "shefu/from-api";
 
 export type MessageToEngine =
     | {
@@ -7,6 +7,12 @@ export type MessageToEngine =
       }
     | {
           type: typeof GET_DEPTH_CLINIC;
+          data: {
+              clinic: string;
+          };
+      }
+    | {
+          type: typeof GET_AVAILABLE_DOCTORS;
           data: {
               clinic: string;
           };

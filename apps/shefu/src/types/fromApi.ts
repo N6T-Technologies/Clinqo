@@ -6,6 +6,7 @@ export const END_RESHIPI = "END_RESHIPI";
 export const CANCEL_RESHIPI = "CANCEL_RESHIPI";
 export const GET_DEPTH_CLINIC = "GET_DEPTH_CLINIC";
 export const GET_DEPTH_DOCTOR = "GET_DEPTH_DOCTOR";
+export const GET_AVAILABLE_DOCTORS = "GET_AVAILABLE_DOCTORS";
 export const START_RESHIPI_BOOK = "START_RESHIPI_BOOK";
 export const END_RESHIPI_BOOK = "END_RESHIPI_BOOK";
 
@@ -71,5 +72,11 @@ export type MessageFromApi =
           type: typeof END_RESHIPI_BOOK;
           data: {
               clinic_doctor: string;
+          };
+      }
+    | {
+          type: typeof GET_AVAILABLE_DOCTORS;
+          data: {
+              clinic: string;
           };
       };

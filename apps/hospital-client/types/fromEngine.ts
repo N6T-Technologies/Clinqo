@@ -1,5 +1,7 @@
+import { AvailableDoctor } from "@/components/auth/create-appointment";
 import { Reshipi } from "shefu/appointments";
-import { DEPTH_CLINIC, RESHIPI_CREATED } from "shefu/to-api";
+import { AVAILABLE_DOCTORS, DEPTH_CLINIC, RESHIPI_CREATED, RETRY_AVAILABLE_DOCTORS } from "shefu/to-api";
+import { Errors } from "../../shefu/src/state/ReshipiBook";
 
 export type MessageFromEngine =
     | {
@@ -18,5 +20,19 @@ export type MessageFromEngine =
                   doctorName: string;
                   reshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctor"> }[];
               }[];
+          };
+      }
+    | {
+          type: typeof AVAILABLE_DOCTORS;
+          payload: {
+              ok: boolean;
+              doctors: AvailableDoctor[];
+          };
+      }
+    | {
+          type: typeof RETRY_AVAILABLE_DOCTORS;
+          payload: {
+              ok: boolean;
+              error: Errors;
           };
       };

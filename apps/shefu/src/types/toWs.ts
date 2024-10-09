@@ -39,7 +39,10 @@ export type TotalUpdate = {
 export type ReshipiBooksUpdate = {
     stream: string;
     data: {
-        availableDoctors: AvailableDoctor[];
+        availableDoctors: {
+            doctorId: string;
+            doctorName: string;
+        }[];
     };
 };
 
