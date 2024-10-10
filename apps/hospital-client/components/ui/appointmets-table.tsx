@@ -81,9 +81,30 @@ export default function AppointmentsTable({ data, clinicId }: { data: Appointmen
             `ongoing_clinic@${clinicId}`
         );
 
+        WsManger.getInstance().registerCallback(
+            "completed_clinic",
+            (data: Reshipi) => {
+                setDepth((depth) => {
+                    return depth.map((r) => {
+                        if (r.id === data.id) {
+                            r.status = Status.Completed;
+                            return r;
+                        }
+                        return r;
+                    });
+                });
+            },
+            `completed_clinic@${clinicId}`
+        );
+
         WsManger.getInstance().sendMessage({
             method: "SUBSCRIBE",
-            params: [`new_clinic@${clinicId}`, `cancellation_clinic@${clinicId}`, `ongoing_clinic@${clinicId}`],
+            params: [
+                `new_clinic@${clinicId}`,
+                `cancellation_clinic@${clinicId}`,
+                `ongoing_clinic@${clinicId}`,
+                `completed_clinic@${clinicId}`,
+            ],
         });
 
         return () => {

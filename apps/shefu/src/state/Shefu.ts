@@ -334,12 +334,22 @@ export class Shefu {
                                 },
                             });
 
-                            RedisManager.getInstance().publishMessageToWs(`completed@${clinic_doctor}`, {
-                                stream: `completed@${clinic_doctor}`,
+                            RedisManager.getInstance().publishMessageToWs(`completed_doctor@${clinic_doctor}`, {
+                                stream: `completed_doctor@${clinic_doctor}`,
                                 data: {
                                     reshipi: completedReshipi,
                                 },
                             });
+
+                            RedisManager.getInstance().publishMessageToWs(
+                                `completed_clinic@${clinic_doctor.split("_")[0]}`,
+                                {
+                                    stream: `completed_clinic@${clinic_doctor.split("_")[0]}`,
+                                    data: {
+                                        reshipi: completedReshipi,
+                                    },
+                                }
+                            );
                         } else if (error) {
                             RedisManager.getInstance().sendToApi(clientId, {
                                 type: RETRY_END_RESHIPI,
