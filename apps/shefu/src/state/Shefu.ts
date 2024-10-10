@@ -1,5 +1,5 @@
 import fs from "fs";
-import { Errors, ReshipiBook } from "./ReshipiBook";
+import { Errors, ReshipiBook, ReshipiBookSnapshot } from "./ReshipiBook";
 import { Reshipi } from "../types/reshipiTypes";
 import {
     CANCEL_RESHIPI,
@@ -10,6 +10,8 @@ import {
     GET_DEPTH_CLINIC,
     GET_DEPTH_DOCTOR,
     MessageFromApi,
+    PAUSE_RESHIPI_BOOK,
+    PLAY_RESHIPI_BOOK,
     START_RESHIPI,
     START_RESHIPI_BOOK,
 } from "../types/fromApi";
@@ -17,15 +19,19 @@ import { RedisManager } from "../RedisManager";
 import {
     ONGOING_RESHIPI,
     RESHIPI_BOOK_ENDED,
+    RESHIPI_BOOK_PAUSED,
     RESHIPI_BOOK_STARTED,
     RESHIPI_CANCELLED,
     RESHIPI_CREATED,
     RESHIPI_ENDED,
     RESHIPI_STARTED,
+    RESTARTED_RESHIPI_BOOK,
     RETRY_CANCEL_RESHIPI,
     RETRY_CREATE_RESHIPI,
     RETRY_END_RESHIPI,
     RETRY_END_RESHIPI_BOOK,
+    RETRY_PAUSE_RESHIPI_BOOK,
+    RETRY_PLAY_RESHIPI_BOOK,
     RETRY_RESHIPI_BOOK_START,
     RETRY_START_RESHIPI,
 } from "../types/toApi";
@@ -38,6 +44,7 @@ export class Shefu {
 
     private reshipieBooks: ReshipiBook[] = [];
     private availableDoctors: AvailableDoctor[] = [];
+    private pausedReshipiBooks = new Map<string, ReshipiBookSnapshot>();
 
     private constructor() {
         let snapshot = null;
@@ -524,6 +531,95 @@ export class Shefu {
                     const clinic = clinic_doctor.split("_")[0];
                     const doctor = clinic_doctor.split("_")[1];
 
+                    const foundSnapshot = this.pausedReshipiBooks.get(clinic_doctor);
+
+                    if (foundSnapshot) {
+                        const restartedReshipiBook = new ReshipiBook(
+                            foundSnapshot.clinic,
+                            foundSnapshot.doctor,
+                            foundSnapshot.reshipies,
+                            foundSnapshot.lastReshipiNumber,
+                            foundSnapshot.currentReshipiNumber,
+                            foundSnapshot.currentReshipi,
+                            foundSnapshot.reshipiToStart,
+                            foundSnapshot.doctorName
+                        );
+
+                        this.pausedReshipiBooks.delete(clinic_doctor);
+
+                        this.reshipieBooks.push(restartedReshipiBook);
+
+                        const doctorName = restartedReshipiBook.getDoctorName();
+                        const restartedReshipies = restartedReshipiBook.getAllReshipies();
+                        //TODO: Send Restarted message to restartedReshipies
+
+                        this.availableDoctors.push({ doctor, doctorName, clinic });
+
+                        const availableDoctorsWithCurrentAndTotal: {
+                            doctorId: string;
+                            doctorName: string;
+                            ongoingNumber: number;
+                            total: number;
+                        }[] = [];
+
+                        this.availableDoctors.forEach((ad) => {
+                            if (ad.clinic === clinic) {
+                                const rb = this.reshipieBooks.find((rb) => rb.title() === `${ad.clinic}_${ad.doctor}`);
+
+                                if (!rb) {
+                                    availableDoctorsWithCurrentAndTotal.push({
+                                        doctorId: ad.doctor,
+                                        doctorName: ad.doctorName,
+                                        ongoingNumber: 0,
+                                        total: 0,
+                                    });
+                                } else {
+                                    availableDoctorsWithCurrentAndTotal.push({
+                                        doctorId: ad.doctor,
+                                        doctorName: ad.doctorName,
+                                        ongoingNumber: rb.getCurrentReshipi()?.reshipiNumber || 0,
+                                        total: rb.getNumberOfReshipies(),
+                                    });
+                                }
+                            }
+                        });
+
+                        if (!availableDoctorsWithCurrentAndTotal) {
+                            RedisManager.getInstance().sendToApi(clientId, {
+                                type: "RETRY_AVAILABLE_DOCTORS",
+                                payload: {
+                                    ok: false,
+                                    error: Errors.NOT_FOUND,
+                                },
+                            });
+
+                            RedisManager.getInstance().publishMessageToWs(`doctors@${clinic}`, {
+                                stream: `doctors@${clinic}`,
+                                data: {
+                                    doctors: availableDoctorsWithCurrentAndTotal,
+                                },
+                            });
+                            return;
+                        }
+
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: RESHIPI_BOOK_STARTED,
+                            payload: {
+                                ok: true,
+                                msg: `Reshipi book with title ${restartedReshipiBook.title()} started`,
+                            },
+                        });
+
+                        RedisManager.getInstance().publishMessageToWs(`doctors@${clinic}`, {
+                            stream: `doctors@${clinic}`,
+                            data: {
+                                doctors: availableDoctorsWithCurrentAndTotal,
+                            },
+                        });
+
+                        return;
+                    }
+
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
                     if (currentReshipieBook) {
                         throw Error(`Reshipi book with title ${clinic_doctor} already exist`);
@@ -612,6 +708,18 @@ export class Shefu {
                     const clinic_doctor = message.data.clinic_doctor;
                     const clinic = clinic_doctor.split("_")[0];
 
+                    if (this.pausedReshipiBooks.get(clinic_doctor)) {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: RETRY_END_RESHIPI_BOOK,
+                            payload: {
+                                ok: false,
+                                error: Errors.BAD_REQUEST,
+                                msg: `Reshipi book with title ${clinic_doctor} is paused`,
+                            },
+                        });
+                        return;
+                    }
+
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
                     if (!currentReshipieBook) {
@@ -637,68 +745,50 @@ export class Shefu {
                         );
                     }
 
-                    if (!currentReshipi && numberOfReshipes === 0) {
-                        this.reshipieBooks = this.reshipieBooks.filter((r) => r.title() != clinic_doctor);
-                        this.availableDoctors = this.availableDoctors.filter((r) => {
-                            if (`${r.clinic}_${r.doctor}` === clinic_doctor) {
-                                return false;
-                            } else {
-                                return true;
-                            }
-                        });
-
-                        const availableDoctorsWithCurrentAndTotal: {
-                            doctorId: string;
-                            doctorName: string;
-                            ongoingNumber: number;
-                            total: number;
-                        }[] = [];
-
-                        this.availableDoctors.forEach((ad) => {
-                            if (ad.clinic === clinic) {
-                                const rb = this.reshipieBooks.find((rb) => rb.title() === `${ad.clinic}_${ad.doctor}`);
-
-                                if (!rb) {
-                                    availableDoctorsWithCurrentAndTotal.push({
-                                        doctorId: ad.doctor,
-                                        doctorName: ad.doctorName,
-                                        ongoingNumber: 0,
-                                        total: 0,
-                                    });
-                                } else {
-                                    availableDoctorsWithCurrentAndTotal.push({
-                                        doctorId: ad.doctor,
-                                        doctorName: ad.doctorName,
-                                        ongoingNumber: rb.getCurrentReshipi()?.reshipiNumber || 0,
-                                        total: rb.getNumberOfReshipies(),
-                                    });
-                                }
-                            }
-                        });
-
-                        if (!availableDoctorsWithCurrentAndTotal) {
-                            RedisManager.getInstance().sendToApi(clientId, {
-                                type: "RETRY_AVAILABLE_DOCTORS",
-                                payload: {
-                                    ok: false,
-                                    error: Errors.NOT_FOUND,
-                                },
-                            });
-
-                            RedisManager.getInstance().publishMessageToWs(`doctors@${clinic}`, {
-                                stream: `doctors@${clinic}`,
-                                data: {
-                                    doctors: availableDoctorsWithCurrentAndTotal,
-                                },
-                            });
-                            return;
+                    this.reshipieBooks = this.reshipieBooks.filter((r) => r.title() != clinic_doctor);
+                    this.availableDoctors = this.availableDoctors.filter((r) => {
+                        if (`${r.clinic}_${r.doctor}` === clinic_doctor) {
+                            return false;
+                        } else {
+                            return true;
                         }
+                    });
 
+                    const availableDoctorsWithCurrentAndTotal: {
+                        doctorId: string;
+                        doctorName: string;
+                        ongoingNumber: number;
+                        total: number;
+                    }[] = [];
+
+                    this.availableDoctors.forEach((ad) => {
+                        if (ad.clinic === clinic) {
+                            const rb = this.reshipieBooks.find((rb) => rb.title() === `${ad.clinic}_${ad.doctor}`);
+
+                            if (!rb) {
+                                availableDoctorsWithCurrentAndTotal.push({
+                                    doctorId: ad.doctor,
+                                    doctorName: ad.doctorName,
+                                    ongoingNumber: 0,
+                                    total: 0,
+                                });
+                            } else {
+                                availableDoctorsWithCurrentAndTotal.push({
+                                    doctorId: ad.doctor,
+                                    doctorName: ad.doctorName,
+                                    ongoingNumber: rb.getCurrentReshipi()?.reshipiNumber || 0,
+                                    total: rb.getNumberOfReshipies(),
+                                });
+                            }
+                        }
+                    });
+
+                    if (!availableDoctorsWithCurrentAndTotal) {
                         RedisManager.getInstance().sendToApi(clientId, {
-                            type: RESHIPI_BOOK_ENDED,
+                            type: "RETRY_AVAILABLE_DOCTORS",
                             payload: {
-                                ok: true,
-                                msg: `Reshipi book with title ${clinic_doctor} ended`,
+                                ok: false,
+                                error: Errors.NOT_FOUND,
                             },
                         });
 
@@ -708,7 +798,23 @@ export class Shefu {
                                 doctors: availableDoctorsWithCurrentAndTotal,
                             },
                         });
+                        return;
                     }
+
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RESHIPI_BOOK_ENDED,
+                        payload: {
+                            ok: true,
+                            msg: `Reshipi book with title ${clinic_doctor} ended`,
+                        },
+                    });
+
+                    RedisManager.getInstance().publishMessageToWs(`doctors@${clinic}`, {
+                        stream: `doctors@${clinic}`,
+                        data: {
+                            doctors: availableDoctorsWithCurrentAndTotal,
+                        },
+                    });
                 } catch (e) {
                     console.log(e);
                     RedisManager.getInstance().sendToApi(clientId, {
@@ -718,6 +824,139 @@ export class Shefu {
                             error: Errors.BAD_REQUEST,
                             //@ts-ignore
                             msg: e?.message,
+                        },
+                    });
+                }
+                break;
+            case PAUSE_RESHIPI_BOOK:
+                try {
+                    const clinic_doctor = message.data.clinic_doctor;
+                    const clinic = clinic_doctor.split("_")[0];
+
+                    const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
+
+                    if (!currentReshipieBook) {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: RETRY_PAUSE_RESHIPI_BOOK,
+                            payload: {
+                                ok: false,
+                                error: Errors.NOT_FOUND,
+                            },
+                        });
+                        return;
+                    }
+
+                    const currentReshipi = currentReshipieBook.getCurrentReshipi();
+
+                    if (currentReshipi) {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: RETRY_PAUSE_RESHIPI_BOOK,
+                            payload: {
+                                ok: false,
+                                error: Errors.BAD_REQUEST,
+                            },
+                        });
+                        return;
+                    }
+
+                    const bookSnapshot = currentReshipieBook.getSnapshot();
+
+                    const pausedReshipies = currentReshipieBook.cancelAll();
+                    //TODO: Send paused message to all pausedReshipies
+                    //TODO: Send Paused reshipies to frontDesk
+
+                    const numberOfReshipes = currentReshipieBook.getNumberOfReshipies();
+
+                    if (numberOfReshipes > 0) {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: RETRY_PAUSE_RESHIPI_BOOK,
+                            payload: {
+                                ok: false,
+                                error: Errors.BAD_REQUEST,
+                            },
+                        });
+                        return;
+                    }
+
+                    this.pausedReshipiBooks.set(clinic_doctor, bookSnapshot);
+
+                    this.reshipieBooks = this.reshipieBooks.filter((r) => r.title() != clinic_doctor);
+
+                    this.availableDoctors = this.availableDoctors.filter((r) => {
+                        if (`${r.clinic}_${r.doctor}` === clinic_doctor) {
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    });
+
+                    const availableDoctorsWithCurrentAndTotal: {
+                        doctorId: string;
+                        doctorName: string;
+                        ongoingNumber: number;
+                        total: number;
+                    }[] = [];
+
+                    this.availableDoctors.forEach((ad) => {
+                        if (ad.clinic === clinic) {
+                            const rb = this.reshipieBooks.find((rb) => rb.title() === `${ad.clinic}_${ad.doctor}`);
+
+                            if (!rb) {
+                                availableDoctorsWithCurrentAndTotal.push({
+                                    doctorId: ad.doctor,
+                                    doctorName: ad.doctorName,
+                                    ongoingNumber: 0,
+                                    total: 0,
+                                });
+                            } else {
+                                availableDoctorsWithCurrentAndTotal.push({
+                                    doctorId: ad.doctor,
+                                    doctorName: ad.doctorName,
+                                    ongoingNumber: rb.getCurrentReshipi()?.reshipiNumber || 0,
+                                    total: rb.getNumberOfReshipies(),
+                                });
+                            }
+                        }
+                    });
+
+                    if (!availableDoctorsWithCurrentAndTotal) {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: "RETRY_PAUSE_RESHIPI_BOOK",
+                            payload: {
+                                ok: false,
+                                error: Errors.NOT_FOUND,
+                            },
+                        });
+
+                        RedisManager.getInstance().publishMessageToWs(`doctors@${clinic}`, {
+                            stream: `doctors@${clinic}`,
+                            data: {
+                                doctors: availableDoctorsWithCurrentAndTotal,
+                            },
+                        });
+                        return;
+                    }
+
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RESHIPI_BOOK_PAUSED,
+                        payload: {
+                            ok: true,
+                        },
+                    });
+
+                    RedisManager.getInstance().publishMessageToWs(`doctors@${clinic}`, {
+                        stream: `doctors@${clinic}`,
+                        data: {
+                            doctors: availableDoctorsWithCurrentAndTotal,
+                        },
+                    });
+                } catch (e) {
+                    console.log(e);
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RETRY_PAUSE_RESHIPI_BOOK,
+                        payload: {
+                            ok: false,
+                            error: Errors.SOMETHING_WENT_WRONG,
                         },
                     });
                 }

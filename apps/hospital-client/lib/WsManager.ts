@@ -7,7 +7,7 @@ export class WsManger {
 
     private ws: WebSocket;
     private bufferedMessages: any[] = [];
-    private callbacks: any = {};
+    private callbacks: Record<string, { id: string; callback: (...args: any) => any }[]> = {};
     private id: number;
     private initialized: boolean = false;
 
@@ -106,16 +106,20 @@ export class WsManger {
         this.callbacks[type] = this.callbacks[type] || [];
         //"depth" => callback
         this.callbacks[type].push({ callback, id });
-
         console.log(this.callbacks);
     }
 
     public async deRegisterCallback(type: string, id: string) {
         if (this.callbacks[type]) {
+            //@ts-ignore
             const index = this.callbacks[type].findIndex((callback) => callback.id === id);
             if (index !== -1) {
                 this.callbacks[type].splice(index, 1);
             }
         }
+    }
+
+    public getCallabcks(type: string) {
+        return this.callbacks[type];
     }
 }

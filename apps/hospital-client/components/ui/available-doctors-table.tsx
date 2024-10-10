@@ -15,13 +15,13 @@ export default function AvailableDoctorsTable({ data, clinicId }: { data: Availa
         WsManger.getInstance().registerCallback(
             "doctors",
             (data: AvailableDoctorTable[]) => {
-                console.log(data);
                 setNewAvailableDoctors(data);
             },
             `doctors@${clinicId}`
         );
 
         WsManger.getInstance().sendMessage({ method: "SUBSCRIBE", params: [`doctors@${clinicId}`] });
+        console.log(WsManger.getInstance().getCallabcks("doctors"));
         return () => {
             WsManger.getInstance().deRegisterCallback("doctors", `doctors@${clinicId}`);
             WsManger.getInstance().sendMessage({ method: "UNSUBSCRIBE", params: [`doctors@${clinicId}`] });

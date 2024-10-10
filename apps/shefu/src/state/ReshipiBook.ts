@@ -4,7 +4,19 @@ export enum Errors {
     "NOT_FOUND" = 404,
     "BAD_REQUEST" = 400,
     "FORBIDDEN" = 403,
+    "SOMETHING_WENT_WRONG" = 500,
 }
+
+export type ReshipiBookSnapshot = {
+    clinic: string;
+    doctor: string;
+    doctorName: string;
+    reshipies: Reshipi[];
+    lastReshipiNumber: number;
+    currentReshipiNumber: number;
+    currentReshipi: Reshipi | null;
+    reshipiToStart: number;
+};
 
 export class ReshipiBook {
     private reshipies: Reshipi[];
@@ -227,6 +239,10 @@ export class ReshipiBook {
         return allReshipies;
     }
 
+    public getAllReshipies() {
+        return this.reshipies;
+    }
+
     public getCurrentReshipi() {
         return this.currentReshipi;
     }
@@ -239,7 +255,7 @@ export class ReshipiBook {
         return this.doctorName;
     }
 
-    public getSnapshot() {
+    public getSnapshot(): ReshipiBookSnapshot {
         return {
             clinic: this.clinic,
             doctor: this.doctor,
@@ -250,5 +266,11 @@ export class ReshipiBook {
             currentReshipi: this.currentReshipi,
             reshipiToStart: this.reshipiToStart,
         };
+    }
+
+    public cancelAll() {
+        const currentReshipies = this.reshipies;
+        this.reshipies = [];
+        return this.currentReshipi;
     }
 }
