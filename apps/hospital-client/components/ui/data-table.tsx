@@ -26,6 +26,7 @@ interface DataTableProps<TData, TValue> {
     heading?: string;
     filterField?: string;
     searchBoxPlaceholder?: string;
+    noRegisterButton?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -35,6 +36,7 @@ export function DataTable<TData, TValue>({
     heading,
     filterField,
     searchBoxPlaceholder,
+    noRegisterButton,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -47,7 +49,7 @@ export function DataTable<TData, TValue>({
         initialState: {
             pagination: {
                 pageIndex: 0,
-                pageSize: 6,
+                pageSize: noRegisterButton ? 7 : 6,
             },
         },
         onSortingChange: setSorting,
@@ -74,7 +76,7 @@ export function DataTable<TData, TValue>({
                 </div>
             </div>
 
-            <div className="flex flex-col h-5/6 justify-between">
+            <div className={`flex flex-col h-5/6 justify-between`}>
                 <div className="mt-8">
                     <Table>
                         <TableHeader>
@@ -113,7 +115,7 @@ export function DataTable<TData, TValue>({
                         </TableBody>
                     </Table>
                 </div>
-                <div className="flex items-center justify-end space-x-2 px-4">
+                <div className={`flex items-center justify-end space-x-2 px-4`}>
                     <Button
                         variant="outline"
                         size="sm"

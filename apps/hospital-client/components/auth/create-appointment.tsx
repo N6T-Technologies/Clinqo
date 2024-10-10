@@ -1,6 +1,12 @@
 "use client";
 
-import { CreateAppointmentError, CreateAppointmentSchema, CreateAppointmentSchemaType, StepInfo } from "@/types";
+import {
+    AvailableDoctorTable,
+    CreateAppointmentError,
+    CreateAppointmentSchema,
+    CreateAppointmentSchemaType,
+    StepInfo,
+} from "@/types";
 import { useEffect, useState, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +22,6 @@ import { Checkbox } from "../ui/checkbox";
 import { PaymentMethod } from "@repo/db/client";
 import { WsManger } from "@/lib/WsManager";
 import { Errors } from "../../../shefu/src/state/ReshipiBook";
-import { useRouter } from "next/navigation";
 
 const formSteps: StepInfo[] = [
     {
@@ -37,22 +42,17 @@ const formSteps: StepInfo[] = [
     { id: "Step 4", name: "Complete" },
 ];
 
-export type AvailableDoctor = {
-    doctorId: string;
-    doctorName: string;
-};
-
 export default function CreateAppointment({
     availableDoctors,
     clinicId,
 }: {
-    availableDoctors: AvailableDoctor[] | Errors;
+    availableDoctors: AvailableDoctorTable[] | Errors;
     clinicId: string;
 }) {
     const [currentStep, setCurrentStep] = useState<number>(0);
     const [success, setSuccess] = useState<string | undefined>(undefined);
     const [error, setError] = useState<CreateAppointmentError | undefined>(undefined);
-    const [newAvailableDoctors, setNewAvailableDoctor] = useState<AvailableDoctor[] | Errors>([]);
+    const [newAvailableDoctors, setNewAvailableDoctor] = useState<AvailableDoctorTable[] | Errors>([]);
 
     const [isPending, startTransition] = useTransition();
 
@@ -60,7 +60,7 @@ export default function CreateAppointment({
         setNewAvailableDoctor(availableDoctors);
         WsManger.getInstance().registerCallback(
             "doctors",
-            (data: AvailableDoctor[]) => setNewAvailableDoctor(data),
+            (data: AvailableDoctorTable[]) => setNewAvailableDoctor(data),
             `doctors@${clinicId}`
         );
 
@@ -289,7 +289,7 @@ export default function CreateAppointment({
                                                                 </SelectTrigger>
                                                             </FormControl>
                                                             <SelectContent>
-                                                                {newAvailableDoctors.map((ad: AvailableDoctor) => {
+                                                                {newAvailableDoctors.map((ad: AvailableDoctorTable) => {
                                                                     return (
                                                                         <SelectItem
                                                                             value={`${ad.doctorName}_${ad.doctorId}`}

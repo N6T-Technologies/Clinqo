@@ -158,7 +158,7 @@ export type MessageToApi =
           type: typeof AVAILABLE_DOCTORS;
           payload: {
               ok: boolean;
-              doctors: { doctorId: string; doctorName: string }[];
+              doctors: { doctorId: string; doctorName: string; ongoingNumber: number; total: number }[];
           };
       }
     | {

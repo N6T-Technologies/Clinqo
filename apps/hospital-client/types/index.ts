@@ -165,3 +165,5 @@ export type Appointment = {
     doctorName: string;
     status: Status;
 };
+
+export type AvailableDoctorTable = { doctorId: string; doctorName: string; ongoingNumber: number; total: number };

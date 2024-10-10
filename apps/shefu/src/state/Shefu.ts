@@ -475,11 +475,38 @@ export class Shefu {
                         });
                     }
 
+                    const availableDoctorsWithCurrentAndTotal: {
+                        doctorId: string;
+                        doctorName: string;
+                        ongoingNumber: number;
+                        total: number;
+                    }[] = [];
+
+                    this.availableDoctors.forEach((ad) => {
+                        const rb = this.reshipieBooks.find((rb) => rb.title() === `${ad.clinic}_${ad.doctor}`);
+
+                        if (!rb) {
+                            availableDoctorsWithCurrentAndTotal.push({
+                                doctorId: ad.doctor,
+                                doctorName: ad.doctorName,
+                                ongoingNumber: 0,
+                                total: 0,
+                            });
+                        } else {
+                            availableDoctorsWithCurrentAndTotal.push({
+                                doctorId: ad.doctor,
+                                doctorName: ad.doctorName,
+                                ongoingNumber: rb.getCurrentReshipi()?.reshipiNumber || 0,
+                                total: rb.getNumberOfReshipies(),
+                            });
+                        }
+                    });
+
                     RedisManager.getInstance().sendToApi(clientId, {
                         type: "AVAILABLE_DOCTORS",
                         payload: {
                             ok: true,
-                            doctors: availableDoctors,
+                            doctors: availableDoctorsWithCurrentAndTotal,
                         },
                     });
                 } catch (e) {
