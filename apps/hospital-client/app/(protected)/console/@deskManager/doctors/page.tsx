@@ -1,11 +1,10 @@
 import { AvailableDoctorTable } from "@/types";
-import { DataTable } from "@/components/ui/data-table";
-import { columns } from "./columns";
 import { auth } from "@/auth";
 import { MessageFromEngine } from "@/types/fromEngine";
 import { RedisManger } from "@/lib/RedisManager";
 import { GET_AVAILABLE_DOCTORS } from "shefu/from-api";
 import { AVAILABLE_DOCTORS } from "shefu/to-api";
+import AvailableDoctorsTable from "@/components/ui/available-doctors-table";
 
 async function getData(clinicId: string): Promise<AvailableDoctorTable[]> {
     // Fetch data from your API here.
@@ -35,17 +34,7 @@ export default async function DesktMangerDoctors() {
 
     return (
         <div className="w-full h-full flex flex-col items-center ">
-            <div className="w-full h-[38rem] px-14 pt-14 mb-14">
-                <DataTable
-                    heading="Available Doctors"
-                    filterField="name"
-                    searchBoxPlaceholder="Fliter Doctors..."
-                    className="bg-white"
-                    columns={columns}
-                    data={data}
-                    noRegisterButton
-                />
-            </div>
+            <AvailableDoctorsTable data={data} clinicId={clinicId} />
         </div>
     );
 }

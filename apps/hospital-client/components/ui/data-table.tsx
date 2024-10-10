@@ -24,7 +24,7 @@ interface DataTableProps<TData, TValue> {
     data: TData[];
     className: string;
     heading?: string;
-    filterField?: string;
+    filterField: string;
     searchBoxPlaceholder?: string;
     noRegisterButton?: boolean;
 }

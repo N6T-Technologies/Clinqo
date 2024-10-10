@@ -83,7 +83,7 @@ export class WsManger {
                         callback(data.newNumber);
                     }
                     if (stream === "doctors") {
-                        callback(data.availableDoctors);
+                        callback(data.doctors);
                     }
                 });
             }
