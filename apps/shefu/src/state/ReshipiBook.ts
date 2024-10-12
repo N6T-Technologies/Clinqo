@@ -213,7 +213,8 @@ export class ReshipiBook {
     }
 
     public getDepth() {
-        const allReshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber"> }[] = [];
+        const allReshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctorName"> }[] =
+            [];
 
         this.reshipies.forEach((r) => {
             allReshipies.push({
@@ -223,7 +224,6 @@ export class ReshipiBook {
                     patientFirstName: r.patientFirstName,
                     patientLastName: r.patientLastName,
                     patientDateOfBirth: r.patientDateOfBirth,
-                    doctorName: r.doctorName,
                     gender: r.gender,
                     paymentMethod: r.paymentMethod,
                     symptoms: r.symptoms,
@@ -255,6 +255,13 @@ export class ReshipiBook {
         return this.doctorName;
     }
 
+    public getReshipiToStart() {
+        if (this.reshipies.length === 0) {
+            return 0;
+        }
+        return this.reshipiToStart;
+    }
+
     public getSnapshot(): ReshipiBookSnapshot {
         return {
             clinic: this.clinic,
@@ -268,9 +275,21 @@ export class ReshipiBook {
         };
     }
 
-    public cancelAll() {
-        const currentReshipies = this.reshipies;
+    public pauseAll() {
+        const currentReshipies = this.reshipies.map((r) => {
+            r.status = Status.Paused;
+            return r;
+        });
         this.reshipies = [];
-        return this.currentReshipi;
+        return currentReshipies;
+    }
+
+    public restartAll() {
+        this.reshipies = this.reshipies.map((r) => {
+            r.status = Status.Created;
+            return r;
+        });
+
+        return this.reshipies;
     }
 }

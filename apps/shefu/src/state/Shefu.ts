@@ -1,6 +1,6 @@
 import fs from "fs";
 import { Errors, ReshipiBook, ReshipiBookSnapshot } from "./ReshipiBook";
-import { Reshipi } from "../types/reshipiTypes";
+import { Reshipi, Status } from "../types/reshipiTypes";
 import {
     CANCEL_RESHIPI,
     CREATE_RESHIPI,
@@ -11,7 +11,6 @@ import {
     GET_DEPTH_DOCTOR,
     MessageFromApi,
     PAUSE_RESHIPI_BOOK,
-    PLAY_RESHIPI_BOOK,
     START_RESHIPI,
     START_RESHIPI_BOOK,
 } from "../types/fromApi";
@@ -25,13 +24,11 @@ import {
     RESHIPI_CREATED,
     RESHIPI_ENDED,
     RESHIPI_STARTED,
-    RESTARTED_RESHIPI_BOOK,
     RETRY_CANCEL_RESHIPI,
     RETRY_CREATE_RESHIPI,
     RETRY_END_RESHIPI,
     RETRY_END_RESHIPI_BOOK,
     RETRY_PAUSE_RESHIPI_BOOK,
-    RETRY_PLAY_RESHIPI_BOOK,
     RETRY_RESHIPI_BOOK_START,
     RETRY_START_RESHIPI,
 } from "../types/toApi";
@@ -44,7 +41,10 @@ export class Shefu {
 
     private reshipieBooks: ReshipiBook[] = [];
     private availableDoctors: AvailableDoctor[] = [];
-    private pausedReshipiBooks = new Map<string, ReshipiBookSnapshot>();
+    private pausedReshipiBooks: Record<string, ReshipiBookSnapshot> = {};
+    //TODO: Implement this along with a timeout function
+    // private cancelledReshipies: Record<string, Reshipi[]> = {};
+    // private completedReshipies: Record<string, Reshipi[]> = {};
 
     private constructor() {
         let snapshot = null;
@@ -74,6 +74,7 @@ export class Shefu {
                     )
             );
             this.availableDoctors = snapshotObject.availableDoctors;
+            this.pausedReshipiBooks = snapshotObject.pausedReshipiBooks;
         }
         setInterval(() => {
             this.saveSnapshot();
@@ -92,6 +93,7 @@ export class Shefu {
         const snapshotObject = {
             reshipieBooks: this.reshipieBooks.map((r) => r.getSnapshot()),
             availableDoctors: this.availableDoctors,
+            pausedReshipiBooks: this.pausedReshipiBooks,
         };
 
         fs.writeFileSync("./snapshot.json", JSON.stringify(snapshotObject));
@@ -424,16 +426,54 @@ export class Shefu {
                         }
                     });
 
-                    const data: {
+                    type ReturnType = {
                         doctorName: string;
-                        reshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctor"> }[];
-                    }[] = [];
+                        reshipies: {
+                            reshipiNumber: number;
+                            reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctorName">;
+                        }[];
+                    };
+
+                    const data: ReturnType[] = [];
 
                     clinicReshipiBooks.forEach((rb) => {
                         const doctorName = rb.getDoctorName();
                         const doctorReshipi = {
                             doctorName: doctorName,
                             reshipies: rb.getDepth(),
+                        };
+
+                        data.push(doctorReshipi);
+                    });
+
+                    const pausedReshipiBooks = this.getValuesWithWildcard<ReshipiBookSnapshot>(
+                        this.pausedReshipiBooks,
+                        clinic + "*"
+                    );
+
+                    pausedReshipiBooks.forEach((prb) => {
+                        const doctorName = prb.doctorName;
+                        const doctorReshipi: ReturnType = {
+                            doctorName: doctorName,
+                            reshipies: prb.reshipies.map((r) => {
+                                return {
+                                    reshipiNumber: r.reshipiNumber,
+                                    reshipiInfo: {
+                                        id: r.id,
+                                        patientFirstName: r.patientFirstName,
+                                        patientLastName: r.patientLastName,
+                                        patientDateOfBirth: r.patientDateOfBirth,
+                                        gender: r.gender,
+                                        paymentMethod: r.paymentMethod,
+                                        symptoms: r.symptoms,
+                                        phoneNumber: r.phoneNumber,
+                                        followup: r.followup,
+                                        managerId: r.managerId,
+                                        date: r.date,
+                                        status: r.status,
+                                    },
+                                };
+                            }),
                         };
 
                         data.push(doctorReshipi);
@@ -531,7 +571,7 @@ export class Shefu {
                     const clinic = clinic_doctor.split("_")[0];
                     const doctor = clinic_doctor.split("_")[1];
 
-                    const foundSnapshot = this.pausedReshipiBooks.get(clinic_doctor);
+                    const foundSnapshot = this.pausedReshipiBooks[clinic_doctor];
 
                     if (foundSnapshot) {
                         const restartedReshipiBook = new ReshipiBook(
@@ -545,13 +585,13 @@ export class Shefu {
                             foundSnapshot.doctorName
                         );
 
-                        this.pausedReshipiBooks.delete(clinic_doctor);
+                        delete this.pausedReshipiBooks.clinic_doctor;
+
+                        const restartedReshipies = restartedReshipiBook.restartAll();
 
                         this.reshipieBooks.push(restartedReshipiBook);
 
                         const doctorName = restartedReshipiBook.getDoctorName();
-                        const restartedReshipies = restartedReshipiBook.getAllReshipies();
-                        //TODO: Send Restarted message to restartedReshipies
 
                         this.availableDoctors.push({ doctor, doctorName, clinic });
 
@@ -577,7 +617,7 @@ export class Shefu {
                                     availableDoctorsWithCurrentAndTotal.push({
                                         doctorId: ad.doctor,
                                         doctorName: ad.doctorName,
-                                        ongoingNumber: rb.getCurrentReshipi()?.reshipiNumber || 0,
+                                        ongoingNumber: rb.getCurrentReshipi()?.reshipiNumber || rb.getReshipiToStart(),
                                         total: rb.getNumberOfReshipies(),
                                     });
                                 }
@@ -615,6 +655,23 @@ export class Shefu {
                             data: {
                                 doctors: availableDoctorsWithCurrentAndTotal,
                             },
+                        });
+
+                        RedisManager.getInstance().publishMessageToWs(`modified-reshipies@${clinic}`, {
+                            stream: `modified-reshipies@${clinic}`,
+                            data: {
+                                modifiedReshipies: restartedReshipies,
+                            },
+                        });
+
+                        restartedReshipies.forEach((r) => {
+                            RedisManager.getInstance().publishMessageToWs(`status-update@${r.id}`, {
+                                stream: `status-update@${r.id}`,
+                                data: {
+                                    status: Status.Created,
+                                    number: r.reshipiNumber,
+                                },
+                            });
                         });
 
                         return;
@@ -708,7 +765,7 @@ export class Shefu {
                     const clinic_doctor = message.data.clinic_doctor;
                     const clinic = clinic_doctor.split("_")[0];
 
-                    if (this.pausedReshipiBooks.get(clinic_doctor)) {
+                    if (this.pausedReshipiBooks[clinic_doctor]) {
                         RedisManager.getInstance().sendToApi(clientId, {
                             type: RETRY_END_RESHIPI_BOOK,
                             payload: {
@@ -861,9 +918,7 @@ export class Shefu {
 
                     const bookSnapshot = currentReshipieBook.getSnapshot();
 
-                    const pausedReshipies = currentReshipieBook.cancelAll();
-                    //TODO: Send paused message to all pausedReshipies
-                    //TODO: Send Paused reshipies to frontDesk
+                    const pausedReshipies = currentReshipieBook.pauseAll();
 
                     const numberOfReshipes = currentReshipieBook.getNumberOfReshipies();
 
@@ -878,7 +933,7 @@ export class Shefu {
                         return;
                     }
 
-                    this.pausedReshipiBooks.set(clinic_doctor, bookSnapshot);
+                    this.pausedReshipiBooks[clinic_doctor] = bookSnapshot;
 
                     this.reshipieBooks = this.reshipieBooks.filter((r) => r.title() != clinic_doctor);
 
@@ -950,6 +1005,23 @@ export class Shefu {
                             doctors: availableDoctorsWithCurrentAndTotal,
                         },
                     });
+
+                    RedisManager.getInstance().publishMessageToWs(`modified-reshipies@${clinic}`, {
+                        stream: `modified-reshipies@${clinic}`,
+                        data: {
+                            modifiedReshipies: pausedReshipies,
+                        },
+                    });
+
+                    pausedReshipies.forEach((r) => {
+                        RedisManager.getInstance().publishMessageToWs(`status-update@${r.id}`, {
+                            stream: `status-update@${r.id}`,
+                            data: {
+                                status: Status.Paused,
+                                number: r.reshipiNumber,
+                            },
+                        });
+                    });
                 } catch (e) {
                     console.log(e);
                     RedisManager.getInstance().sendToApi(clientId, {
@@ -1005,6 +1077,28 @@ export class Shefu {
         const { newReshipi, allReshipies } = ReshipiBook.addReshipi(reshipi);
 
         return { newReshipi: newReshipi, allReshipies: allReshipies };
+    }
+
+    private getValuesWithWildcard<V>(data: Map<string, V> | Record<string, V>, wildcard: string): V[] {
+        const regex = new RegExp("^" + wildcard.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*") + "$");
+
+        const matchingValues: V[] = [];
+
+        if (data instanceof Map) {
+            for (const [key, value] of data) {
+                if (typeof key === "string" && regex.test(key)) {
+                    matchingValues.push(value);
+                }
+            }
+        } else {
+            for (const [key, value] of Object.entries(data)) {
+                if (regex.test(key)) {
+                    matchingValues.push(value as V);
+                }
+            }
+        }
+
+        return matchingValues;
     }
 
     private getRandomId() {

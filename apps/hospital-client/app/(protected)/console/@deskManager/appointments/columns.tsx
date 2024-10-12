@@ -38,6 +38,8 @@ const RenderStatus = ({ status }: { status: Status }) => {
                 <div className="text-red-700">{status}</div>
             ) : status === Status.Created ? (
                 <div className="text-clinqoNormal">{status}</div>
+            ) : status === Status.Paused ? (
+                <div className="text-gray-500">{status}</div>
             ) : (
                 <div>{status}</div>
             )}

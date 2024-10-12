@@ -1,4 +1,4 @@
-import { Reshipi } from "./reshipiTypes";
+import { Reshipi, Status } from "./reshipiTypes";
 
 export type ReshipiUpdate = {
     stream: string;
@@ -55,6 +55,21 @@ export type ReshipiBooksUpdate = {
     };
 };
 
+export type ModifiedReshipies = {
+    stream: string;
+    data: {
+        modifiedReshipies: Reshipi[];
+    };
+};
+
+export type ReshipiDetailsUpdate = {
+    stream: string;
+    data: {
+        status: Status;
+        number: number;
+    };
+};
+
 export type WsMessage =
     | DepthUpdateMessage
     | NumberUpdate
@@ -62,4 +77,6 @@ export type WsMessage =
     | ReshipiBooksUpdate
     | ReshipiUpdate
     | CurrentNumberUpdate
-    | CancellationUpdate;
+    | CancellationUpdate
+    | ModifiedReshipies
+    | ReshipiDetailsUpdate;

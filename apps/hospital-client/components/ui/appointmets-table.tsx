@@ -97,6 +97,27 @@ export default function AppointmentsTable({ data, clinicId }: { data: Appointmen
             `completed_clinic@${clinicId}`
         );
 
+        WsManger.getInstance().registerCallback(
+            "modified-reshipies",
+            (data: Reshipi[]) => {
+                console.log("Reachded here");
+                console.log(data);
+                setDepth((depth) => {
+                    let j = 0;
+                    return depth.map((r) => {
+                        if (j < data.length && r.id === data[j]?.id) {
+                            r.status = data[j]?.status || Status.Created;
+                            j++;
+                            return r;
+                        }
+
+                        return r;
+                    });
+                });
+            },
+            `modified-reshipies@${clinicId}`
+        );
+
         WsManger.getInstance().sendMessage({
             method: "SUBSCRIBE",
             params: [
@@ -104,6 +125,7 @@ export default function AppointmentsTable({ data, clinicId }: { data: Appointmen
                 `cancellation_clinic@${clinicId}`,
                 `ongoing_clinic@${clinicId}`,
                 `completed_clinic@${clinicId}`,
+                `modified-reshipies@${clinicId}`,
             ],
         });
 

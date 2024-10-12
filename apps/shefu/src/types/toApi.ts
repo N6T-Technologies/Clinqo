@@ -22,8 +22,6 @@ export const AVAILABLE_DOCTORS = "AVAILABLE_DOCTORS";
 export const RETRY_AVAILABLE_DOCTORS = "RETRY_AVAILABLE_DOCTORS";
 export const RESHIPI_BOOK_PAUSED = "RESHIPI_BOOK_PAUSED";
 export const RETRY_PAUSE_RESHIPI_BOOK = "RETRY_PAUSE_RESHIPI_BOOK";
-export const RESTARTED_RESHIPI_BOOK = "RESTARTED_RESHIPI_BOOK";
-export const RETRY_PLAY_RESHIPI_BOOK = "RETRY_PLAY_RESHIPI_BOOK";
 
 export type MessageToApi =
     | {
@@ -96,7 +94,7 @@ export type MessageToApi =
           type: typeof DEPTH_DOCTOR;
           payload: {
               ok: boolean;
-              reshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber"> }[];
+              reshipies: { reshipiNumber: number; reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctorName"> }[];
           };
       }
     | {
@@ -115,7 +113,7 @@ export type MessageToApi =
                   doctorName: string;
                   reshipies: {
                       reshipiNumber: number;
-                      reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctor">;
+                      reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctorName">;
                   }[];
               }[];
           };
@@ -180,19 +178,6 @@ export type MessageToApi =
       }
     | {
           type: typeof RETRY_PAUSE_RESHIPI_BOOK;
-          payload: {
-              ok: boolean;
-              error: Errors;
-          };
-      }
-    | {
-          type: typeof RESTARTED_RESHIPI_BOOK;
-          payload: {
-              ok: boolean;
-          };
-      }
-    | {
-          type: typeof RETRY_PLAY_RESHIPI_BOOK;
           payload: {
               ok: boolean;
               error: Errors;

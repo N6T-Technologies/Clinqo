@@ -5,6 +5,7 @@ export enum Status {
     Created = "Created",
     Canceled = "Canceled",
     Completed = "Completed",
+    Paused = "Paused",
 }
 
 export type Reshipi = {

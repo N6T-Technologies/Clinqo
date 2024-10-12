@@ -10,7 +10,6 @@ export const GET_AVAILABLE_DOCTORS = "GET_AVAILABLE_DOCTORS";
 export const START_RESHIPI_BOOK = "START_RESHIPI_BOOK";
 export const END_RESHIPI_BOOK = "END_RESHIPI_BOOK";
 export const PAUSE_RESHIPI_BOOK = "PAUSE_RESHIPI_BOOK";
-export const PLAY_RESHIPI_BOOK = "PLAY_RESHIPI_BOOK";
 
 //What happens if i make this interface instead type
 
@@ -85,12 +84,6 @@ export type MessageFromApi =
       }
     | {
           type: typeof PAUSE_RESHIPI_BOOK;
-          data: {
-              clinic_doctor: string;
-          };
-      }
-    | {
-          type: typeof PLAY_RESHIPI_BOOK;
           data: {
               clinic_doctor: string;
           };

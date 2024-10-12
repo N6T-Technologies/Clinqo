@@ -5,9 +5,9 @@ import { RedisManger } from "@/lib/RedisManager";
 import { GET_DEPTH_CLINIC } from "shefu/from-api";
 import { auth } from "@/auth";
 import AppointmentsTable from "@/components/ui/appointmets-table";
+import { DEPTH_CLINIC } from "shefu/to-api";
 
 async function getData(clinicId: string): Promise<Appointment[]> {
-    // Fetch data from your API here.
     const incomingData: MessageFromEngine = await RedisManger.getInstance().sendAndAwait({
         type: GET_DEPTH_CLINIC,
         data: {
@@ -21,21 +21,22 @@ async function getData(clinicId: string): Promise<Appointment[]> {
 
     const data: Appointment[] = [];
 
-    //@ts-ignore
-    incomingData.payload.doctorReshipies.forEach((dr) => {
-        //@ts-ignore
-        dr.reshipies.forEach((r) => {
-            const newAppointment = {
-                id: r.reshipiInfo.id,
-                number: r.reshipiNumber,
-                name: r.reshipiInfo.patientFirstName + " " + r.reshipiInfo.patientLastName,
-                doctorName: dr.doctorName,
-                status: r.reshipiInfo.status,
-            };
-            //@ts-ignore
-            data.push(newAppointment);
+    if (incomingData.type === DEPTH_CLINIC) {
+        incomingData.payload.doctorReshipies.forEach((dr) => {
+            dr.reshipies.forEach((r) => {
+                const newAppointment = {
+                    id: r.reshipiInfo.id,
+                    number: r.reshipiNumber,
+                    name: r.reshipiInfo.patientFirstName + " " + r.reshipiInfo.patientLastName,
+                    doctorName: dr.doctorName,
+                    status: r.reshipiInfo.status,
+                };
+                data.push(newAppointment);
+            });
         });
-    });
+        return data;
+    }
+
     return data;
 }
 export default async function DeskManagerAppointments() {

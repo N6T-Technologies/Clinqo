@@ -73,6 +73,9 @@ export class WsManger {
                     if (stream === "completed_doctor") {
                         callback(data.reshipi);
                     }
+                    if (stream === "modified-reshipies") {
+                        callback(data.modifiedReshipies);
+                    }
                     if (stream === "current") {
                         callback(data.currentNumber);
                     }
