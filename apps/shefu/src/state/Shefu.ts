@@ -42,7 +42,6 @@ export class Shefu {
     private reshipieBooks: ReshipiBook[] = [];
     private availableDoctors: AvailableDoctor[] = [];
     private pausedReshipiBooks: Record<string, ReshipiBookSnapshot> = {};
-    //TODO: Implement this along with a timeout function
     // private cancelledReshipies: Record<string, Reshipi[]> = {};
     // private completedReshipies: Record<string, Reshipi[]> = {};
 
