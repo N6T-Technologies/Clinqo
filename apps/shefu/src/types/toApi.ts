@@ -22,6 +22,8 @@ export const AVAILABLE_DOCTORS = "AVAILABLE_DOCTORS";
 export const RETRY_AVAILABLE_DOCTORS = "RETRY_AVAILABLE_DOCTORS";
 export const RESHIPI_BOOK_PAUSED = "RESHIPI_BOOK_PAUSED";
 export const RETRY_PAUSE_RESHIPI_BOOK = "RETRY_PAUSE_RESHIPI_BOOK";
+export const CURRENT_SESSION = "CURRENT_SESSION";
+export const RETRY_GET_SESSION = "RETRY_GET_SESSION";
 
 export type MessageToApi =
     | {
@@ -101,8 +103,8 @@ export type MessageToApi =
           type: typeof RETRY_DEPTH_DOCTOR;
           payload: {
               ok: boolean;
-              reshipies: null;
-              msg: string;
+              error: Errors;
+              msg?: string;
           };
       }
     | {
@@ -178,6 +180,20 @@ export type MessageToApi =
       }
     | {
           type: typeof RETRY_PAUSE_RESHIPI_BOOK;
+          payload: {
+              ok: boolean;
+              error: Errors;
+          };
+      }
+    | {
+          type: typeof CURRENT_SESSION;
+          payload: {
+              ok: boolean;
+              clinicId: string;
+          };
+      }
+    | {
+          type: typeof RETRY_GET_SESSION;
           payload: {
               ok: boolean;
               error: Errors;

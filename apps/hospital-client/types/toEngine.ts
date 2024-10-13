@@ -1,4 +1,13 @@
-import { CreateAppointmentData, CREATE_RESHIPI, GET_DEPTH_CLINIC, GET_AVAILABLE_DOCTORS } from "shefu/from-api";
+import {
+    CreateAppointmentData,
+    CREATE_RESHIPI,
+    GET_DEPTH_CLINIC,
+    GET_AVAILABLE_DOCTORS,
+    GET_DEPTH_DOCTOR,
+    START_RESHIPI_BOOK,
+    GET_SESSION,
+    END_RESHIPI_BOOK,
+} from "shefu/from-api";
 
 export type MessageToEngine =
     | {
@@ -15,5 +24,30 @@ export type MessageToEngine =
           type: typeof GET_AVAILABLE_DOCTORS;
           data: {
               clinic: string;
+          };
+      }
+    | {
+          type: typeof GET_DEPTH_DOCTOR;
+          data: {
+              clinic_doctor: string;
+          };
+      }
+    | {
+          type: typeof START_RESHIPI_BOOK;
+          data: {
+              clinic_doctor: string;
+              doctorName: string;
+          };
+      }
+    | {
+          type: typeof GET_SESSION;
+          data: {
+              doctor: string;
+          };
+      }
+    | {
+          type: typeof END_RESHIPI_BOOK;
+          data: {
+              clinic_doctor: string;
           };
       };

@@ -11,7 +11,7 @@ export const DEFAULT_LOGGEDIN_REDIRECT = "/console/dashboard";
  * @type {string[]}
  */
 
-export const publicRoutes = ["/", "/auth/new-verification"];
+export const publicRoutes = ["/auth/new-verification"];
 
 /**
  * An array of routes that are used for authentication.
@@ -19,7 +19,7 @@ export const publicRoutes = ["/", "/auth/new-verification"];
  * @type {string[]}
  */
 
-export const authRoutes = ["/auth/login", "/auth/error", "/auth/reset", "/auth/new-password"];
+export const authRoutes = ["/", "/auth/login", "/auth/error", "/auth/reset", "/auth/new-password"];
 
 /**
  * The prefix for API authentication routes.

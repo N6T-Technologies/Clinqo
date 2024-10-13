@@ -9,6 +9,7 @@ import {
     GET_AVAILABLE_DOCTORS,
     GET_DEPTH_CLINIC,
     GET_DEPTH_DOCTOR,
+    GET_SESSION,
     MessageFromApi,
     PAUSE_RESHIPI_BOOK,
     START_RESHIPI,
@@ -16,6 +17,7 @@ import {
 } from "../types/fromApi";
 import { RedisManager } from "../RedisManager";
 import {
+    CURRENT_SESSION,
     ONGOING_RESHIPI,
     RESHIPI_BOOK_ENDED,
     RESHIPI_BOOK_PAUSED,
@@ -26,8 +28,10 @@ import {
     RESHIPI_STARTED,
     RETRY_CANCEL_RESHIPI,
     RETRY_CREATE_RESHIPI,
+    RETRY_DEPTH_DOCTOR,
     RETRY_END_RESHIPI,
     RETRY_END_RESHIPI_BOOK,
+    RETRY_GET_SESSION,
     RETRY_PAUSE_RESHIPI_BOOK,
     RETRY_RESHIPI_BOOK_START,
     RETRY_START_RESHIPI,
@@ -388,7 +392,15 @@ export class Shefu {
                     const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
 
                     if (!currentReshipieBook) {
-                        throw Error(`Reshipi book with title ${clinic_doctor} does not exist`);
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: "RETRY_DEPTH_DOCTOR",
+                            payload: {
+                                ok: false,
+                                error: Errors.NOT_FOUND,
+                            },
+                        });
+
+                        return;
                     }
 
                     RedisManager.getInstance().sendToApi(clientId, {
@@ -404,7 +416,7 @@ export class Shefu {
                         type: "RETRY_DEPTH_DOCTOR",
                         payload: {
                             ok: false,
-                            reshipies: null,
+                            error: Errors.SOMETHING_WENT_WRONG,
                             //@ts-ignore
                             msg: e?.message,
                         },
@@ -583,8 +595,7 @@ export class Shefu {
                             foundSnapshot.reshipiToStart,
                             foundSnapshot.doctorName
                         );
-
-                        delete this.pausedReshipiBooks.clinic_doctor;
+                        delete this.pausedReshipiBooks[clinic_doctor];
 
                         const restartedReshipies = restartedReshipiBook.restartAll();
 
@@ -676,9 +687,18 @@ export class Shefu {
                         return;
                     }
 
-                    const currentReshipieBook = this.reshipieBooks.find((r) => r.title() === clinic_doctor);
-                    if (currentReshipieBook) {
-                        throw Error(`Reshipi book with title ${clinic_doctor} already exist`);
+                    const { found } = this.getDoctorSession(doctor);
+
+                    if (found) {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: RETRY_RESHIPI_BOOK_START,
+                            payload: {
+                                ok: false,
+                                error: Errors.BAD_REQUEST,
+                                msg: `Reshipi book for doctor with id ${clinic} already exists`,
+                            },
+                        });
+                        return;
                     }
 
                     const newReshipiBook = new ReshipiBook(clinic, doctor, [], 0, 0, null, 1, doctorName);
@@ -1032,6 +1052,38 @@ export class Shefu {
                     });
                 }
                 break;
+            case GET_SESSION:
+                try {
+                    const { found, clinicId } = this.getDoctorSession(message.data.doctor);
+
+                    if (found && clinicId) {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: CURRENT_SESSION,
+                            payload: {
+                                ok: true,
+                                clinicId: clinicId,
+                            },
+                        });
+                    } else {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: RETRY_GET_SESSION,
+                            payload: {
+                                ok: false,
+                                error: Errors.NOT_FOUND,
+                            },
+                        });
+                    }
+                } catch (e) {
+                    console.log(e);
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RETRY_GET_SESSION,
+                        payload: {
+                            ok: false,
+                            error: Errors.SOMETHING_WENT_WRONG,
+                        },
+                    });
+                }
+                break;
         }
     }
 
@@ -1098,6 +1150,23 @@ export class Shefu {
         }
 
         return matchingValues;
+    }
+
+    private getDoctorSession(doctor: string) {
+        const regex = RegExp(`^(\\w+?)_${doctor}$`);
+
+        let found = false;
+        let clinicId = null;
+
+        for (let i = 0; i < this.reshipieBooks.length; i++) {
+            if (this.reshipieBooks[i].title().match(regex)) {
+                found = true;
+                clinicId = this.reshipieBooks[i].title().split("_")[0];
+                break;
+            }
+        }
+
+        return { found, clinicId };
     }
 
     private getRandomId() {

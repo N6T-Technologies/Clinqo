@@ -1,5 +1,18 @@
 import { Reshipi } from "shefu/appointments";
-import { AVAILABLE_DOCTORS, DEPTH_CLINIC, RESHIPI_CREATED, RETRY_AVAILABLE_DOCTORS } from "shefu/to-api";
+import {
+    AVAILABLE_DOCTORS,
+    CURRENT_SESSION,
+    DEPTH_CLINIC,
+    DEPTH_DOCTOR,
+    RESHIPI_BOOK_ENDED,
+    RESHIPI_BOOK_STARTED,
+    RESHIPI_CREATED,
+    RETRY_AVAILABLE_DOCTORS,
+    RETRY_DEPTH_DOCTOR,
+    RETRY_END_RESHIPI_BOOK,
+    RETRY_GET_SESSION,
+    RETRY_RESHIPI_BOOK_START,
+} from "shefu/to-api";
 import { Errors } from "../../shefu/src/state/ReshipiBook";
 import { AvailableDoctorTable } from ".";
 
@@ -34,5 +47,68 @@ export type MessageFromEngine =
           payload: {
               ok: boolean;
               error: Errors;
+          };
+      }
+    | {
+          type: typeof DEPTH_DOCTOR;
+          payload: {
+              ok: boolean;
+
+              reshipies: {
+                  reshipiNumber: number;
+                  reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctorName">;
+              }[];
+          };
+      }
+    | {
+          type: typeof RETRY_DEPTH_DOCTOR;
+          payload: {
+              ok: boolean;
+              error: Errors;
+              msg?: string;
+          };
+      }
+    | {
+          type: typeof RESHIPI_BOOK_STARTED;
+          payload: {
+              ok: boolean;
+              msg: string;
+          };
+      }
+    | {
+          type: typeof RETRY_RESHIPI_BOOK_START;
+          payload: {
+              ok: boolean;
+              error: Errors;
+              msg: string;
+          };
+      }
+    | {
+          type: typeof CURRENT_SESSION;
+          payload: {
+              ok: boolean;
+              clinicId: string;
+          };
+      }
+    | {
+          type: typeof RETRY_GET_SESSION;
+          payload: {
+              ok: boolean;
+              error: Errors;
+          };
+      }
+    | {
+          type: typeof RESHIPI_BOOK_ENDED;
+          payload: {
+              ok: boolean;
+              msg: string;
+          };
+      }
+    | {
+          type: typeof RETRY_END_RESHIPI_BOOK;
+          payload: {
+              ok: boolean;
+              error: Errors;
+              msg: string;
           };
       };

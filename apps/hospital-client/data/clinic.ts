@@ -7,3 +7,5 @@ export const getClinicByGSTIN = async (gstin: string): Promise<ClinicType | null
 
     return clinic;
 };
+
+export const getDoctorClinics = async (id: string) => {};
