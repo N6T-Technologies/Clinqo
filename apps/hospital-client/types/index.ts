@@ -139,6 +139,7 @@ export enum StartSessionError {
     No_Creadentials = "No Credentials",
     Doctor_Not_Found = "Doctor not found",
     Clinic_Not_Found = "Clinic Not Found",
+    Session_Not_Found = "Session Not Found",
 }
 
 export interface Route {

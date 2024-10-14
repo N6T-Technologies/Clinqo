@@ -45,7 +45,7 @@ export async function startSession(
     });
 
     if (response.type === RETRY_RESHIPI_BOOK_START) {
-        return { ok: response.payload.ok, error: response.payload.error, msg: response.payload.msg };
+        return { ok: response.payload.ok, error: StartSessionError.Session_Not_Found, msg: response.payload.msg };
     }
 
     if (response.type === RESHIPI_BOOK_STARTED) {

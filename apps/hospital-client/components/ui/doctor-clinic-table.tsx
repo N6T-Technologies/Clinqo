@@ -17,6 +17,9 @@ import { Switch } from "@/components/ui/switch";
 import { DataTable } from "./data-table";
 import { startSession } from "@/actions/start-session";
 import { endSession } from "@/actions/end-session";
+import { useToast } from "@/hooks/use-toast";
+import { useRecoilState } from "recoil";
+import { sessionAtom } from "@/store/atoms/sessionAtom";
 
 const Header = ({ header, icon }: { header: string; icon?: ReactNode }) => {
     return (
@@ -33,31 +36,64 @@ const CellStyles = ({ text }: { text: string | number }) => {
 
 export default function DoctorClinicTable({
     data,
-    currentSession,
+    doctorId,
 }: {
     data: AllClinicTable[] | undefined;
-    currentSession: string | undefined;
+    doctorId: string;
 }) {
-    const [activeSwitchId, setActiveSwitchId] = useState<string | null>(null);
+    const [activeSwitchId, setActiveSwitchId] = useRecoilState(sessionAtom);
+
+    const { toast } = useToast();
 
     useEffect(() => {
-        if (currentSession) {
-            setActiveSwitchId(currentSession);
-        }
-    });
+        const fetchData = async () => {
+            const res = await fetch("/api/session", {
+                next: { revalidate: false },
+                method: "POST",
+                body: JSON.stringify({ doctorId: doctorId }),
+            });
 
+            const data = await res.json();
+            if (data.ok) {
+                setActiveSwitchId(data.currentSessionId);
+            } else {
+                setActiveSwitchId(null);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    //TODO: Use Optimistic ui here
     const handleSwitchToggle = async (id: string) => {
         if (activeSwitchId === id) {
             const result = await endSession(id);
+
+            console.log("off");
+
             setActiveSwitchId(null);
-            if (!result.ok) {
-                setActiveSwitchId(id);
+            if (result.ok) {
+                setActiveSwitchId(null);
+            } else if (!result.ok) {
+                toast({
+                    variant: "destructive",
+                    title: `${result.error}`,
+                    description: `This error is not fetal, Try Reloading`,
+                });
             }
         } else {
             const result = await startSession(id);
-            setActiveSwitchId(id);
-            if (!result.ok) {
-                setActiveSwitchId(null);
+
+            console.log("on");
+
+            if (result.ok) {
+                setActiveSwitchId(id);
+            } else if (!result.ok) {
+                toast({
+                    variant: "destructive",
+                    title: `${result.error}`,
+                    description: `This error is not fetal, Try Reloading`,
+                });
             }
         }
     };

@@ -1,68 +1,104 @@
-import { Card } from "@/components/ui/card";
 import { RedisManger } from "@/lib/RedisManager";
 import { GET_DEPTH_DOCTOR } from "shefu/from-api";
-import { DEPTH_DOCTOR, RETRY_DEPTH_DOCTOR } from "shefu/to-api";
+import { CURRENT_SESSION, DEPTH_DOCTOR, RETRY_DEPTH_DOCTOR, RETRY_GET_SESSION } from "shefu/to-api";
 import { Errors } from "../../../../../../shefu/src/state/ReshipiBook";
 import { auth } from "@/auth";
 import { Reshipi } from "shefu/appointments";
 import AppointmentCard from "@/components/ui/appointment-card";
+import { MessageFromEngine } from "@/types/fromEngine";
+import { Genders } from "@repo/db/client";
 
-async function getDoctorAppoitmnets(clinic_doctor: string) {
-    const depth = await RedisManger.getInstance().sendAndAwait({
-        type: GET_DEPTH_DOCTOR,
+async function getDoctorAppoitmnets(doctorId: string): Promise<{
+    ok: boolean;
+    reshipies?: {
+        reshipiNumber: number;
+        reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctorName">;
+    }[];
+    msg?: string;
+}> {
+    const session: MessageFromEngine = await RedisManger.getInstance().sendAndAwait({
+        type: "GET_SESSION",
         data: {
-            clinic_doctor: clinic_doctor,
+            doctor: doctorId,
         },
     });
 
-    if (depth.type === RETRY_DEPTH_DOCTOR) {
-        if (depth.payload.error === Errors.NOT_FOUND) {
-            return { ok: false, msg: "No active sessions" };
-        } else if (depth.payload.error === Errors.SOMETHING_WENT_WRONG) {
-            return { ok: false, msg: "Something went wrong" };
+    console.log(session);
+
+    if (session.payload.ok && session.type === CURRENT_SESSION) {
+        const depth = await RedisManger.getInstance().sendAndAwait({
+            type: GET_DEPTH_DOCTOR,
+            data: {
+                clinic_doctor: `${session.payload.clinicId}_${doctorId}`,
+            },
+        });
+
+        if (depth.type === RETRY_DEPTH_DOCTOR) {
+            if (depth.payload.error === Errors.NOT_FOUND) {
+                return { ok: false, msg: "No active sessions" };
+            } else if (depth.payload.error === Errors.SOMETHING_WENT_WRONG) {
+                return { ok: false, msg: "Something went wrong" };
+            }
+        }
+
+        if (depth.type === DEPTH_DOCTOR) {
+            return { ok: true, reshipies: depth.payload.reshipies };
         }
     }
 
-    if (depth.type === DEPTH_DOCTOR) {
-        return { ok: true, reshipies: depth.payload.reshipies };
+    if (session.type === RETRY_GET_SESSION) {
+        return { ok: false, msg: "Session not found" };
     }
-
-    return { ok: false, msg: "Something went wrong" };
+    return { ok: false, msg: "Something Wend Wrong" };
 }
+
+function getAge(dob: Date) {
+    const birthYear = dob.getFullYear();
+    const currentYear = new Date().getFullYear();
+    const age = currentYear - birthYear;
+
+    return age;
+}
+
+export type DoctorAppointmentData = {
+    id: string;
+    number: number;
+    patientName: string;
+    gender: Genders;
+    folloup: boolean;
+    age: number;
+    symtoms: string;
+};
+
+//TODO: Use recoil state management for started clinic
 
 export default async function DoctorAppointments() {
     const session = await auth();
 
     //@ts-ignore
-    const clinics = session.user.clinics;
-    //@ts-ignore
     const doctorId = session.user.doctorId;
-    let ok = false;
-    let msg = null;
-    let reshipies:
-        | {
-              reshipiNumber: number;
-              reshipiInfo: Omit<Reshipi, "reshipiNumber" | "doctorName">;
-          }[]
-        | undefined = [];
 
-    for (let i = 0; i < clinics.length; i++) {
-        const result = await getDoctorAppoitmnets(`${clinics[i].clinicId}_${doctorId}`);
-        if (result.ok) {
-            ok = true;
-            reshipies = result.reshipies;
-        } else {
-            msg = result.msg;
-        }
+    const result = await getDoctorAppoitmnets(doctorId);
+
+    const data: DoctorAppointmentData[] = [];
+
+    if (result.ok && result.reshipies) {
+        result.reshipies.forEach((r) => {
+            data.push({
+                id: r.reshipiInfo.id,
+                number: r.reshipiNumber,
+                patientName: `${r.reshipiInfo.patientFirstName} ${r.reshipiInfo.patientLastName}`,
+                gender: r.reshipiInfo.gender,
+                folloup: r.reshipiInfo.followup,
+                age: getAge(r.reshipiInfo.patientDateOfBirth),
+                symtoms: r.reshipiInfo.symptoms,
+            });
+        });
     }
 
     return (
         <>
-            {ok ? (
-                <AppointmentCard reshipies={reshipies} />
-            ) : (
-                <div className="h-full flex justify-center items-center text-xl">{msg}</div>
-            )}
+            <AppointmentCard data={data} />
         </>
     );
 }

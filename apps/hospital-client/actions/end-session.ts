@@ -47,12 +47,12 @@ export async function endSession(
     console.log("Reached after call");
 
     if (response.type === RETRY_END_RESHIPI_BOOK) {
-        return { ok: response.payload.ok, error: response.payload.error, msg: response.payload.msg };
+        return { ok: response.payload.ok, error: StartSessionError.Something_Went_Wrong, msg: response.payload.msg };
     }
 
     if (response.type === RESHIPI_BOOK_ENDED) {
         return { ok: response.payload.ok };
     }
 
-    return { ok: false, error: Errors.SOMETHING_WENT_WRONG };
+    return { ok: false, error: StartSessionError.Something_Went_Wrong };
 }

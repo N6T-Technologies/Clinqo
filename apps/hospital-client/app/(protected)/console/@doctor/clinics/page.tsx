@@ -5,6 +5,7 @@ import { AllClinicTable } from "@/types";
 import { MessageFromEngine } from "@/types/fromEngine";
 import { CURRENT_SESSION, RETRY_GET_SESSION } from "shefu/to-api";
 
+//TODO: create endpoint for getSession
 async function getSession(doctorId: string) {
     const result: MessageFromEngine = await RedisManger.getInstance().sendAndAwait({
         type: "GET_SESSION",
@@ -38,11 +39,10 @@ export default async function DoctorClinics() {
             timing: "--:--",
         };
     });
-    const result = await getSession(doctorId);
 
     return (
         <div className="w-full h-full flex flex-col items-center ">
-            <DoctorClinicTable data={data} currentSession={result.currentSession} />
+            <DoctorClinicTable data={data} doctorId={doctorId} />
         </div>
     );
 }
