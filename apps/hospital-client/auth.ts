@@ -30,7 +30,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             }
 
             //TODO: Add more role based ids like this
-            if (token.role === UserRoles.EMPLOYEE || token.role === UserRoles.CLINIC_HEAD) {
+            if (token.role === UserRoles.EMPLOYEE) {
                 const employee = await prisma.employee.findUnique({
                     where: { userId: session.user.id },
                 });
@@ -38,6 +38,15 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                 session.user.employeeId = employee?.id;
                 //@ts-ignore
                 session.user.clinicId = employee?.clinicId;
+            }
+
+            if (token.role === UserRoles.CLINIC_HEAD) {
+                const clinicHead = await prisma.clinicHead.findUnique({
+                    where: { userId: session.user.id },
+                });
+
+                //@ts-ignore
+                session.user.clinicHeadId = clinicHead?.id;
             }
 
             if (token.role === UserRoles.DOCTOR) {
@@ -66,6 +75,17 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                 session.user.clinics = clinics.map((c) => {
                     return { clinicId: c.id, clinicName: c.name };
                 });
+            }
+
+            if (token.role === UserRoles.ADMIN) {
+                const admin = await prisma.admin.findUnique({
+                    where: {
+                        userId: session.user.id,
+                    },
+                });
+
+                //@ts-ignore
+                session.user.adminId = admin?.id;
             }
 
             if (token.role && session.user) {

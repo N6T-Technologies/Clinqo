@@ -23,8 +23,6 @@ async function getDoctorAppoitmnets(doctorId: string): Promise<{
         },
     });
 
-    console.log(session);
-
     if (session.payload.ok && session.type === CURRENT_SESSION) {
         const depth = await RedisManger.getInstance().sendAndAwait({
             type: GET_DEPTH_DOCTOR,
@@ -70,6 +68,23 @@ export type DoctorAppointmentData = {
     symtoms: string;
 };
 
+async function getSession(doctorId: string) {
+    const result: MessageFromEngine = await RedisManger.getInstance().sendAndAwait({
+        type: "GET_SESSION",
+        data: {
+            doctor: doctorId,
+        },
+    });
+
+    if (result.type === CURRENT_SESSION) {
+        return { ok: true, currentSession: result.payload.clinicId };
+    }
+
+    if (result.type === RETRY_GET_SESSION) {
+        return { ok: false, currentSession: undefined };
+    }
+    return { ok: false, currentSession: undefined };
+}
 //TODO: Use recoil state management for started clinic
 
 export default async function DoctorAppointments() {
@@ -77,6 +92,8 @@ export default async function DoctorAppointments() {
 
     //@ts-ignore
     const doctorId = session.user.doctorId;
+
+    const clinicId = await getSession(doctorId);
 
     const result = await getDoctorAppoitmnets(doctorId);
 
@@ -90,7 +107,7 @@ export default async function DoctorAppointments() {
                 patientName: `${r.reshipiInfo.patientFirstName} ${r.reshipiInfo.patientLastName}`,
                 gender: r.reshipiInfo.gender,
                 folloup: r.reshipiInfo.followup,
-                age: getAge(r.reshipiInfo.patientDateOfBirth),
+                age: getAge(new Date(r.reshipiInfo.patientDateOfBirth)),
                 symtoms: r.reshipiInfo.symptoms,
             });
         });
@@ -98,7 +115,7 @@ export default async function DoctorAppointments() {
 
     return (
         <>
-            <AppointmentCard data={data} />
+            <AppointmentCard data={data} doctorId={doctorId} clinicId={clinicId.currentSession} />
         </>
     );
 }

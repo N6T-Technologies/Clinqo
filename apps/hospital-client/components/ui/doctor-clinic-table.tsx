@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { AllClinicTable } from "@/types";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useOptimistic, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { DataTable } from "./data-table";
 import { startSession } from "@/actions/start-session";
@@ -20,6 +20,7 @@ import { endSession } from "@/actions/end-session";
 import { useToast } from "@/hooks/use-toast";
 import { useRecoilState } from "recoil";
 import { sessionAtom } from "@/store/atoms/sessionAtom";
+import { revalidatePath } from "next/cache";
 
 const Header = ({ header, icon }: { header: string; icon?: ReactNode }) => {
     return (
@@ -43,6 +44,13 @@ export default function DoctorClinicTable({
 }) {
     const [activeSwitchId, setActiveSwitchId] = useRecoilState(sessionAtom);
 
+    const [optimisticSwitchId, setOptimisticSwitchId] = useOptimistic(
+        activeSwitchId,
+        (state, newActiceSwitchId: string | null) => {
+            return newActiceSwitchId;
+        }
+    );
+
     const { toast } = useToast();
 
     useEffect(() => {
@@ -64,14 +72,11 @@ export default function DoctorClinicTable({
         fetchData();
     }, []);
 
-    //TODO: Use Optimistic ui here
     const handleSwitchToggle = async (id: string) => {
         if (activeSwitchId === id) {
+            setOptimisticSwitchId(null);
             const result = await endSession(id);
 
-            console.log("off");
-
-            setActiveSwitchId(null);
             if (result.ok) {
                 setActiveSwitchId(null);
             } else if (!result.ok) {
@@ -80,10 +85,11 @@ export default function DoctorClinicTable({
                     title: `${result.error}`,
                     description: `This error is not fetal, Try Reloading`,
                 });
+                revalidatePath("/console/clinics");
             }
         } else {
+            setOptimisticSwitchId(id);
             const result = await startSession(id);
-
             console.log("on");
 
             if (result.ok) {
@@ -94,6 +100,7 @@ export default function DoctorClinicTable({
                     title: `${result.error}`,
                     description: `This error is not fetal, Try Reloading`,
                 });
+                revalidatePath("/console/clinics");
             }
         }
     };
@@ -121,9 +128,9 @@ export default function DoctorClinicTable({
                 return (
                     <div className="flex justify-center items-center">
                         <Switch
-                            checked={activeSwitchId === row.original.id}
+                            checked={optimisticSwitchId === row.original.id}
                             onCheckedChange={() => handleSwitchToggle(row.original.id)}
-                            disabled={activeSwitchId !== null && activeSwitchId !== row.original.id}
+                            disabled={optimisticSwitchId !== null && optimisticSwitchId !== row.original.id}
                         />
                     </div>
                 );

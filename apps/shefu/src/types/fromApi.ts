@@ -11,6 +11,7 @@ export const START_RESHIPI_BOOK = "START_RESHIPI_BOOK";
 export const END_RESHIPI_BOOK = "END_RESHIPI_BOOK";
 export const PAUSE_RESHIPI_BOOK = "PAUSE_RESHIPI_BOOK";
 export const GET_SESSION = "GET_SESSION";
+export const GET_ONGOING_RESHIPI = "GET_ONGOING_RESHIPI";
 
 //What happens if i make this interface instead type
 
@@ -93,5 +94,11 @@ export type MessageFromApi =
           type: typeof GET_SESSION;
           data: {
               doctor: string;
+          };
+      }
+    | {
+          type: typeof GET_ONGOING_RESHIPI;
+          data: {
+              clinic_doctor: string;
           };
       };

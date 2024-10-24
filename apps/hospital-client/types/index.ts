@@ -142,6 +142,15 @@ export enum StartSessionError {
     Session_Not_Found = "Session Not Found",
 }
 
+export enum EndAppointmentError {
+    Something_Went_Wrong = "Something went wrong",
+    Unauthorized = "Unauthorized",
+    No_Creadentials = "No Credentials",
+    Doctor_Not_Found = "Doctor not found",
+    Clinic_Not_Found = "Clinic Not Found",
+    Session_Not_Found = "Session Not Found",
+}
+
 export interface Route {
     href: string;
     icon: ReactNode;
@@ -165,6 +174,13 @@ export type Clinic = {
     name: string;
     headName: string;
     headEmail: string;
+};
+
+export type Doctor = {
+    id: string;
+    doctorName: string;
+    timing: string;
+    doctorEmail: string;
 };
 
 export type Appointment = {

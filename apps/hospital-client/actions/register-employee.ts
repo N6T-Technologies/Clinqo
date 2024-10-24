@@ -61,7 +61,7 @@ export async function registerEmployee(data: EmployeeRegSchemaType): Promise<{
         },
     });
 
-    //TODO: Send Email and password by email to Employee
+    //TODO: Send Email and password by email to Employee and revalidate path
     console.log(password);
     return { ok: true, msg: `Employee with id ${newEmployee.id}` };
 }

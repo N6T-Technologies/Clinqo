@@ -12,7 +12,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Clinic } from "@/types";
+import { Doctor } from "@/types";
 import { ReactNode } from "react";
 
 const Header = ({ header, icon }: { header: string; icon?: ReactNode }) => {
@@ -28,24 +28,24 @@ const CellStyles = ({ text }: { text: string | number }) => {
     return <div className="font-normal text-center ">{text}</div>;
 };
 
-export const columns: ColumnDef<Clinic>[] = [
+export const columns: ColumnDef<Doctor>[] = [
     {
         accessorKey: "Sr No",
         header: () => <Header header="Sr No" />,
         cell: ({ row }) => <CellStyles text={row.index + 1} />,
     },
     {
-        accessorKey: "name",
-        header: () => <Header header="Employee Name" />,
-        cell: ({ row }) => <CellStyles text={row.getValue("name")} />,
+        accessorKey: "doctorName",
+        header: () => <Header header="Doctor Name" />,
+        cell: ({ row }) => <CellStyles text={row.getValue("doctorName")} />,
     },
     {
-        accessorKey: "headName",
-        header: () => <Header header="Employee Name" />,
-        cell: ({ row }) => <CellStyles text={row.getValue("headName")} />,
+        accessorKey: "timing",
+        header: () => <Header header="Timing " />,
+        cell: ({ row }) => <CellStyles text={row.getValue("timing")} />,
     },
     {
-        accessorKey: "headEmail",
+        accessorKey: "doctorEmail",
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -53,7 +53,7 @@ export const columns: ColumnDef<Clinic>[] = [
                 </Button>
             );
         },
-        cell: ({ row }) => <CellStyles text={row.getValue("headEmail")} />,
+        cell: ({ row }) => <CellStyles text={row.getValue("doctorEmail")} />,
     },
     {
         id: "actions",
@@ -69,12 +69,12 @@ export const columns: ColumnDef<Clinic>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(clinic.headEmail)}>
+                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(clinic.doctorEmail)}>
                             Copy Email
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>View Clinic</DropdownMenuItem>
-                        <DropdownMenuItem>View Clinic Head</DropdownMenuItem>
+                        <DropdownMenuItem>View Doctor</DropdownMenuItem>
+                        <DropdownMenuItem>Message Doctor</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

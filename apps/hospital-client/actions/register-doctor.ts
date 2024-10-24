@@ -71,7 +71,7 @@ export async function registerDoctor(data: DoctorRegSchemaType): Promise<{
         },
     });
 
-    //TODO: Send Email and password by email to Employee
+    //TODO: Send Email and password by email to doctor and revalidate path
     console.log(password);
     return { ok: true, msg: `Employee with id ${newDoctor.id}` };
 }

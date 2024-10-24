@@ -24,6 +24,7 @@ export const RESHIPI_BOOK_PAUSED = "RESHIPI_BOOK_PAUSED";
 export const RETRY_PAUSE_RESHIPI_BOOK = "RETRY_PAUSE_RESHIPI_BOOK";
 export const CURRENT_SESSION = "CURRENT_SESSION";
 export const RETRY_GET_SESSION = "RETRY_GET_SESSION";
+export const RETRY_GET_ONGOING_RESHIPI = "RETRY_GET_ONGOING_RESHIPI";
 
 export type MessageToApi =
     | {
@@ -73,8 +74,17 @@ export type MessageToApi =
           type: typeof ONGOING_RESHIPI;
           payload: {
               ok: boolean;
-              reshipiId: string;
-              msg: string;
+              reshipiId?: string;
+              reshipi?: Reshipi;
+              msg?: string;
+          };
+      }
+    | {
+          type: typeof RETRY_GET_ONGOING_RESHIPI;
+          payload: {
+              ok: boolean;
+              error: Errors;
+              msg?: string;
           };
       }
     | {

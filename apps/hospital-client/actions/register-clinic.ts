@@ -97,7 +97,7 @@ export async function registerClinic(
         },
     });
 
-    //TODO: Mail email and password
+    //TODO: Mail email and password and revalidate path
 
     console.log(password);
 

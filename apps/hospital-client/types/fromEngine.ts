@@ -4,14 +4,20 @@ import {
     CURRENT_SESSION,
     DEPTH_CLINIC,
     DEPTH_DOCTOR,
+    ONGOING_RESHIPI,
     RESHIPI_BOOK_ENDED,
     RESHIPI_BOOK_STARTED,
     RESHIPI_CREATED,
+    RESHIPI_ENDED,
+    RESHIPI_STARTED,
     RETRY_AVAILABLE_DOCTORS,
     RETRY_DEPTH_DOCTOR,
+    RETRY_END_RESHIPI,
     RETRY_END_RESHIPI_BOOK,
+    RETRY_GET_ONGOING_RESHIPI,
     RETRY_GET_SESSION,
     RETRY_RESHIPI_BOOK_START,
+    RETRY_START_RESHIPI,
 } from "shefu/to-api";
 import { Errors } from "../../shefu/src/state/ReshipiBook";
 import { AvailableDoctorTable } from ".";
@@ -110,5 +116,51 @@ export type MessageFromEngine =
               ok: boolean;
               error: Errors;
               msg: string;
+          };
+      }
+    | {
+          type: typeof RESHIPI_ENDED;
+          payload: {
+              ok: boolean;
+              reshipiId: string;
+              currentReshipiNumber: number | null;
+          };
+      }
+    | {
+          type: typeof RETRY_END_RESHIPI;
+          payload: {
+              ok: boolean;
+              msg: string;
+          };
+      }
+    | {
+          type: typeof RESHIPI_STARTED;
+          payload: {
+              ok: boolean;
+              reshipiId: string;
+          };
+      }
+    | {
+          type: typeof RETRY_START_RESHIPI;
+          payload: {
+              ok: boolean;
+              msg: string;
+          };
+      }
+    | {
+          type: typeof ONGOING_RESHIPI;
+          payload: {
+              ok: boolean;
+              reshipiId?: string;
+              reshipi?: Reshipi;
+              msg?: string;
+          };
+      }
+    | {
+          type: typeof RETRY_GET_ONGOING_RESHIPI;
+          payload: {
+              ok: boolean;
+              error: Errors;
+              msg?: string;
           };
       };

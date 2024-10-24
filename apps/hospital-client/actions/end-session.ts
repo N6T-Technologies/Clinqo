@@ -36,15 +36,12 @@ export async function endSession(
 
     const title = `${clinic}_${doctorId}`;
 
-    console.log("Reached Here");
     const response: MessageFromEngine = await RedisManger.getInstance().sendAndAwait({
         type: END_RESHIPI_BOOK,
         data: {
             clinic_doctor: title,
         },
     });
-
-    console.log("Reached after call");
 
     if (response.type === RETRY_END_RESHIPI_BOOK) {
         return { ok: response.payload.ok, error: StartSessionError.Something_Went_Wrong, msg: response.payload.msg };

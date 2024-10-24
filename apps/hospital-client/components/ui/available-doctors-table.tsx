@@ -22,20 +22,29 @@ function addSubForNewDoctors(
                 params: [`${type}@${clinicId}_${d.doctorId}`],
             });
         }
+        console.log(d.doctorId);
         WsManger.getInstance().registerCallback(
             type,
             (updatedNumber: number) => {
+                // setNewAvailableDoctors((doctors: AvailableDoctorsTable[]) => {
+                //     console.log("Old Doctors: " + doctors);
+                //     const unchangedDoctors = doctors.filter((doc: AvailableDoctorsTable) => doc.doctorId != d.doctorId);
+                //     console.log("Unchanged Doctors: " + unchangedDoctors);
+                //
+                //     const newDoctor =
+                // });
+                // Change the below logic for better updates
                 setNewAvailableDoctors((doctors: AvailableDoctorTable[]) => {
                     return doctors.map((doctor: AvailableDoctorTable) => {
-                        if (doctor.doctorId === d.doctorId) {
-                            if (type === "total") {
-                                doctor.total = updatedNumber;
-                            } else if (type === "current") {
-                                doctor.ongoingNumber = updatedNumber;
-                            }
+                        if (doctor.doctorId === d.doctorId && type === "total") {
+                            doctor.total = updatedNumber;
+                            return doctor;
+                        } else if (doctor.doctorId === d.doctorId && type === "current") {
+                            doctor.ongoingNumber = updatedNumber;
+                            return doctor;
+                        } else {
                             return doctor;
                         }
-                        return doctor;
                     });
                 });
             },

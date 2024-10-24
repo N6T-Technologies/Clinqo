@@ -9,6 +9,7 @@ import {
     GET_AVAILABLE_DOCTORS,
     GET_DEPTH_CLINIC,
     GET_DEPTH_DOCTOR,
+    GET_ONGOING_RESHIPI,
     GET_SESSION,
     MessageFromApi,
     PAUSE_RESHIPI_BOOK,
@@ -31,6 +32,7 @@ import {
     RETRY_DEPTH_DOCTOR,
     RETRY_END_RESHIPI,
     RETRY_END_RESHIPI_BOOK,
+    RETRY_GET_ONGOING_RESHIPI,
     RETRY_GET_SESSION,
     RETRY_PAUSE_RESHIPI_BOOK,
     RETRY_RESHIPI_BOOK_START,
@@ -1083,6 +1085,47 @@ export class Shefu {
                         },
                     });
                 }
+                break;
+            case GET_ONGOING_RESHIPI:
+                try {
+                    const clinic_doctor = message.data.clinic_doctor;
+                    const reshipiBook = this.reshipieBooks.find((rb) => rb.title() === clinic_doctor);
+
+                    const ongoingReshipi = reshipiBook?.getCurrentReshipi();
+
+                    if (!ongoingReshipi) {
+                        RedisManager.getInstance().sendToApi(clientId, {
+                            type: RETRY_GET_ONGOING_RESHIPI,
+                            payload: {
+                                ok: false,
+                                error: Errors.NOT_FOUND,
+                            },
+                        });
+                        return;
+                    }
+
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: ONGOING_RESHIPI,
+                        payload: {
+                            ok: true,
+                            reshipi: ongoingReshipi,
+                        },
+                    });
+                } catch (e) {
+                    console.log(e);
+                    RedisManager.getInstance().sendToApi(clientId, {
+                        type: RETRY_GET_ONGOING_RESHIPI,
+                        payload: {
+                            ok: false,
+                            error: Errors.SOMETHING_WENT_WRONG,
+                            //@ts-ignore
+                            msg: e.message,
+                        },
+                    });
+                }
+                break;
+            default:
+                console.log("Reached default");
                 break;
         }
     }

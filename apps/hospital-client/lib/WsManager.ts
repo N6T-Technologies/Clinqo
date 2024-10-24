@@ -65,7 +65,7 @@ export class WsManger {
                         callback(data);
                     }
                     if (stream === "cancellation_doctor") {
-                        callback(data);
+                        callback(data.removedReshipi);
                     }
                     if (stream === "completed_clinic") {
                         callback(data.reshipi);
