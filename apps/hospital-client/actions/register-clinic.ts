@@ -6,7 +6,9 @@ import { getClinicByGSTIN } from "@/data/clinic";
 import { createUser, getUserByEmial } from "@/data/user";
 import { generatePass } from "@/lib/utils";
 import { ClinicRegError, CliniqRegSchema, CliniqRegSchemaType } from "@/types";
-import prisma, { EmployeeDesignation, EmployeeStatus, UserRoles } from "@repo/db/client";
+import prisma, { EmployeeDesignation, EmployeeStatus, Genders, UserRoles } from "@repo/db/client";
+import { sendCreadentailEmail } from "./send-email";
+import { Title } from "@/components/templates/credentials-email-template";
 
 export async function registerClinic(
     data: CliniqRegSchemaType
@@ -97,9 +99,8 @@ export async function registerClinic(
         },
     });
 
-    //TODO: Mail email and password and revalidate path
-
-    console.log(password);
+    const title = newUser.gender === Genders.MALE ? Title.Mr : Title.Ms;
+    await sendCreadentailEmail(email, { title: title, firstName: newUser.firstName, password: password });
 
     return { ok: true, msg: `The clinic with id ${newClinic.id} created` };
 }

@@ -29,7 +29,6 @@ import {
     RESHIPI_STARTED,
     RETRY_CANCEL_RESHIPI,
     RETRY_CREATE_RESHIPI,
-    RETRY_DEPTH_DOCTOR,
     RETRY_END_RESHIPI,
     RETRY_END_RESHIPI_BOOK,
     RETRY_GET_ONGOING_RESHIPI,
@@ -283,6 +282,7 @@ export class Shefu {
                                 payload: {
                                     ok: true,
                                     reshipiId: currentReshipi.id,
+                                    reshipi: currentReshipi,
                                 },
                             });
 

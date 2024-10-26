@@ -3,9 +3,11 @@
 import bcrypt from "bcryptjs";
 import { auth } from "@/auth";
 import { EmployeeRegError, EmployeeRegSchema, EmployeeRegSchemaType } from "@/types";
-import prisma, { EmployeeDesignation, EmployeeStatus, UserRoles } from "@repo/db/client";
+import prisma, { EmployeeDesignation, EmployeeStatus, Genders, UserRoles } from "@repo/db/client";
 import { createUser, getUserByEmial } from "@/data/user";
 import { generatePass } from "@/lib/utils";
+import { sendCreadentailEmail } from "./send-email";
+import { Title } from "@/components/templates/credentials-email-template";
 
 export async function registerEmployee(data: EmployeeRegSchemaType): Promise<{
     ok: boolean;
@@ -61,7 +63,8 @@ export async function registerEmployee(data: EmployeeRegSchemaType): Promise<{
         },
     });
 
-    //TODO: Send Email and password by email to Employee and revalidate path
-    console.log(password);
+    const title = newUser.gender === Genders.MALE ? Title.Mr : Title.Ms;
+    await sendCreadentailEmail(newUser.email, { title: title, firstName: newUser.firstName, password: password });
+
     return { ok: true, msg: `Employee with id ${newEmployee.id}` };
 }

@@ -61,6 +61,7 @@ export type MessageToApi =
           payload: {
               ok: boolean;
               reshipiId: string;
+              reshipi: Reshipi;
           };
       }
     | {

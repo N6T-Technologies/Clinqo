@@ -82,11 +82,31 @@ export const CreateAppointmentSchema = z.object({
     paymentMethod: z.custom<PaymentMethod>(),
 });
 
+export const NewPasswordSchema = z.object({
+    password: z
+        .string()
+        .min(8, {
+            message: "Minimum 8 characters required",
+        })
+        .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+        .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+        .regex(/[0-9]/, { message: "Password must contain at least one number" })
+        .regex(/[@$!%*?&]/, { message: "Password must contain at least one special character (@$!%*?&)" }),
+});
+
+export const ResetSchema = z.object({
+    email: z.string().email({
+        message: "Email is required",
+    }),
+});
+
 export type CreateAppointmentSchemaType = z.infer<typeof CreateAppointmentSchema>;
 export type DoctorRegSchemaType = z.infer<typeof DoctorRegSchema>;
 export type EmployeeRegSchemaType = z.infer<typeof EmployeeRegSchema>;
 export type LoginSchemaType = z.infer<typeof LoginSchema>;
 export type CliniqRegSchemaType = z.infer<typeof CliniqRegSchema>;
+export type NewPasswordSchemaType = z.infer<typeof NewPasswordSchema>;
+export type ResetSchemaType = z.infer<typeof ResetSchema>;
 
 export enum LoginActionsError {
     Invalid_Fields = "Invalid fields",

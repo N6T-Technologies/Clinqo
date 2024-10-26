@@ -6,6 +6,8 @@ import { DoctorRegError, DoctorRegSchema, DoctorRegSchemaType } from "@/types";
 import prisma, { UserRoles } from "@repo/db/client";
 import { createUser, getUserByEmial } from "@/data/user";
 import { generatePass } from "@/lib/utils";
+import { sendCreadentailEmail } from "./send-email";
+import { Title } from "@/components/templates/credentials-email-template";
 
 export async function registerDoctor(data: DoctorRegSchemaType): Promise<{
     ok: boolean;
@@ -71,7 +73,7 @@ export async function registerDoctor(data: DoctorRegSchemaType): Promise<{
         },
     });
 
-    //TODO: Send Email and password by email to doctor and revalidate path
-    console.log(password);
+    await sendCreadentailEmail(newUser.email, { title: Title.Dr, firstName: newUser.firstName, password: password });
+
     return { ok: true, msg: `Employee with id ${newDoctor.id}` };
 }

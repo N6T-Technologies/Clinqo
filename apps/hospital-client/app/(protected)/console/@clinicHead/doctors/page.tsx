@@ -13,7 +13,7 @@ async function getData(id: string): Promise<Doctor[]> {
     const doctors = rawDoctors.map((d) => {
         return {
             id: d.id,
-            doctorName: "Dr." + d.user.firstName + d.user.lastName,
+            doctorName: "Dr. " + d.user.firstName + " " + d.user.lastName,
             timing: "--:--",
             doctorEmail: d.user.email,
         };

@@ -4,10 +4,10 @@ import { auth } from "@/auth";
 import { RedisManger } from "@/lib/RedisManager";
 import { EndAppointmentError } from "@/types";
 import { MessageFromEngine } from "@/types/fromEngine";
-import { START_RESHIPI } from "shefu/from-api";
-import { RESHIPI_STARTED, RETRY_START_RESHIPI } from "shefu/to-api";
+import { END_RESHIPI } from "shefu/from-api";
+import { RESHIPI_ENDED, RETRY_END_RESHIPI } from "shefu/to-api";
 
-export async function startAppointment(clinicId: string) {
+export async function endAppointment(clinicId: string) {
     const session = await auth();
 
     if (!session || !session.user) {
@@ -33,19 +33,20 @@ export async function startAppointment(clinicId: string) {
 
     const title = `${clinicId}_${doctorId}`;
 
-    const startResult: MessageFromEngine = await RedisManger.getInstance().sendAndAwait({
-        type: START_RESHIPI,
+    const result: MessageFromEngine = await RedisManger.getInstance().sendAndAwait({
+        type: END_RESHIPI,
         data: {
             clinic_doctor: title,
         },
     });
 
-    if (startResult.type === RESHIPI_STARTED) {
-        return { ok: true, currentAppointment: startResult.payload.reshipi };
-    }
-    if (startResult.type === RETRY_START_RESHIPI) {
-        return { ok: false, msg: startResult.payload.msg };
+    if (result.type === RESHIPI_ENDED) {
+        return { ok: true };
     }
 
-    return { ok: false };
+    if (result.type === RETRY_END_RESHIPI) {
+        return { ok: false, msg: "Current Appointment could not end" };
+    }
+
+    return { ok: false, msg: EndAppointmentError.Something_Went_Wrong };
 }

@@ -138,6 +138,7 @@ export type MessageFromEngine =
           payload: {
               ok: boolean;
               reshipiId: string;
+              reshipi: Reshipi;
           };
       }
     | {

@@ -15,10 +15,7 @@ export async function POST(req: NextRequest) {
             },
         });
 
-        console.log(result);
-
         if (result.type === ONGOING_RESHIPI) {
-            console.log("hello");
             return NextResponse.json({ ok: true, currentAppointment: result.payload.reshipi });
         }
 

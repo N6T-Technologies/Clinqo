@@ -37,7 +37,7 @@ export const LoginForm = () => {
     };
 
     return (
-        <CardWrapper headerLabel="Welcome back">
+        <CardWrapper headerLabel="Welcome back" title="Login">
             <Form {...form}>
                 <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
                     <div className="space-y-4">
