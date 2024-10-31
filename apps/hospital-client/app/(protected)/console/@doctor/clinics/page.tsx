@@ -1,28 +1,6 @@
 import { auth } from "@/auth";
 import DoctorClinicTable from "@/components/ui/doctor-clinic-table";
-import { RedisManger } from "@/lib/RedisManager";
 import { AllClinicTable } from "@/types";
-import { MessageFromEngine } from "@/types/fromEngine";
-import { CURRENT_SESSION, RETRY_GET_SESSION } from "shefu/to-api";
-
-//TODO: create endpoint for getSession
-async function getSession(doctorId: string) {
-    const result: MessageFromEngine = await RedisManger.getInstance().sendAndAwait({
-        type: "GET_SESSION",
-        data: {
-            doctor: doctorId,
-        },
-    });
-
-    if (result.type === CURRENT_SESSION) {
-        return { ok: true, currentSession: result.payload.clinicId };
-    }
-
-    if (result.type === RETRY_GET_SESSION) {
-        return { ok: false, currentSession: "" };
-    }
-    return { ok: false, currentSession: "" };
-}
 
 export default async function DoctorClinics() {
     const session = await auth();

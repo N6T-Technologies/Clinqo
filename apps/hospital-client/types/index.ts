@@ -203,6 +203,12 @@ export type Doctor = {
     doctorEmail: string;
 };
 
+export type Employee = {
+    id: string;
+    name: string;
+    email: string;
+};
+
 export type Appointment = {
     id: string;
     number: number;

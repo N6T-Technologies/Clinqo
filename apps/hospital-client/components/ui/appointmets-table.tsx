@@ -7,7 +7,15 @@ import { useEffect, useState } from "react";
 import { WsManger } from "@/lib/WsManager";
 import { Reshipi, Status } from "shefu/appointments";
 
-export default function AppointmentsTable({ data, clinicId }: { data: Appointment[]; clinicId: string }) {
+export default function AppointmentsTable({
+    data,
+    clinicId,
+    dashboard,
+}: {
+    data: Appointment[];
+    clinicId: string;
+    dashboard?: boolean;
+}) {
     const [depth, setDepth] = useState<Appointment[]>([]);
 
     useEffect(() => {
@@ -141,7 +149,7 @@ export default function AppointmentsTable({ data, clinicId }: { data: Appointmen
     }, []);
 
     return (
-        <div className="w-full h-4/5 px-14 pt-14">
+        <div className={dashboard ? "w-full h-3/4 mt-6" : "w-full h-4/5 px-14 pt-14"}>
             <DataTable
                 heading="Appointments"
                 filterField="name"
@@ -149,6 +157,7 @@ export default function AppointmentsTable({ data, clinicId }: { data: Appointmen
                 className="bg-white"
                 columns={columns}
                 data={depth}
+                dashboard={dashboard}
             />
         </div>
     );

@@ -38,9 +38,11 @@ const CellStyles = ({ text }: { text: string | number }) => {
 export default function DoctorClinicTable({
     data,
     doctorId,
+    dashboard,
 }: {
     data: AllClinicTable[] | undefined;
     doctorId: string;
+    dashboard?: boolean;
 }) {
     const [activeSwitchId, setActiveSwitchId] = useRecoilState(sessionAtom);
 
@@ -167,7 +169,7 @@ export default function DoctorClinicTable({
     ];
 
     return (
-        <div className="w-full h-5/6 px-14 pt-14">
+        <div className={dashboard ? "w-full h-3/4 mt-6" : "w-full h-5/6 px-14 pt-14"}>
             <DataTable
                 heading="All Clinics"
                 filterField="name"
@@ -176,6 +178,7 @@ export default function DoctorClinicTable({
                 columns={columns}
                 data={data || []}
                 noRegisterButton
+                dashboard={dashboard}
             />
         </div>
     );

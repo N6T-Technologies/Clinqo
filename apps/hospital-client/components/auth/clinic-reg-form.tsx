@@ -193,7 +193,7 @@ export const ClinicRegForm = () => {
                                                     <SelectContent>
                                                         <SelectItem value="MALE">Male</SelectItem>
                                                         <SelectItem value="FEMALE">Female</SelectItem>
-                                                        <SelectItem value="OTHERS">Others</SelectItem>
+                                                        <SelectItem value="OTHER">Others</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                                 <FormMessage />

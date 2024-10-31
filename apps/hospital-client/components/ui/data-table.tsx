@@ -27,6 +27,7 @@ interface DataTableProps<TData, TValue> {
     filterField: string;
     searchBoxPlaceholder?: string;
     noRegisterButton?: boolean;
+    dashboard?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -37,6 +38,7 @@ export function DataTable<TData, TValue>({
     filterField,
     searchBoxPlaceholder,
     noRegisterButton,
+    dashboard,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -49,7 +51,7 @@ export function DataTable<TData, TValue>({
         initialState: {
             pagination: {
                 pageIndex: 0,
-                pageSize: noRegisterButton ? 7 : 6,
+                pageSize: noRegisterButton ? 7 : dashboard ? 4 : 6,
             },
         },
         onSortingChange: setSorting,

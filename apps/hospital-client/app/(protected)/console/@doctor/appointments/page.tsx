@@ -1,11 +1,5 @@
-import { RedisManger } from "@/lib/RedisManager";
-import { GET_DEPTH_DOCTOR } from "shefu/from-api";
-import { CURRENT_SESSION, DEPTH_DOCTOR, RETRY_DEPTH_DOCTOR, RETRY_GET_SESSION } from "shefu/to-api";
-import { Errors } from "../../../../../../shefu/src/state/ReshipiBook";
 import { auth } from "@/auth";
-import { Reshipi } from "shefu/appointments";
 import AppointmentCard from "@/components/ui/appointment-card";
-import { MessageFromEngine } from "@/types/fromEngine";
 import { Genders } from "@repo/db/client";
 
 export type DoctorAppointmentData = {

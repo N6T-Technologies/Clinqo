@@ -1,100 +1,31 @@
-import { Clinic } from "@/types";
+import { Employee } from "@/types";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
 import { RegisterButton } from "@/components/ui/regiseter-button";
+import { auth } from "@/auth";
+import { getEmployeesByClinicHeadId } from "@/data/employees";
 
-async function getData(): Promise<Clinic[]> {
+async function getData(id: string): Promise<Employee[]> {
     // Fetch data from your API here.
-    return [
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Mayur Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "sannyb@gmail.com",
-        },
-        {
-            id: "728ed52f",
-            name: "Clinqo Hospital",
-            headName: "Sanat Behera",
-            headEmail: "abc@gmail.com",
-        },
-        // ...
-    ];
+    //
+    const rawEmployees = await getEmployeesByClinicHeadId(id);
+
+    const employees = rawEmployees.map((re) => {
+        return {
+            id: re.id,
+            name: `${re.user.firstName} ${re.user.lastName}`,
+            email: re.user.email,
+        };
+    });
+
+    return employees;
 }
 export default async function AdminEmployees() {
-    const data = await getData();
+    const session = await auth();
+
+    //@ts-ignore
+    const clinicHeadId = session.user.clinicHeadId;
+    const data = await getData(clinicHeadId);
 
     return (
         <div className="w-full h-full flex flex-col items-center ">
@@ -102,7 +33,7 @@ export default async function AdminEmployees() {
                 <DataTable
                     heading="Employees"
                     filterField="name"
-                    searchBoxPlaceholder="Fliter Clinics..."
+                    searchBoxPlaceholder="Fliter Employees..."
                     className="bg-white"
                     columns={columns}
                     data={data}

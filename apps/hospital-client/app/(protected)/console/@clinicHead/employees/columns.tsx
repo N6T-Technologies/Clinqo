@@ -12,7 +12,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { Clinic } from "@/types";
+import { Employee } from "@/types";
 import { ReactNode } from "react";
 
 const Header = ({ header, icon }: { header: string; icon?: ReactNode }) => {
@@ -28,7 +28,7 @@ const CellStyles = ({ text }: { text: string | number }) => {
     return <div className="font-normal text-center ">{text}</div>;
 };
 
-export const columns: ColumnDef<Clinic>[] = [
+export const columns: ColumnDef<Employee>[] = [
     {
         accessorKey: "Sr No",
         header: () => <Header header="Sr No" />,
@@ -40,12 +40,7 @@ export const columns: ColumnDef<Clinic>[] = [
         cell: ({ row }) => <CellStyles text={row.getValue("name")} />,
     },
     {
-        accessorKey: "headName",
-        header: () => <Header header="Employee Name" />,
-        cell: ({ row }) => <CellStyles text={row.getValue("headName")} />,
-    },
-    {
-        accessorKey: "headEmail",
+        accessorKey: "email",
         header: ({ column }) => {
             return (
                 <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -53,12 +48,12 @@ export const columns: ColumnDef<Clinic>[] = [
                 </Button>
             );
         },
-        cell: ({ row }) => <CellStyles text={row.getValue("headEmail")} />,
+        cell: ({ row }) => <CellStyles text={row.getValue("email")} />,
     },
     {
         id: "actions",
         cell: ({ row }) => {
-            const clinic = row.original;
+            const employee = row.original;
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -69,12 +64,11 @@ export const columns: ColumnDef<Clinic>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(clinic.headEmail)}>
+                        <DropdownMenuItem onClick={() => navigator.clipboard.writeText(employee.email)}>
                             Copy Email
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>View Clinic</DropdownMenuItem>
-                        <DropdownMenuItem>View Clinic Head</DropdownMenuItem>
+                        <DropdownMenuItem>View Employee</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );
