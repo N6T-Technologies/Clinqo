@@ -16,7 +16,7 @@ export const SidebarItem = ({ href, icon, title, router }: SidebarItemProps) => 
     const selected = pathname == href;
     return (
         <div
-            className={`flex items-center ${selected ? "bg-[#7B9FEF] bg-opacity-40 cursor-default pointer-events-none" : "bg-transparent cursor-pointer"} p-2 pl-6 mt-2`}
+            className={`flex items-center ${selected ? "bg-[#7B9FEF] bg-opacity-40 cursor-default pointer-events-none" : "bg-transparent cursor-pointer hover:bg-[#7B9FEF] hover:bg-opacity-20"} p-2 pl-6 mt-2`}
             onClick={() => router.push(href)}
         >
             <div className={`font-bold ${selected ? "text-white" : "text-white opacity-40"} pr-2`}>{icon}</div>

@@ -11,7 +11,7 @@ export default function DoctorDashboard({ doctorId, data }: { doctorId: string; 
         <div className="h-full px-16 py-12">
             <div className="flex gap-x-12">
                 <DataCard
-                    data="2648"
+                    data="206"
                     description="Avg. Patients/Week"
                     icon={<FaUser className="bg-[#F5E6FE] text-[#BE63F9] rounded-lg size-12 p-2" />}
                 />

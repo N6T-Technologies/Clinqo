@@ -31,6 +31,8 @@ export default function AppointmentCard({ doctorId }: { doctorId: string }) {
     const [lastIndex, setLastIndex] = useState<number>(0);
     const [total, setTotal] = useState<number>(0);
     const [count, setCount] = useState<number>(1);
+    //TODO: form to be added instead of the remarks
+    const [remarks, setRemarks] = useState<string>("");
 
     const [message, setMessage] = useState<string>("");
 
@@ -228,7 +230,13 @@ export default function AppointmentCard({ doctorId }: { doctorId: string }) {
                                     <Label htmlFor="remakrs" className="underline">
                                         Remarks:
                                     </Label>
-                                    <Textarea placeholder="Type your remarks here." id="remarks" rows={3} />
+                                    <Textarea
+                                        value={remarks}
+                                        onChange={(e) => setRemarks(e.target.value)}
+                                        placeholder="Type your remarks here."
+                                        id="remarks"
+                                        rows={3}
+                                    />
                                     <p className="text-sm text-muted-foreground">
                                         Your remarks will be added in the appointment details as prescription.
                                     </p>
@@ -256,6 +264,7 @@ export default function AppointmentCard({ doctorId }: { doctorId: string }) {
                                     setLastIndex(0);
                                     setCurrentAppointment(null);
                                     setCount(1);
+                                    setRemarks("");
                                     return;
                                 }
                                 if (!currentSession) {
@@ -276,6 +285,7 @@ export default function AppointmentCard({ doctorId }: { doctorId: string }) {
                                         }
                                         return null;
                                     });
+                                    setRemarks("");
                                 } else if (!result.ok) {
                                     toast({
                                         variant: "destructive",

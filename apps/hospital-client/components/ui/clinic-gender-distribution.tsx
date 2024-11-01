@@ -33,7 +33,7 @@ export default function ClinicGenderDistribution() {
     const totalPatients = chartData.reduce((sum, { patients }) => sum + patients, 0);
 
     return (
-        <Card className="flex flex-col">
+        <Card className="flex flex-col hover:shadow-lg hover:bg-slate-50">
             <CardHeader className="items-center pb-2">
                 <CardTitle>Weekly Patient Gender Distribution</CardTitle>
                 <CardDescription>Hospital Admissions by Gender</CardDescription>
