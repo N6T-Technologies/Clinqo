@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 import { CheckIcon, ChevronsUpDown } from "lucide-react";
 
 import * as React from "react";

@@ -1,5 +1,3 @@
-import { Genders, PaymentMethod } from "@repo/db/src";
-
 export const CREATE_RESHIPI = "CREATE_RESHIPI";
 export const START_RESHIPI = "START_RESHIPI";
 export const END_RESHIPI = "END_RESHIPI";
@@ -12,6 +10,19 @@ export const END_RESHIPI_BOOK = "END_RESHIPI_BOOK";
 export const PAUSE_RESHIPI_BOOK = "PAUSE_RESHIPI_BOOK";
 export const GET_SESSION = "GET_SESSION";
 export const GET_ONGOING_RESHIPI = "GET_ONGOING_RESHIPI";
+
+export enum Genders {
+    MALE = "MALE",
+    FEMALE = "FEMALE",
+    OTHER = "OTHER",
+}
+
+export enum PaymentMethod {
+    UPI = "UPI",
+    DEBIT_CARD = "DEBIT_CARD",
+    CREDIT_CARD = "CREDIT_CARD",
+    CASH = "CASH",
+}
 
 //What happens if i make this interface instead type
 

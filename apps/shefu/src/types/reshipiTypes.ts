@@ -1,4 +1,4 @@
-import { Genders, PaymentMethod } from "@repo/db/src/index";
+import { Genders, PaymentMethod } from "./fromApi";
 
 export enum Status {
     Ongoing = "Ongoing",

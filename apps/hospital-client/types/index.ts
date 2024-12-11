@@ -12,8 +12,8 @@ export const LoginSchema = z.object({
     }),
 });
 
-const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+// const MAX_FILE_SIZE = 5000000;
+// const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 export const CliniqRegSchema = z.object({
     firstName: z.string().min(1, "First name is required"),
@@ -215,6 +215,16 @@ export type Appointment = {
     name: string;
     doctorName: string;
     status: Status;
+};
+
+export type DoctorAppointmentData = {
+    id: string;
+    number: number;
+    patientName: string;
+    gender: Genders;
+    folloup: boolean;
+    age: number;
+    symtoms: string;
 };
 
 export type AvailableDoctorTable = { doctorId: string; doctorName: string; ongoingNumber: number; total: number };

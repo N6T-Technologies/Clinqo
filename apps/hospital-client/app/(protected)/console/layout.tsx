@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { auth } from "@/auth";
 import { UserRoles } from "@repo/db/client";
 
@@ -16,7 +17,6 @@ export default async function ConsoleLayout({
 
     return (
         <div className="h-full">
-            {/* @ts-ignore */}
             {session?.user.role === UserRoles.ADMIN
                 ? admin
                 : session?.user.role === UserRoles.CLINIC_HEAD

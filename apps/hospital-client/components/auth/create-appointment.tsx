@@ -46,13 +46,13 @@ export default function CreateAppointment({
     availableDoctors,
     clinicId,
 }: {
-    availableDoctors: AvailableDoctorTable[] | Errors;
+    availableDoctors: AvailableDoctorTable[];
     clinicId: string;
 }) {
     const [currentStep, setCurrentStep] = useState<number>(0);
     const [success, setSuccess] = useState<string | undefined>(undefined);
     const [error, setError] = useState<CreateAppointmentError | undefined>(undefined);
-    const [newAvailableDoctors, setNewAvailableDoctor] = useState<AvailableDoctorTable[] | Errors>([]);
+    const [newAvailableDoctors, setNewAvailableDoctor] = useState<AvailableDoctorTable[]>([]);
 
     const [isPending, startTransition] = useTransition();
 
@@ -274,33 +274,24 @@ export default function CreateAppointment({
                                                     <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
                                                         Doctor
                                                     </FormLabel>
-                                                    {newAvailableDoctors === Errors.NOT_FOUND ||
-                                                    newAvailableDoctors === Errors.FORBIDDEN ||
-                                                    newAvailableDoctors === Errors.BAD_REQUEST ? (
-                                                        <div>No Doctors Found</div>
-                                                    ) : (
-                                                        <Select
-                                                            onValueChange={field.onChange}
-                                                            defaultValue={field.value}
-                                                        >
-                                                            <FormControl>
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Select Doctor" />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent>
-                                                                {newAvailableDoctors.map((ad: AvailableDoctorTable) => {
-                                                                    return (
-                                                                        <SelectItem
-                                                                            value={`${ad.doctorName}_${ad.doctorId}`}
-                                                                        >
-                                                                            {ad.doctorName}
-                                                                        </SelectItem>
-                                                                    );
-                                                                })}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    )}
+                                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                        <FormControl>
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select Doctor" />
+                                                            </SelectTrigger>
+                                                        </FormControl>
+                                                        <SelectContent>
+                                                            {newAvailableDoctors.map((ad: AvailableDoctorTable) => {
+                                                                return (
+                                                                    <SelectItem
+                                                                        value={`${ad.doctorName}_${ad.doctorId}`}
+                                                                    >
+                                                                        {ad.doctorName}
+                                                                    </SelectItem>
+                                                                );
+                                                            })}
+                                                        </SelectContent>
+                                                    </Select>
                                                     <FormMessage />
                                                 </FormItem>
                                             );

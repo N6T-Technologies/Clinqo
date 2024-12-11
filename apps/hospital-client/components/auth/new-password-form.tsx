@@ -4,7 +4,7 @@ import { newPassword } from "@/actions/new-password";
 import { NewPasswordSchema, NewPasswordSchemaType } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
-import { useState, useTransition } from "react";
+import { Suspense, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { CardWrapper } from "./card-wrapper";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
@@ -15,7 +15,7 @@ import { FormSuccess } from "../ui/form-success";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import Link from "next/link";
 
-export function NewPasswordForm() {
+function PassForm() {
     const [error, setError] = useState<string | undefined>("");
     const [success, setSuccess] = useState<string | undefined>("");
     const [isPending, startTransition] = useTransition();
@@ -95,5 +95,13 @@ export function NewPasswordForm() {
                 </Form>
             </CardWrapper>
         </>
+    );
+}
+
+export function NewPasswordForm() {
+    return (
+        <Suspense>
+            <PassForm />
+        </Suspense>
     );
 }

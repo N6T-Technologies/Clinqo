@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 import AppointmentsTable from "@/components/ui/appointmets-table";
 import { DEPTH_CLINIC } from "shefu/to-api";
 
-export async function getAppointmentData(clinicId: string): Promise<Appointment[]> {
+async function getAppointmentData(clinicId: string): Promise<Appointment[]> {
     const incomingData: MessageFromEngine = await RedisManger.getInstance().sendAndAwait({
         type: GET_DEPTH_CLINIC,
         data: {

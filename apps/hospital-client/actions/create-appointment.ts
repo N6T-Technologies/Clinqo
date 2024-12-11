@@ -3,8 +3,9 @@
 import { auth } from "@/auth";
 import { RedisManger } from "@/lib/RedisManager";
 import { CreateAppointmentError, CreateAppointmentSchema, CreateAppointmentSchemaType } from "@/types";
-import { MessageFromEngine, ReshipiCreatedData } from "@/types/fromEngine";
+import { MessageFromEngine } from "@/types/fromEngine";
 import { CREATE_RESHIPI, CreateAppointmentData } from "shefu/from-api";
+import { RESHIPI_CREATED } from "shefu/to-api";
 
 export async function createAppointment(data: CreateAppointmentSchemaType): Promise<{
     ok: boolean;
@@ -65,5 +66,9 @@ export async function createAppointment(data: CreateAppointmentSchemaType): Prom
         return { ok: false, error: CreateAppointmentError.Something_Went_Wrong };
     }
 
-    return { ok: true, msg: `Appointment with id ${response.payload.newReshipi.id} created` };
+    if (response.type === RESHIPI_CREATED) {
+        return { ok: true, msg: `Appointment with id ${response.payload.newReshipi.id} created` };
+    }
+
+    return { ok: false, error: CreateAppointmentError.Something_Went_Wrong };
 }

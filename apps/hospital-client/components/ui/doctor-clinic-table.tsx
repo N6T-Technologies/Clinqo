@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { AllClinicTable } from "@/types";
-import { ReactNode, useEffect, useOptimistic, useState } from "react";
+import { ReactNode, useEffect, useOptimistic } from "react";
 import { Switch } from "@/components/ui/switch";
 import { DataTable } from "./data-table";
 import { startSession } from "@/actions/start-session";

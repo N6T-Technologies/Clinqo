@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./card";
 import { useEffect, useState } from "react";
-import { DoctorAppointmentData } from "@/app/(protected)/console/@doctor/appointments/page";
+import { DoctorAppointmentData } from "@/types";
 import { useRecoilState } from "recoil";
 import { sessionAtom } from "@/store/atoms/sessionAtom";
 import Image from "next/image";

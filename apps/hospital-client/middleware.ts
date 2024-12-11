@@ -5,6 +5,7 @@ import { DEFAULT_LOGGEDIN_REDIRECT, apiAuthPrefix, authRoutes, publicRoutes } fr
 
 const { auth } = NextAuth(authConfig);
 
+//@ts-ignore
 export default auth((req) => {
     const { nextUrl } = req;
 

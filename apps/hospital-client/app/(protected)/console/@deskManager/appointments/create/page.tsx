@@ -3,7 +3,7 @@ import CreateAppointment from "@/components/auth/create-appointment";
 import { RedisManger } from "@/lib/RedisManager";
 import { GET_AVAILABLE_DOCTORS } from "shefu/from-api";
 
-export async function getDoctors(clinicId: string) {
+async function getDoctors(clinicId: string) {
     const availableDoctors = await RedisManger.getInstance().sendAndAwait({
         type: GET_AVAILABLE_DOCTORS,
         data: {
@@ -12,9 +12,9 @@ export async function getDoctors(clinicId: string) {
         },
     });
     if (availableDoctors.payload.ok && availableDoctors.type === "AVAILABLE_DOCTORS") {
-        return availableDoctors.payload.doctors;
+        return { ok: true, data: availableDoctors.payload.doctors };
     } else if (availableDoctors.type === "RETRY_AVAILABLE_DOCTORS") {
-        return availableDoctors.payload.error;
+        return { ok: false, msg: availableDoctors.payload.error };
     }
 }
 
@@ -32,7 +32,11 @@ export default async function CreateAppointments() {
 
     return (
         <div className="w-full">
-            <CreateAppointment availableDoctors={res} clinicId={clinicId} />
+            {res.ok && res.data ? (
+                <CreateAppointment availableDoctors={res.data} clinicId={clinicId} />
+            ) : (
+                <div className="">No Doctor is available</div>
+            )}
         </div>
     );
 }
