@@ -14,6 +14,7 @@ import {
 
 import { Clinic } from "@/types";
 import { ReactNode } from "react";
+import Link from "next/link";
 
 const Header = ({ header, icon }: { header: string; icon?: ReactNode }) => {
     return (
@@ -74,7 +75,9 @@ export const columns: ColumnDef<Clinic>[] = [
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>View Clinic</DropdownMenuItem>
-                        <DropdownMenuItem>View Clinic Head</DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <Link href={`/console/clinics/qr-generator/${clinic.id}`}>Generate QR Code</Link>
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );
