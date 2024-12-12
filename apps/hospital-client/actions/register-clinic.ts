@@ -7,8 +7,12 @@ import { createUser, getUserByEmial } from "@/data/user";
 import { generatePass } from "@/lib/utils";
 import { ClinicRegError, CliniqRegSchema, CliniqRegSchemaType } from "@/types";
 import prisma, { EmployeeDesignation, EmployeeStatus, Genders, UserRoles } from "@repo/db/client";
-import { sendCreadentailEmail } from "./send-email";
-import { Title } from "@/components/templates/credentials-email-template";
+import { sendEmail } from "./send-email";
+import {
+    CredentailEmailTemplate,
+    CredentialEmailTemplateProps,
+    Title,
+} from "@/components/templates/credentials-email-template";
 
 export async function registerClinic(
     data: CliniqRegSchemaType
@@ -100,7 +104,11 @@ export async function registerClinic(
     });
 
     const title = newUser.gender === Genders.MALE ? Title.Mr : Title.Ms;
-    await sendCreadentailEmail(email, { title: title, firstName: newUser.firstName, password: password });
+    await sendEmail<CredentialEmailTemplateProps>(
+        email,
+        { title: title, firstName: newUser.firstName, password: password },
+        CredentailEmailTemplate
+    );
 
     return { ok: true, msg: `The clinic with id ${newClinic.id} created` };
 }

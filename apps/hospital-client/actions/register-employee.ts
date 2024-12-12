@@ -6,8 +6,12 @@ import { EmployeeRegError, EmployeeRegSchema, EmployeeRegSchemaType } from "@/ty
 import prisma, { EmployeeDesignation, EmployeeStatus, Genders, UserRoles } from "@repo/db/client";
 import { createUser, getUserByEmial } from "@/data/user";
 import { generatePass } from "@/lib/utils";
-import { sendCreadentailEmail } from "./send-email";
-import { Title } from "@/components/templates/credentials-email-template";
+import { sendEmail } from "./send-email";
+import {
+    CredentailEmailTemplate,
+    Title,
+    CredentialEmailTemplateProps,
+} from "@/components/templates/credentials-email-template";
 
 export async function registerEmployee(data: EmployeeRegSchemaType): Promise<{
     ok: boolean;
@@ -64,7 +68,11 @@ export async function registerEmployee(data: EmployeeRegSchemaType): Promise<{
     });
 
     const title = newUser.gender === Genders.MALE ? Title.Mr : Title.Ms;
-    await sendCreadentailEmail(newUser.email, { title: title, firstName: newUser.firstName, password: password });
+    await sendEmail<CredentialEmailTemplateProps>(
+        newUser.email,
+        { title: title, firstName: newUser.firstName, password: password },
+        CredentailEmailTemplate
+    );
 
     return { ok: true, msg: `Employee with id ${newEmployee.id}` };
 }

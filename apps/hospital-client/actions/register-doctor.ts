@@ -6,8 +6,12 @@ import { DoctorRegError, DoctorRegSchema, DoctorRegSchemaType } from "@/types";
 import prisma, { UserRoles } from "@repo/db/client";
 import { createUser, getUserByEmial } from "@/data/user";
 import { generatePass } from "@/lib/utils";
-import { sendCreadentailEmail } from "./send-email";
-import { Title } from "@/components/templates/credentials-email-template";
+import { sendEmail } from "./send-email";
+import {
+    CredentailEmailTemplate,
+    CredentialEmailTemplateProps,
+    Title,
+} from "@/components/templates/credentials-email-template";
 
 export async function registerDoctor(data: DoctorRegSchemaType): Promise<{
     ok: boolean;
@@ -73,7 +77,11 @@ export async function registerDoctor(data: DoctorRegSchemaType): Promise<{
         },
     });
 
-    await sendCreadentailEmail(newUser.email, { title: Title.Dr, firstName: newUser.firstName, password: password });
+    await sendEmail<CredentialEmailTemplateProps>(
+        newUser.email,
+        { title: Title.Dr, firstName: newUser.firstName, password: password },
+        CredentailEmailTemplate
+    );
 
     return { ok: true, msg: `Employee with id ${newDoctor.id}` };
 }

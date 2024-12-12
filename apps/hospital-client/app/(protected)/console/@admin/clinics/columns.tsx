@@ -76,7 +76,11 @@ export const columns: ColumnDef<Clinic>[] = [
                         <DropdownMenuSeparator />
                         <DropdownMenuItem>View Clinic</DropdownMenuItem>
                         <DropdownMenuItem>
-                            <Link href={`/console/clinics/qr-generator/${clinic.id}`}>Generate QR Code</Link>
+                            <Link
+                                href={`/console/clinics/qr-generator/${clinic.id}_${clinic.name}_${clinic.headEmail}`}
+                            >
+                                Generate QR Code
+                            </Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
