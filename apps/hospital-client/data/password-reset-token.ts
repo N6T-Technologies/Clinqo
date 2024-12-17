@@ -55,13 +55,14 @@ export const generatePasswordResetToken = async (email: string) => {
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
     const resetLink = `${url}/auth/new-password?token=${token}`;
-
-    await resend.emails.send({
+    const res = await resend.emails.send({
         from: `Clinqo <noreply@${domain}>`,
         to: email,
         subject: "Change your password",
         react: ResetPassEmail({ resetLink }),
     });
+
+    console.log(res);
 };
 
 // export const sendVerificationEmail = async (email: string, token: string) => {

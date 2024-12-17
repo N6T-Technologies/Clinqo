@@ -30,6 +30,10 @@ export default auth((req) => {
         return Response.redirect(new URL("/auth/login", nextUrl));
     }
 
+    if (nextUrl.pathname === "/" && isLoggedIn) {
+        return Response.redirect(new URL(DEFAULT_LOGGEDIN_REDIRECT, nextUrl));
+    }
+
     return null;
 });
 
