@@ -4,7 +4,8 @@ import { Resend } from "resend";
 import { ResetPassEmail } from "@/components/templates/reset-pass-email-template";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const domain = process.env.DOMAIN;
+const domain = process.env.RESEND_DOMAIN;
+const url = process.env.URL;
 
 export async function getPasswordResetTokenByToken(token: string) {
     try {
@@ -53,10 +54,10 @@ export const generatePasswordResetToken = async (email: string) => {
 };
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
-    const resetLink = `http://localhost:3000/auth/new-password?token=${token}`;
+    const resetLink = `${url}/auth/new-password?token=${token}`;
 
     await resend.emails.send({
-        from: "Clinqo <noreply@l3xlabs.com>",
+        from: `Clinqo <noreply@${domain}>`,
         to: email,
         subject: "Change your password",
         react: ResetPassEmail({ resetLink }),

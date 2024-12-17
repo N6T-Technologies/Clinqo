@@ -5,7 +5,7 @@ export function ResetPassEmail({ resetLink }: { resetLink: string }) {
         <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 p-6">
             <div className="text-center mb-4">
                 <img
-                    src="/images/logo.png"
+                    src="/n6t-logo.jpg"
                     alt="N6T Technologies Logo"
                     className="mx-auto"
                     style={{ width: "120px", height: "40px" }}
