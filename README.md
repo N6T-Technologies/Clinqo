@@ -33,6 +33,13 @@ Setup env variables as directed in env.example
   Clinqo/apps/packages/db/env.example
 ```
 
+move to Clinqo/packages/db/prisma
+
+```bash
+  yarn prisma migrate
+  yarn prisma generate
+```
+
 Run postgres in docker container
 
 ```bash
