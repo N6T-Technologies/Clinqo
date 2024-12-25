@@ -47,7 +47,6 @@ export function Sidebar({ routes, help }: { routes: Route[]; help: boolean }) {
                     className="flex items-center space-x-2"
                     onClick={async () => {
                         await signOut();
-                        router.push("/auth/login");
                     }}
                 >
                     <SlLogout className="text-white cursor-pointer" />
