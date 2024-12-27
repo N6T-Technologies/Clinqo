@@ -1,7 +1,7 @@
 import { EmployeeRegSchemaType } from "@/types";
 import prisma, { UserRoles, type UserType } from "@repo/db/client";
 
-export const getUserByEmial = async (email: string): Promise<UserType | null> => {
+export const getUserByEmail = async (email: string): Promise<UserType | null> => {
     const user = await prisma.user.findUnique({
         where: { email: email },
     });

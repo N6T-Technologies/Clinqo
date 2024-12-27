@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { auth } from "@/auth";
 import { EmployeeRegError, EmployeeRegSchema, EmployeeRegSchemaType } from "@/types";
 import prisma, { EmployeeDesignation, EmployeeStatus, Genders, UserRoles } from "@repo/db/client";
-import { createUser, getUserByEmial } from "@/data/user";
+import { createUser, getUserByEmail } from "@/data/user";
 import { generatePass } from "@/lib/utils";
 import { sendEmail } from "./send-email";
 import {
@@ -43,7 +43,7 @@ export async function registerEmployee(data: EmployeeRegSchemaType): Promise<{
         return { ok: false, error: EmployeeRegError.Invalid_Fields };
     }
 
-    const existingUser = await getUserByEmial(validatedFields.data.email);
+    const existingUser = await getUserByEmail(validatedFields.data.email);
 
     if (existingUser) {
         return { ok: false, error: EmployeeRegError.Employee_Already_Exists };
