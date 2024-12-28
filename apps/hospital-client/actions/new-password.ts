@@ -2,7 +2,7 @@
 
 import bcrypt from "bcryptjs";
 import { getPasswordResetTokenByToken } from "@/data/password-reset-token";
-import { getUserByEmial } from "@/data/user";
+import { getUserByEmail } from "@/data/user";
 import prisma from "@repo/db/client";
 import { NewPasswordSchema, NewPasswordSchemaType } from "@/types";
 
@@ -29,7 +29,7 @@ export async function newPassword(values: NewPasswordSchemaType, token: string |
         return { error: "Token expired" };
     }
 
-    const existingUser = await getUserByEmial(existingToken.email);
+    const existingUser = await getUserByEmail(existingToken.email);
 
     if (!existingUser || !existingUser.id) {
         return { error: "User does not exists" };

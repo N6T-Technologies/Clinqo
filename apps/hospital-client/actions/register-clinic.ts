@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import bcrypt from "bcryptjs";
 import { getClinicByGSTIN } from "@/data/clinic";
-import { createUser, getUserByEmial } from "@/data/user";
+import { createUser, getUserByEmail } from "@/data/user";
 import { generatePass } from "@/lib/utils";
 import { ClinicRegError, CliniqRegSchema, CliniqRegSchemaType } from "@/types";
 import prisma, { EmployeeDesignation, EmployeeStatus, Genders, UserRoles } from "@repo/db/client";
@@ -45,7 +45,7 @@ export async function registerClinic(
     const { email, clinicName, logo, gstin, country, addressLine1, addressLine2, city, state, pincode } =
         validatedFields.data;
 
-    const existingUser = await getUserByEmial(email);
+    const existingUser = await getUserByEmail(email);
 
     if (existingUser) {
         return { ok: false, error: ClinicRegError.Clinic_Head_Already_Exits };

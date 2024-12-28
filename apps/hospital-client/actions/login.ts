@@ -4,7 +4,7 @@ import { AuthError } from "next-auth";
 import { signIn } from "../auth";
 import { DEFAULT_LOGGEDIN_REDIRECT } from "../routes";
 import { LoginSchema, type LoginSchemaType } from "@/types";
-import { getUserByEmial } from "../data/user";
+import { getUserByEmail } from "../data/user";
 import { LoginActionsError } from "@/types";
 
 export const login = async (
@@ -18,7 +18,7 @@ export const login = async (
 
     const { email, password } = validatedFields.data;
 
-    const existingUser = await getUserByEmial(email);
+    const existingUser = await getUserByEmail(email);
 
     if (!existingUser) {
         return { ok: false, error: LoginActionsError.User_Not_Found };
