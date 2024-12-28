@@ -56,6 +56,7 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ field, isPending }) => {
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
         >
+            {/*TODO: Add the next.js Image component to see the choosen image also add the src set. Create the local url of the uploaded image to set the url of the Image component*/}
             <Input
                 {...field}
                 ref={fileInputRef}
@@ -75,6 +76,7 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ field, isPending }) => {
                         <p className="mt-2 text-sm">or</p>
                     </>
                 )}
+                {/*TODO: Change the button given to the shadcn button component with appropriate variant*/}
                 <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
