@@ -57,10 +57,8 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ field, isPending }) => {
 
     return (
         <div
-            className={`relative flex flex-col items-center justify-center h-64 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-300 ${
-                dragOver
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-gray-300 hover:border-sky-600 hover:bg-gray-50"
+            className={`relative flex flex-col items-center justify-center h-64 border-2 border-[#b5cddb] rounded-lg cursor-pointer transition-all duration-300 ${
+                dragOver ? "border-blue-600 bg-blue-600 text-white" : "border-gray-300 bg-[#bfc8e2]"
             }`}
             onDragOver={(e) => {
                 e.preventDefault();

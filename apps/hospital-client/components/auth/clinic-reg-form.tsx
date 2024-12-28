@@ -446,12 +446,12 @@ export const ClinicRegForm = () => {
                                         }}
                                     />
                                 </div>
-                                <button
+                                {/* <button
                                     type="button"
                                     className="mt-6 px-6 py-3 text-sm font-medium text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-700 focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                                 >
                                     Upload Logo
-                                </button>
+                                </button> */}
                             </div>
                         )}
                     </form>
