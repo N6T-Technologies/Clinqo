@@ -33,11 +33,29 @@ Setup env variables as directed in env.example
   Clinqo/apps/packages/db/env.example
 ```
 
+update your information
+
+```bash
+  Clinqo/packages/db/prisma/seedsData.ts
+```
+
 move to Clinqo/packages/db/prisma
 
 ```bash
   yarn prisma generate
   yarn prisma migrate
+```
+
+Generate hashcode of your password
+
+```bash
+  https://bcrypt.online/
+```
+
+replace your password by hashcode in user table
+
+```bash
+  yarn prisma studio
 ```
 
 Run postgres in docker container
