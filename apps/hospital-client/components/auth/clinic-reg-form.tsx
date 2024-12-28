@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
 import { registerClinic } from "@/actions/register-clinic";
-// import DragAndDrop from "../ui/drag-and-drop";
+import DragAndDrop from "../ui/drag-and-drop";
 
 const formSteps: StepInfo[] = [
     {
@@ -435,15 +435,15 @@ export const ClinicRegForm = () => {
                                                         Clinic Logo
                                                     </FormLabel>
                                                     <FormControl>
-                                                        {/* <DragAndDrop field={field} /> */}
+                                                        <DragAndDrop field={field} />
                                                         {/* enable DragAndDrop when S3 upload is available */}
-                                                        <Input
+                                                        {/* <Input
                                                             className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                                                             {...field}
                                                             disabled={isPending}
                                                             type="text"
                                                             placeholder="/img/clinic.png"
-                                                        />
+                                                        /> */}
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
