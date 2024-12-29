@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
 import { registerClinic } from "@/actions/register-clinic";
-// import DragAndDrop from "../ui/drag-and-drop";
+import DragAndDrop from "../ui/drag-and-drop";
 
 const formSteps: StepInfo[] = [
     {
@@ -421,29 +421,24 @@ export const ClinicRegForm = () => {
                         )}
 
                         {currentStep === 2 && (
-                            <div className="w-full h-full">
-                                <h2 className="text-base font-semibold leading-7 text-gray-900">Clinic Logo</h2>
-                                <p className="mt-1 text-sm leading-6 text-gray-600">Add Clinic Logo</p>
-                                <div className="w-full mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-4">
+                            <div className="w-full h-full flex flex-col items-center justify-center">
+                                <h2 className="text-lg font-semibold leading-7 text-gray-900 text-center">
+                                    Clinic Logo
+                                </h2>
+                                {/* <p className="mt-1 text-sm leading-6 text-gray-600">Add Clinic Logo</p> */}
+                                <div className="w-full max-w-md mt-8">
                                     <FormField
                                         control={form.control}
                                         name="logo"
                                         render={({ field }) => {
                                             return (
                                                 <FormItem>
-                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                        Clinic Logo
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900 text-center">
+                                                        Add Clinic Logo
                                                     </FormLabel>
                                                     <FormControl>
-                                                        {/* <DragAndDrop field={field} /> */}
+                                                        <DragAndDrop field={field} />
                                                         {/* enable DragAndDrop when S3 upload is available */}
-                                                        <Input
-                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                            {...field}
-                                                            disabled={isPending}
-                                                            type="text"
-                                                            placeholder="/img/clinic.png"
-                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -451,6 +446,12 @@ export const ClinicRegForm = () => {
                                         }}
                                     />
                                 </div>
+                                {/* <button
+                                    type="button"
+                                    className="mt-6 px-6 py-3 text-sm font-medium text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-700 focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                                >
+                                    Upload Logo
+                                </button> */}
                             </div>
                         )}
                     </form>
