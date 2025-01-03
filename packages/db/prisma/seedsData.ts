@@ -6,14 +6,14 @@ const seedsData: {
 } = {
     admins: [
         {
-            firstName: "Mayur",
-            lastName: "Pachpor",
+            firstName: "Akash",
+            lastName: "Tiwari",
             dateOfBirth: new Date("2003-02-28"),
             gender: Genders.MALE,
-            email: "mayurpachpor2802@gmail.com",
-            contactNumber: "8208669377",
+            email: "akashtiwariaku@gmail.com",
+            contactNumber: "7417041977",
             countryCode: "+91",
-            password: "$2y$10$YeZ2u447qTKivjud7IcC7OROAqOq9C7dkXKQYldOy3CIhkR0aLaSW",
+            password: "Admin@124",
             role: Roles.ADMIN,
         },
     ],
