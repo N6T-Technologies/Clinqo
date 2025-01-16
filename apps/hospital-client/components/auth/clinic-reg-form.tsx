@@ -421,9 +421,9 @@ export const ClinicRegForm = () => {
                         )}
 
                         {currentStep === 2 && (
-                            <div className="w-full h-full flex flex-col items-center justify-center">
+                            <div className="w-full h-full flex flex-col items-start">
                                 <h2 className="text-lg font-semibold leading-7 text-gray-900 text-center">
-                                    Clinic Logo
+                                    
                                 </h2>
                                 {/* <p className="mt-1 text-sm leading-6 text-gray-600">Add Clinic Logo</p> */}
                                 <div className="w-full max-w-md mt-8">
@@ -432,9 +432,9 @@ export const ClinicRegForm = () => {
                                         name="logo"
                                         render={({ field }) => {
                                             return (
-                                                <FormItem>
-                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900 text-center">
-                                                        Add Clinic Logo
+                                                <FormItem items-start>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900 text-center items-start">
+                                                        
                                                     </FormLabel>
                                                     <FormControl>
                                                         <DragAndDrop field={field} />

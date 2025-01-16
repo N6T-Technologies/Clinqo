@@ -7,7 +7,7 @@
     "author": "meru45",
     "scripts": {
         "build": "tsc -b",
-        "start": "WITH_SNAPSHOT=true node dist/index.js",
+        "start": "node dist/index.js",
         "dev": "yarn run build && yarn run start"
     },
     "dependencies": {
