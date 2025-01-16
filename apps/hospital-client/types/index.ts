@@ -12,8 +12,8 @@ export const LoginSchema = z.object({
     }),
 });
 
-// const MAX_FILE_SIZE = 5 * 1024 * 1024; //5 MB
-// const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; //5 MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 export const CliniqRegSchema = z.object({
     firstName: z.string().min(1, "First name is required"),
