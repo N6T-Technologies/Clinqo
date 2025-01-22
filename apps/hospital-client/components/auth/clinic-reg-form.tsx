@@ -422,9 +422,7 @@ export const ClinicRegForm = () => {
 
                         {currentStep === 2 && (
                             <div className="w-full h-full flex flex-col items-start">
-                                <h2 className="text-lg font-semibold leading-7 text-gray-900 text-center">
-                                    
-                                </h2>
+                                <h2 className="text-lg font-semibold leading-7 text-gray-900 text-center"></h2>
                                 {/* <p className="mt-1 text-sm leading-6 text-gray-600">Add Clinic Logo</p> */}
                                 <div className="w-full max-w-md mt-8">
                                     <FormField
@@ -433,11 +431,18 @@ export const ClinicRegForm = () => {
                                         render={({ field }) => {
                                             return (
                                                 <FormItem items-start>
-                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900 text-center items-start">
-                                                        
-                                                    </FormLabel>
+                                                    <FormLabel className="block text-sm font-medium leading-6 text-gray-900 text-center items-start"></FormLabel>
                                                     <FormControl>
-                                                        <DragAndDrop field={field} />
+                                                        <Input
+                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
+                                                            {...field}
+                                                            disabled={isPending}
+                                                            type="text"
+                                                            placeholder="India"
+                                                        />
+
+                                                        {/* <DragAndDrop field={field} /> */}
+
                                                         {/* enable DragAndDrop when S3 upload is available */}
                                                     </FormControl>
                                                     <FormMessage />

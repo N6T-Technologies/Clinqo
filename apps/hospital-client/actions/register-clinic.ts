@@ -47,6 +47,8 @@ export async function registerClinic(
 
     const existingUser = await getUserByEmail(email);
 
+    console.log(logo);
+
     if (existingUser) {
         return { ok: false, error: ClinicRegError.Clinic_Head_Already_Exits };
     }
@@ -69,7 +71,8 @@ export async function registerClinic(
     const newClinic = await prisma.clinic.create({
         data: {
             name: clinicName,
-            logo: logo,
+            //TODO: Change this hard coded value to the image url in s3
+            logo: "logo",
             clinicHeads: {
                 create: [
                     {
