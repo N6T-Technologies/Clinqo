@@ -433,15 +433,15 @@ export const ClinicRegForm = () => {
                                                 <FormItem items-start>
                                                     <FormLabel className="block text-sm font-medium leading-6 text-gray-900 text-center items-start"></FormLabel>
                                                     <FormControl>
-                                                        <Input
+                                                        {/* <Input
                                                             className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
                                                             {...field}
                                                             disabled={isPending}
                                                             type="text"
                                                             placeholder="India"
-                                                        />
+                                                        /> */}
 
-                                                        {/* <DragAndDrop field={field} /> */}
+                                                        <DragAndDrop field={field} />
 
                                                         {/* enable DragAndDrop when S3 upload is available */}
                                                     </FormControl>

@@ -9,7 +9,6 @@ interface DragAndDropProps {
     isPending?: boolean;
 }
 
-
 const allowedExtensions = [".png", ".jpg", ".jpeg", ".webp"];
 
 const isValidFileType = (fileName: string) => allowedExtensions.includes(`.${fileName.split(".").pop()}`);
@@ -69,95 +68,85 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ field, isPending }) => {
 
     return (
         <div className="flex flex-col items-start space-y-4">
-    {/* Title above the circle */}
-    <p className="text-lg font-medium text-gray-700">Add Clinic Logo</p>
+            {/* Title above the circle */}
+            <p className="text-lg font-medium text-gray-700">Add Clinic Logo</p>
 
-    {/* Circle and right-side content in a horizontal row */}
-    <div className="flex items-center space-x-4">
-        {/* Circle with image or placeholder */}
-        <div
-            className={`relative flex items-center justify-center h-24 w-24 border-2 border-dashed border-[#b5cddb] rounded-full transition-all duration-300 ${
-                dragOver ? "border-blue-600 bg-blue-600 text-white" : "border-gray-300 bg-[#f4f6fa]"
-            }`}
-            onDragOver={(e) => {
-                e.preventDefault();
-                setDragOver(true);
-            }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={handleDrop}
-        >
-            {previewSrc ? (
-                /* Dynamically display uploaded image */
-                <img
-                    src={previewSrc}
-                    alt="Preview"
-                    className="h-full w-full rounded-full object-cover"
-                />
-            ) : (
-                /* Default placeholder image */
-                <img
-                    src="/medical.png" /* Replace with your placeholder image path */
-                    alt="Placeholder"
-                    className="h-12 w-12"
-                />
-            )}
-
-            {/* Hidden Input for File Upload */}
-            <Input
-                {...field}
-                ref={fileInputRef}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                type="file"
-                accept=".png, .jpg, .jpeg, .webp"
-                onChange={handleFileChange}
-                disabled={isPending}
-            />
-        </div>
-
-        {/* Content on the right side */}
-        <div className="flex items-center space-x-4">
-            {/* Upload Logo Content */}
-            <div className="flex flex-col space-y-2">
-                {/* File size hint */}
-                {error ? (
-                    <p className="text-red-500 text-sm">{error}</p>
-                ) : (
-                    <p className="text-sm text-gray-500">in PNG, JPEG max. 5MB</p>
-                )}
-
-                {/* Upload Button */}
-                <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-md hover:bg-sky-700"
+            {/* Circle and right-side content in a horizontal row */}
+            <div className="flex items-center space-x-4">
+                {/* Circle with image or placeholder */}
+                <div
+                    className={`relative flex items-center justify-center h-24 w-24 border-2 border-dashed border-[#b5cddb] rounded-full transition-all duration-300 ${
+                        dragOver ? "border-blue-600 bg-blue-600 text-white" : "border-gray-300 bg-[#f4f6fa]"
+                    }`}
+                    onDragOver={(e) => {
+                        e.preventDefault();
+                        setDragOver(true);
+                    }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={handleDrop}
                 >
-                    Upload Logo
-                </button>
-            </div>
+                    {previewSrc ? (
+                        /* Dynamically display uploaded image */
+                        <Image src={previewSrc} alt="Preview" className="h-full w-full rounded-full object-cover" />
+                    ) : (
+                        /* Default placeholder image */
+                        <Image
+                            src="/medical.png" /* Replace with your placeholder image path */
+                            alt="Placeholder"
+                            className="h-12 w-12"
+                        />
+                    )}
 
-            {/* Delete Button */}
-            {previewSrc && (
-                <button
-                    type="button"
-                    onClick={handleDelete} // Function to clear the image
-                    className="flex items-center justify-center w-6 h-6 bg-white text-white rounded-full shadow hover:bg-red-700"
-                >
-                    <img
-                        src="/delete.png" /* Replace with your delete icon path */
-                        alt="Delete"
-                        className="h-full w-full object-cover rounded-full"
+                    {/* Hidden Input for File Upload */}
+                    <Input
+                        {...field}
+                        ref={fileInputRef}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        type="file"
+                        accept=".png, .jpg, .jpeg, .webp"
+                        onChange={handleFileChange}
+                        disabled={isPending}
                     />
-                </button>
-            )}
+                </div>
+
+                {/* Content on the right side */}
+                <div className="flex items-center space-x-4">
+                    {/* Upload Logo Content */}
+                    <div className="flex flex-col space-y-2">
+                        {/* File size hint */}
+                        {error ? (
+                            <p className="text-red-500 text-sm">{error}</p>
+                        ) : (
+                            <p className="text-sm text-gray-500">in PNG, JPEG max. 5MB</p>
+                        )}
+
+                        {/* Upload Button */}
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-md hover:bg-sky-700"
+                        >
+                            Upload Logo
+                        </button>
+                    </div>
+
+                    {/* Delete Button */}
+                    {previewSrc && (
+                        <button
+                            type="button"
+                            onClick={handleDelete} // Function to clear the image
+                            className="flex items-center justify-center w-6 h-6 bg-white text-white rounded-full shadow hover:bg-red-700"
+                        >
+                            <Image
+                                src="/delete.png" /* Replace with your delete icon path */
+                                alt="Delete"
+                                className="h-full w-full object-cover rounded-full"
+                            />
+                        </button>
+                    )}
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-
-
-
-
-
-
     );
 };
 
