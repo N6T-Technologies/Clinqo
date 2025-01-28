@@ -30,14 +30,16 @@ interface LogoSettings {
     excavate: boolean;
 }
 
+const URL = process.env.NEXT_PUBLIC_URL;
+
 const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ clinicId, clinicName, email }) => {
-    const DEMO_URL = `http://localhost:3000/${clinicId}`;
+    const DEMO_URL = `${URL}/clinic?id=${clinicId}`;
     const qrSettings: QRCodeSettings = {
         color: "#ffffff",
         bgColor: "#2182D9",
         size: 256,
     };
-
+    console.log(DEMO_URL);
     const logo = "/n6t-logo.jpg";
     const qrCodeRef = useRef<HTMLDivElement>(null);
 

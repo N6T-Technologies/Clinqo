@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "name": "shefu",
     "version": "1.0.0",
@@ -24,3 +25,31 @@
         "@types/redis": "^4.0.11"
     }
 }
+=======
+{
+    "name": "shefu",
+    "version": "1.0.0",
+    "description": "Engine for Cliqo Queue Management System",
+    "main": "index.js",
+    "license": "MIT",
+    "author": "meru45",
+    "scripts": {
+        "build": "tsc -b",
+        "start": "node dist/index.js",
+        "dev": "yarn run build && yarn run start"
+    },
+    "dependencies": {
+        "redis": "^4.7.0",
+        "@repo/db": "*"
+    },
+    "exports": {
+        "./appointments": "./src/types/reshipiTypes.ts",
+        "./from-api": "./src/types/fromApi.ts",
+        "./to-api": "./src/types/toApi.ts",
+        "./to-ws": "./src/types/toWs.ts"
+    },
+    "devDependencies": {
+        "@types/redis": "^4.0.11"
+    }
+}
+>>>>>>> upstream/main

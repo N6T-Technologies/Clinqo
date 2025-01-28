@@ -19,6 +19,7 @@ export async function sendEmail<T>(to: string, emailData: T, template: (emailDat
 
         return { ok: true, data: data };
     } catch (error) {
+        console.log(error);
         return { ok: false, error, status: 500 };
     }
 }

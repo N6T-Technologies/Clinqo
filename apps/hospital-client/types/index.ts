@@ -12,8 +12,8 @@ export const LoginSchema = z.object({
     }),
 });
 
-// const MAX_FILE_SIZE = 5000000;
-// const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; //5 MB
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 export const CliniqRegSchema = z.object({
     firstName: z.string().min(1, "First name is required"),
@@ -28,6 +28,13 @@ export const CliniqRegSchema = z.object({
         .startsWith("+", "Country code is required"),
     clinicName: z.string().min(1, "Name of the Cliniq is required"),
     logo: z.string(),
+    //TODO:: finish the drag and drop component using following zod type
+    // logo: z
+    //     .instanceof(File)
+    //     .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), { message: "Invalid image file type" })
+    //     .refine((file) => file.size <= MAX_FILE_SIZE, {
+    //         message: `Image size must not exceede ${MAX_FILE_SIZE / (1024 * 1024)} MB`,
+    //     }),
     gstin: z.string().min(1, "GSTIN is required").length(15, "Invalid GSTIN"),
     country: z.string().min(1, "Country is required"),
     addressLine1: z.string().min(1, "Street is required"),
