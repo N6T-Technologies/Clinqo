@@ -110,6 +110,7 @@ export async function registerClinic(
     await sendEmail<CredentialEmailTemplateProps>(
         email,
         { title: title, firstName: newUser.firstName, password: password },
+        "Register your clinic at Clinqo",
         CredentailEmailTemplate
     );
 

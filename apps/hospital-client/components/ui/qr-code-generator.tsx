@@ -7,6 +7,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { toPng } from "html-to-image";
 import { saveAs } from "file-saver";
+import { sendQR } from "@/actions/sendQR"
 
 interface QRCodeGeneratorProps {
     clinicId: string;
@@ -68,13 +69,31 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ clinicId, clinicName,
 
     const handleEmailShare = async (): Promise<void> => {
         if (!qrCodeRef.current) return;
+        
 
         try {
-            const dataUrl = await toPng(qrCodeRef.current);
-            const mailtoLink = `mailto:?subject=QR Code&body=Here's your QR Code for ${DEMO_URL}`;
-            window.location.href = mailtoLink;
+            const qrCodeImage = await toPng(qrCodeRef.current);
+
+            const emailData = {
+                clinicName,
+                clinicId,
+                demoUrl: DEMO_URL,
+                qrCodeImage,
+            };
+
+            const response = await sendQR(email, emailData);
+
+            if (response.ok) {
+                console.log("QR Code sent successfully!");
+            } else {
+                console.log(response.error || "Failed to send QR code");
+            }
         } catch (err: unknown) {
-            console.error("Error generating QR code for email:", err instanceof Error ? err.message : err);
+            const errorMessage = err instanceof Error ? err.message : "Failed to send QR code";
+            
+            console.error("Error sending QR code:", errorMessage);
+        } finally {
+        
         }
     };
 

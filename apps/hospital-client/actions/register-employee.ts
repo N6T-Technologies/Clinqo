@@ -71,6 +71,7 @@ export async function registerEmployee(data: EmployeeRegSchemaType): Promise<{
     await sendEmail<CredentialEmailTemplateProps>(
         newUser.email,
         { title: title, firstName: newUser.firstName, password: password },
+        "Register as Employee",
         CredentailEmailTemplate
     );
 

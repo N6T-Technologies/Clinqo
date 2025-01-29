@@ -80,6 +80,7 @@ export async function registerDoctor(data: DoctorRegSchemaType): Promise<{
     await sendEmail<CredentialEmailTemplateProps>(
         newUser.email,
         { title: Title.Dr, firstName: newUser.firstName, password: password },
+        "Register as doctor",
         CredentailEmailTemplate
     );
 
