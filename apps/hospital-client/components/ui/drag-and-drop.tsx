@@ -30,11 +30,11 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ field, isPending }) => {
 
         // put request on this url to save file to bucket
         const putURL = await putObjURL(saveFileName, contenType);
-        console.log(putURL);
+        // console.log(putURL);
 
         // save this url to databse to get the image
-        // const key = `uploads/user-uploads/${saveFileName}`;
-        // const getURL = await getObjURL(key);
+        const key = `uploads/user-uploads/${saveFileName}`;
+        const getURL = await getObjURL(key);
     };
 
     const handleDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -63,6 +63,8 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ field, isPending }) => {
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
+
+        // TODO : delete uploaded url from database
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
