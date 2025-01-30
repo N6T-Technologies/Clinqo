@@ -3,6 +3,7 @@
 import React, { useState, DragEvent, useRef } from "react";
 import { Input } from "./input";
 import Image from "next/image";
+import { getObjURL, putObjURL } from "../../lib/S3Manager";
 
 interface DragAndDropProps {
     field: any;
@@ -20,6 +21,22 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ field, isPending }) => {
     const [previewSrc, setPreviewSrc] = useState<string | null>(null); // For preview
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+    const handleSubmitLogo = async () => {
+        // console.log("hii");
+        if (!fileName) return;
+
+        const contenType = `image/.${fileName.split(".").pop()}`;
+        const saveFileName = `image-${Date.now()}-${fileName}`;
+
+        // put request on this url to save file to bucket
+        const putURL = await putObjURL(saveFileName, contenType);
+        console.log(putURL);
+
+        // save this url to databse to get the image
+        // const key = `uploads/user-uploads/${saveFileName}`;
+        // const getURL = await getObjURL(key);
+    };
+
     const handleDrop = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         setDragOver(false);
@@ -35,17 +52,18 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ field, isPending }) => {
             setPreviewSrc(null);
         }
     };
-    // const handleDelete = () => {
-    //     // Clear the uploaded image and file name
-    //     setPreviewSrc(null);
-    //     setFileName(null);
-    //     setError(null);
 
-    //     // Reset the file input value
-    //     if (fileInputRef.current) {
-    //         fileInputRef.current.value = "";
-    //     }
-    // };
+    const handleDeleteLogo = () => {
+        // Clear the uploaded image and file name
+        setPreviewSrc(null);
+        setFileName(null);
+        setError(null);
+
+        // Reset the file input value
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+    };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target?.files?.[0];
@@ -137,11 +155,11 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ field, isPending }) => {
         //                     onClick={handleDelete} // Function to clear the image
         //                     className="flex items-center justify-center w-6 h-6 bg-white text-white rounded-full shadow hover:bg-red-700"
         //                 >
-        //                     <Image
-        //                         src="/delete.png" /* Replace with your delete icon path */
-        //                         alt="Delete"
-        //                         className="h-full w-full object-cover rounded-full"
-        //                     />
+        // <Image
+        //     src="/delete.png" /* Replace with your delete icon path */
+        //     alt="Delete"
+        //     className="h-full w-full object-cover rounded-full"
+        // />
         //                 </button>
         //             )}
         //         </div>
@@ -202,12 +220,14 @@ const DragAndDrop: React.FC<DragAndDropProps> = ({ field, isPending }) => {
             <div className="flex justify-center items-center mt-6 space-x-4">
                 <button
                     type="button"
+                    onClick={handleSubmitLogo}
                     className="px-6 py-3 text-sm font-medium text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-700 focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                 >
                     Upload Logo
                 </button>
                 <button
                     type="button"
+                    onClick={handleDeleteLogo}
                     className="px-6 py-3 text-sm font-medium text-white bg-sky-600 rounded-md shadow-sm hover:bg-sky-700 focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
                 >
                     Delete Logo
