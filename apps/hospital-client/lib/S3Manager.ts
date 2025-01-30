@@ -4,21 +4,32 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import dotenv from "dotenv";
 dotenv.config();
 
-// TODO : env variables are not working
+// TODO : env variables are not working you need to hardcode info
+// const accessKeyId = process.env.ACCESS_KEY_ID;
+// const secretAccessKey = process.env.SECRET_ACCESS_KEY;
+// const bucketName = process.env.BUCKET_NAME;
+
+const accessKeyId = "YOUR_ACCESS_KEY_ID_FROM_AWS";
+const secretAccessKey = "YOUR_SECRET_ACCESS_KEY_FROM_AWS";
+const bucketName = "YOUR_BUCKET_NAME_FROM_AWS";
+
+if (!accessKeyId || !secretAccessKey || !bucketName) {
+    throw new Error("Missing AWS credentials in environment variables");
+}
 
 const s3Client = new S3Client({
     region: "ap-south-1",
     credentials: {
-        accessKeyId: process.env.ACCESS_KEY_ID as string,
-        secretAccessKey: process.env.SECRET_ACCESS_KEY as string,
+        accessKeyId,
+        secretAccessKey,
     },
 });
 
-// Todo : type checks of all parameters
+// Todo : improve type checks of all parameters
 
 export async function getObjURL(key: any) {
     const command = new GetObjectCommand({
-        Bucket: process.env.BUCKET_NAME as string,
+        Bucket: bucketName,
         Key: key,
     });
 
@@ -28,7 +39,7 @@ export async function getObjURL(key: any) {
 
 export async function putObjURL(filename: any, contentType: any) {
     const command = new PutObjectCommand({
-        Bucket: process.env.BUCKET_NAME as string,
+        Bucket: bucketName,
         Key: `uploads/user-uploads/${filename}`,
         ContentType: contentType,
     });
