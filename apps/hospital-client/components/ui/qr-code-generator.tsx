@@ -33,7 +33,7 @@ interface LogoSettings {
 const URL = process.env.NEXT_PUBLIC_URL;
 
 const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ clinicId, clinicName, email }) => {
-    const DEMO_URL = `${URL}/clinic?id=${clinicId}`;
+    const DEMO_URL = `${URL}/appointments/new?clinic_id=${clinicId}`;
     const qrSettings: QRCodeSettings = {
         color: "#ffffff",
         bgColor: "#2182D9",

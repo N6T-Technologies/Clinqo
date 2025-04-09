@@ -1,0 +1,36 @@
+import CreateAppointment from "@/components/auth/create-appointment";
+import { RedisManger } from "@/lib/RedisManager";
+import { GET_AVAILABLE_DOCTORS } from "shefu/from-api";
+
+async function getDoctors(clinicId: string) {
+    const availableDoctors = await RedisManger.getInstance().sendAndAwait({
+        type: GET_AVAILABLE_DOCTORS,
+        data: {
+            //@ts-ignore
+            clinic: clinicId,
+        },
+    });
+    if (availableDoctors.payload.ok && availableDoctors.type === "AVAILABLE_DOCTORS") {
+        return { ok: true, data: availableDoctors.payload.doctors };
+    } else if (availableDoctors.type === "RETRY_AVAILABLE_DOCTORS") {
+        return { ok: false, msg: availableDoctors.payload.error };
+    }
+}
+
+export default async function CreateNewAppointment({ searchParams }: { searchParams: { clinic_id: string } }) {
+    const clinicId = searchParams.clinic_id;
+    const res = await getDoctors(clinicId);
+    if (!res) {
+        return <div>RETRY</div>;
+    }
+
+    return (
+        <div className="w-full">
+            {res.ok && res.data ? (
+                <CreateAppointment availableDoctors={res.data} clinicId={clinicId} self={true} />
+            ) : (
+                <div className="">No Doctor is available</div>
+            )}
+        </div>
+    );
+}
