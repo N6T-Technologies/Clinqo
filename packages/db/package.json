@@ -21,6 +21,8 @@
         "./client": "./src/index.ts"
     },
     "devDependencies": {
-        "prisma": "^5.18.0"
+        "prisma": "^5.18.0",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3"
     }
 }
