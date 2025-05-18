@@ -49,7 +49,9 @@ If you need to pre-populate your database with seed data:
 nano packages/db/prisma/seedsData.ts  
 # Apply seeds  
 yarn prisma generate  
-yarn prisma migrate  
+yarn prisma migrate
+#if on a ubuntu based system
+node node packages/db/copy-engines.js 
 ```
 
 #### 6. Generate Hashcode for Password
