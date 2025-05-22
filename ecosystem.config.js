@@ -1,23 +1,36 @@
 module.exports = {
     apps: [
+        // {
+        //     name: "redis-container",
+        //     script: "docker",
+        //     args: "run --rm -d -p 6379:6379 --name redis redis:latest",
+        //     watch: false,
+        //     autorestart: false,
+        //     wait_ready: false,
+        //     listen_timeout: 30000,
+        // },
+        // {
+        //     name: "postgres-container",
+        //     script: "docker",
+        //     args: "run --rm -d -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=mysecretpassword postgres:latest",
+        //     watch: false,
+        //     autorestart: false,
+        //     wait_ready: false,
+        //     listen_timeout: 30000,
+        // },
         {
             name: "redis-container",
             script: "docker",
-            args: "run --rm -d -p 6379:6379 --name redis redis:latest",
-            watch: false,
-            autorestart: false,
-            wait_ready: false,
-            listen_timeout: 30000,
+            args: "start redis",
+            autorestart: true
         },
         {
             name: "postgres-container",
             script: "docker",
-            args: "run --rm -d -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=mysecretpassword postgres:latest",
-            watch: false,
-            autorestart: false,
-            wait_ready: false,
-            listen_timeout: 30000,
+            args: "start postgres",
+            autorestart: true
         },
+
         {
             name: "hospital-client",
             cwd: "./apps/hospital-client",
