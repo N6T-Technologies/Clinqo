@@ -35,7 +35,7 @@ module.exports = {
             name: "hospital-client",
             cwd: "./apps/hospital-client",
             script: "node_modules/next/dist/bin/next",
-            args: "dev",
+            args: "start",
         },
         {
             name: "shefu-service",
