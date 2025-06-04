@@ -1,0 +1,1 @@
+{"root":["./src/redismanager.ts","./src/index.ts","./src/state/reshipibook.ts","./src/state/shefu.ts","./src/state/events.ts","./src/types/fromapi.ts","./src/types/reshipitypes.ts","./src/types/toapi.ts","./src/types/tows.ts"],"version":"5.8.3"}
