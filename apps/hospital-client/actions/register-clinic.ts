@@ -66,13 +66,11 @@ export async function registerClinic(
 
     if (!newUser) {
         return { ok: false, error: ClinicRegError.Something_Went_Wrong };
-    }
-
+    }    
     const newClinic = await prisma.clinic.create({
         data: {
             name: clinicName,
-            //TODO: Change this hard coded value to the image url in s3
-            logo: "logo",
+            logo: logo || "https://github.com/shadcn.png",
             clinicHeads: {
                 create: [
                     {

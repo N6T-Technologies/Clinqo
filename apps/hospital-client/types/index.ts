@@ -199,6 +199,7 @@ export interface StepperRefType {
 export type Clinic = {
     id: string;
     name: string;
+    logo?: string | null;
     headName: string;
     headEmail: string;
 };
