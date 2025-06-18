@@ -6,8 +6,20 @@ import { ReactNode } from "react";
 import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 import { Sidebar } from "@/components/ui/sidebar";
 import { FaUserDoctor } from "react-icons/fa6";
+import { auth } from "@/auth";
+import { getEmployeeByUserId } from "@/data/employees";
 
-export default function DeskMangerLayout({ children }: { children: ReactNode }) {
+export default async function DeskMangerLayout({ children }: { children: ReactNode }) {
+    const session = await auth();
+    
+    // Get employee information including clinic logo
+    const employee = session?.user?.id ? await getEmployeeByUserId(session.user.id) : null;
+    
+    // Generate initials for fallback
+    const userInitials = session?.user?.name 
+        ? session.user.name.split(' ').map(n => n[0]).join('').toUpperCase()
+        : 'DM';
+    
     const routes: Route[] = [
         { href: "/console/dashboard", icon: <FaChartArea className="h-6 w-6" />, title: "Dashboard" },
         { href: "/console/appointments", icon: <FaClipboardList className="h-6 w-6" />, title: "Appointments" },
@@ -17,13 +29,12 @@ export default function DeskMangerLayout({ children }: { children: ReactNode }) 
     return (
         <div className="h-full w-full grid grid-cols-12">
             <Sidebar routes={routes} help={true} />
-            <div className="w-full col-span-10 bg-clinqoHover h-full">
-                <Appbar
-                    alt={"MP"}
-                    src="https://github.com/shadcn.png"
+            <div className="w-full col-span-10 bg-clinqoHover h-full">                <Appbar
+                    alt={userInitials}
+                    src={employee?.clinic?.logo}
                     icon={<EnvelopeClosedIcon className="h-6 w-6" />}
                 />
-                <div className="h-full w-full">{children}</div>
+                <div className="h-full w-full overflow-y-auto">{children}</div>
             </div>
         </div>
     );
