@@ -69,104 +69,148 @@ async function createPrescriptionWithRealData(
     if (!clinic) {
       console.log('Clinic not found for ID:', clinicId);
       return null;
-    }    // Try to find patient by name (improved search)
+    }    // Try to find patient by name (improved search with exact matching first)
     const patientNameParts = patientName.trim().split(' ');
     const firstName = patientNameParts[0] || '';
     const lastName = patientNameParts.slice(1).join(' ') || '';
     
     console.log('Searching for patient - firstName:', firstName, 'lastName:', lastName);
-      const patient = await prisma.patient.findFirst({
+    
+    // First try exact matching
+    let patient = await prisma.patient.findFirst({
       include: {
         user: true,
       },
       where: {
         user: {
-          OR: [
-            // Exact match on first name
+          AND: [
             {
               firstName: {
                 equals: firstName,
                 mode: Prisma.QueryMode.insensitive,
               },
             },
-            // Contains match on first name
-            {
-              firstName: {
-                contains: firstName,
+            ...(lastName ? [{
+              lastName: {
+                equals: lastName,
                 mode: Prisma.QueryMode.insensitive,
               },
-            },
-            // Full name search
-            ...(lastName ? [{
-              AND: [
-                {
-                  firstName: {
-                    contains: firstName,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-                {
-                  lastName: {
-                    contains: lastName,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-              ],
             }] : []),
           ],
         },
       },
     });
-
-    // Try to find doctor by name (improved search)
+    
+    // If no exact match found, try fuzzy matching
+    if (!patient) {
+      console.log('No exact match found, trying fuzzy search...');
+      patient = await prisma.patient.findFirst({
+        include: {
+          user: true,
+        },
+        where: {
+          user: {
+            OR: [
+              // Contains match on first name only
+              {
+                firstName: {
+                  contains: firstName,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+              // Full name search only if lastName exists
+              ...(lastName ? [{
+                AND: [
+                  {
+                    firstName: {
+                      contains: firstName,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    lastName: {
+                      contains: lastName,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
+              }] : []),
+            ],
+          },
+        },
+      });
+    }    // Try to find doctor by name (improved search with exact matching first)
     const doctorNameClean = doctorName.replace(/^Dr\.?\s*/i, '').trim();
     const doctorNameParts = doctorNameClean.split(' ');
     const doctorFirstName = doctorNameParts[0] || '';
     const doctorLastName = doctorNameParts.slice(1).join(' ') || '';
     
     console.log('Searching for doctor - firstName:', doctorFirstName, 'lastName:', doctorLastName);
-      const doctor = await prisma.doctor.findFirst({
+    
+    // First try exact matching
+    let doctor = await prisma.doctor.findFirst({
       include: {
         user: true,
       },
       where: {
         user: {
-          OR: [
-            // Exact match on first name
+          AND: [
             {
               firstName: {
                 equals: doctorFirstName,
                 mode: Prisma.QueryMode.insensitive,
               },
             },
-            // Contains match on first name
-            {
-              firstName: {
-                contains: doctorFirstName,
+            ...(doctorLastName ? [{
+              lastName: {
+                equals: doctorLastName,
                 mode: Prisma.QueryMode.insensitive,
               },
-            },
-            // Full name search
-            ...(doctorLastName ? [{
-              AND: [
-                {
-                  firstName: {
-                    contains: doctorFirstName,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-                {
-                  lastName: {
-                    contains: doctorLastName,
-                    mode: Prisma.QueryMode.insensitive,
-                  },
-                },
-              ],
             }] : []),
           ],
         },
       },
     });
+    
+    // If no exact match found, try fuzzy matching
+    if (!doctor) {
+      console.log('No exact doctor match found, trying fuzzy search...');
+      doctor = await prisma.doctor.findFirst({
+        include: {
+          user: true,
+        },
+        where: {
+          user: {
+            OR: [
+              // Contains match on first name only
+              {
+                firstName: {
+                  contains: doctorFirstName,
+                  mode: Prisma.QueryMode.insensitive,
+                },
+              },
+              // Full name search only if lastName exists
+              ...(doctorLastName ? [{
+                AND: [
+                  {
+                    firstName: {
+                      contains: doctorFirstName,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                  {
+                    lastName: {
+                      contains: doctorLastName,
+                      mode: Prisma.QueryMode.insensitive,
+                    },
+                  },
+                ],
+              }] : []),
+            ],
+          },
+        },
+      });
+    }
 
     console.log('Found patient:', patient ? `${patient.user.firstName} ${patient.user.lastName}` : 'No');
     console.log('Found doctor:', doctor ? `Dr. ${doctor.user.firstName} ${doctor.user.lastName}` : 'No');
