@@ -29,7 +29,8 @@ export default async function DeskMangerLayout({ children }: { children: ReactNo
     return (
         <div className="h-full w-full grid grid-cols-12">
             <Sidebar routes={routes} help={true} />
-            <div className="w-full col-span-10 bg-clinqoHover h-full">                <Appbar
+            <div className="w-full col-span-10 bg-clinqoHover h-full">                
+                <Appbar
                     alt={userInitials}
                     src={employee?.clinic?.logo}
                     icon={<EnvelopeClosedIcon className="h-6 w-6" />}
