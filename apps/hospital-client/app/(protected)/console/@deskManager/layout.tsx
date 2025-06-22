@@ -6,6 +6,7 @@ import { ReactNode } from "react";
 import { EnvelopeClosedIcon } from "@radix-ui/react-icons";
 import { Sidebar } from "@/components/ui/sidebar";
 import { FaUserDoctor } from "react-icons/fa6";
+import { FaUsers } from "react-icons/fa";
 import { auth } from "@/auth";
 import { getEmployeeByUserId } from "@/data/employees";
 
@@ -19,11 +20,11 @@ export default async function DeskMangerLayout({ children }: { children: ReactNo
     const userInitials = session?.user?.name 
         ? session.user.name.split(' ').map(n => n[0]).join('').toUpperCase()
         : 'DM';
-    
-    const routes: Route[] = [
+      const routes: Route[] = [
         { href: "/console/dashboard", icon: <FaChartArea className="h-6 w-6" />, title: "Dashboard" },
         { href: "/console/appointments", icon: <FaClipboardList className="h-6 w-6" />, title: "Appointments" },
         { href: "/console/doctors", icon: <FaUserDoctor className="h-6 w-6" />, title: "Doctors" },
+        { href: "/console/previous-patients", icon: <FaUsers className="h-6 w-6" />, title: "Previous Patients" },
     ];
 
     return (
