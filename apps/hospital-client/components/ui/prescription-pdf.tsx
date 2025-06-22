@@ -313,3 +313,37 @@ export const downloadPrescription = async (
   // Cleanup
   URL.revokeObjectURL(url);
 };
+
+// Helper function to open PDF in print interface (no download)
+export const printPrescription = async (
+  data: PrescriptionData | Partial<PrescriptionData>, 
+  isBlank: boolean = false
+) => {
+  const doc = <PrescriptionPDF data={data} isBlank={isBlank} />;
+  const asPdf = pdf(doc);
+  const blob = await asPdf.toBlob();
+  
+  // Create object URL
+  const url = URL.createObjectURL(blob);
+  
+  // Open in new window/tab for printing
+  const printWindow = window.open(url, '_blank');
+  
+  if (printWindow) {
+    // Add event listener to cleanup URL after window closes
+    printWindow.addEventListener('beforeunload', () => {
+      URL.revokeObjectURL(url);
+    });
+    
+    // Trigger print dialog when PDF loads
+    printWindow.addEventListener('load', () => {
+      setTimeout(() => {
+        printWindow.print();
+      }, 1000); // Small delay to ensure PDF is fully loaded
+    });
+  } else {
+    // Fallback if popup was blocked
+    URL.revokeObjectURL(url);
+    throw new Error('Unable to open print window. Please allow popups for this site.');
+  }
+};

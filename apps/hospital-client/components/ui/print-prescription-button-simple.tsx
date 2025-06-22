@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Printer, Download, Loader2 } from 'lucide-react';
+import { Printer, Loader2, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface PrintPrescriptionButtonProps {
@@ -22,6 +22,7 @@ interface PrintPrescriptionButtonProps {
   size?: 'default' | 'sm' | 'lg' | 'icon';
   className?: string;
   isBlank?: boolean;
+  showDownload?: boolean; // Option to show download button alongside print
 }
 
 const PrintPrescriptionButton: React.FC<PrintPrescriptionButtonProps> = ({
@@ -33,9 +34,11 @@ const PrintPrescriptionButton: React.FC<PrintPrescriptionButtonProps> = ({
   size = 'default',
   className = '',
   isBlank = false,
+  showDownload = false,
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const handlePrintPrescription = async () => {
+  
+  const handleAction = async (actionType: 'print' | 'download') => {
     setIsGenerating(true);
     
     try {
@@ -91,20 +94,26 @@ const PrintPrescriptionButton: React.FC<PrintPrescriptionButtonProps> = ({
       }
 
       const { data } = await response.json();
-      prescriptionData = data;
-
-      console.log('Prescription data fetched:', prescriptionData);
+      prescriptionData = data;      console.log('Prescription data fetched:', prescriptionData);
 
       // Dynamic import to avoid SSR issues
-      const { downloadPrescription } = await import('./prescription-pdf');
-      
-      // Generate and download PDF
-      await downloadPrescription(prescriptionData, filename, isBlank);
-      
-      toast({
-        title: "Success",
-        description: "Prescription downloaded successfully!",
-      });    } catch (error) {
+      if (actionType === 'print') {
+        const { printPrescription } = await import('./prescription-pdf');
+        await printPrescription(prescriptionData, isBlank);
+        
+        toast({
+          title: "Success",
+          description: "Prescription opened for printing!",
+        });
+      } else {
+        const { downloadPrescription } = await import('./prescription-pdf');
+        await downloadPrescription(prescriptionData, filename, isBlank);
+        
+        toast({
+          title: "Success", 
+          description: "Prescription downloaded successfully!",
+        });
+      }} catch (error) {
       console.error('Error generating prescription:', error);
       toast({
         title: "Error",
@@ -113,24 +122,54 @@ const PrintPrescriptionButton: React.FC<PrintPrescriptionButtonProps> = ({
       });
     } finally {
       setIsGenerating(false);
-    }
-  };
+    }  };
+
+  if (showDownload) {
+    return (
+      <div className="flex space-x-2">
+        <Button
+          onClick={() => handleAction('print')}
+          disabled={isGenerating}
+          variant={variant}
+          size={size}
+          className={className}
+        >
+          {isGenerating ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <Printer className="h-4 w-4 mr-2" />
+          )}
+          {isGenerating 
+            ? 'Generating...' 
+            : isBlank 
+              ? 'Print Blank' 
+              : 'Print'
+          }
+        </Button>
+        <Button
+          onClick={() => handleAction('download')}
+          disabled={isGenerating}
+          variant="outline"
+          size={size}
+        >
+          <Download className="h-4 w-4 mr-2" />
+          Download
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <Button
-      onClick={handlePrintPrescription}
+      onClick={() => handleAction('print')}
       disabled={isGenerating}
       variant={variant}
       size={size}
       className={className}
-    >
-      {isGenerating ? (
+    >{isGenerating ? (
         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
       ) : (
-        <>
-          <Printer className="h-4 w-4 mr-2" />
-          <Download className="h-4 w-4 mr-2" />
-        </>
+        <Printer className="h-4 w-4 mr-2" />
       )}
       {isGenerating 
         ? 'Generating...' 
