@@ -11,7 +11,7 @@ export const DEFAULT_LOGGEDIN_REDIRECT = "/console/dashboard";
  * @type {string[]}
  */
 
-export const publicRoutes = ["/auth/new-verification", "/appointments/new"];
+export const publicRoutes = ["/auth/new-verification", "/appointments/new", "/auth/signout"];
 
 /**
  * An array of routes that are used for authentication.
