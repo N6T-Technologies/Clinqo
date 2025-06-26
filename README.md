@@ -32,7 +32,7 @@ cd Clinqo
 # Configure hospital client environment  
 cp apps/hospital-client/env.example apps/hospital-client/.env  
 # Configure database environment  
-cp apps/packages/db/env.example apps/packages/db/.env  
+cp packages/db/env.example apps/packages/db/.env  
 ```
 
 #### 4. Set up the Database
@@ -49,7 +49,9 @@ If you need to pre-populate your database with seed data:
 nano packages/db/prisma/seedsData.ts  
 # Apply seeds  
 yarn prisma generate  
-yarn prisma migrate  
+yarn prisma migrate
+#if on a ubuntu based system
+node node packages/db/copy-engines.js 
 ```
 
 #### 6. Generate Hashcode for Password

@@ -21,7 +21,7 @@ export default async function DoctorClinics() {
     //@ts-ignore
     const clinics: { clinicId: string; clinicName: string }[] = session.user.clinics || [];
 
-    const data: AllClinicTable[] = clinics.map((c) => {
+    const data: AllClinicTable[] = (clinics ?? []).map((c) => {
         return {
             id: c.clinicId,
             name: c.clinicName,
