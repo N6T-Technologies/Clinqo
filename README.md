@@ -32,7 +32,7 @@ cd Clinqo
 # Configure hospital client environment  
 cp apps/hospital-client/env.example apps/hospital-client/.env  
 # Configure database environment  
-cp apps/packages/db/env.example apps/packages/db/.env  
+cp packages/db/env.example apps/packages/db/.env  
 ```
 
 #### 4. Set up the Database
