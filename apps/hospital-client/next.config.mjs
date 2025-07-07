@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    env: {
+        NEXT_PUBLIC_URL: process.env.URL,
+    },
     images: {
         remotePatterns: [
             {
@@ -7,6 +10,12 @@ const nextConfig = {
                 hostname: "github.com",
                 port: "",
                 pathname: "/",
+            },
+            {
+                protocol: "https",
+                hostname: "res.cloudinary.com",
+                port: "",
+                pathname: "/**",
             },
         ],
     },

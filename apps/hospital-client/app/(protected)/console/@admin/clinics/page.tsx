@@ -16,6 +16,7 @@ async function getData(id: string): Promise<Clinic[]> {
         return {
             id: c.id,
             name: c.name,
+            logo: c.logo,
             headName: c.clinicHeads[0]?.user.firstName || "Not Found" + c.clinicHeads[0]?.user.lastName || "Not Found",
             headEmail: c.clinicHeads[0]?.user.email || "Not Found",
         };

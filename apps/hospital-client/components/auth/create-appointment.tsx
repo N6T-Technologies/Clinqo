@@ -21,6 +21,7 @@ import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { Checkbox } from "../ui/checkbox";
 import { PaymentMethod } from "@repo/db/client";
 import { WsManger } from "@/lib/WsManager";
+import PrintPrescriptionButton from "@/components/ui/print-prescription-button-simple";
 
 const formSteps: StepInfo[] = [
     {
@@ -370,12 +371,42 @@ export default function CreateAppointment({
                                     />
                                 </div>
                             </div>
-                        )}
-                        {currentStep === 3 && (
+                        )}                        {currentStep === 3 && (
                             <div className="w-full text-center p-4">
                                 {success ? (
-                                    <div className="text-green-600 text-lg font-semibold p-4 bg-green-50 rounded-lg">
-                                        {success}
+                                    <div className="space-y-4">
+                                        <div className="text-green-600 text-lg font-semibold p-4 bg-green-50 rounded-lg">
+                                            {success}
+                                        </div>
+                                        {(() => {
+                                            // Extract appointment ID from success message
+                                            const match = success.match(/Appointment with id (\S+) created/);
+                                            const appointmentId = match ? match[1] : null;
+                                            
+                                            if (appointmentId) {
+                                                // Get patient and doctor names from form data
+                                                const formValues = form.getValues();
+                                                const patientName = `${formValues.firstName} ${formValues.lastName}`;
+                                                const doctorName = formValues.doctor ? formValues.doctor.split("_")[0] : "";
+                                                
+                                                return (
+                                                    <div className="flex flex-col items-center space-y-3">
+                                                        <p className="text-gray-600 text-sm">
+                                                            Appointment ID: <span className="font-mono font-semibold">{appointmentId}</span>
+                                                        </p>                                                        <PrintPrescriptionButton
+                                                            appointmentId={appointmentId}
+                                                            patientName={patientName}
+                                                            doctorName={doctorName}
+                                                            variant="default"
+                                                            size="default"
+                                                            className="min-w-40"
+                                                            showDownload={true}
+                                                        />
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        })()}
                                     </div>
                                 ) : error ? (
                                     <div className="text-red-600 text-lg font-semibold p-4 bg-red-50 rounded-lg">

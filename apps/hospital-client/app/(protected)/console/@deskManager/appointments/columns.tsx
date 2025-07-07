@@ -15,6 +15,7 @@ import {
 import { Appointment } from "@/types";
 import { ReactNode } from "react";
 import { Status } from "shefu/appointments";
+import PrintPrescriptionButton from "@/components/ui/print-prescription-button-simple";
 
 const Header = ({ header, icon }: { header: string; icon?: ReactNode }) => {
     return (
@@ -90,11 +91,20 @@ export const columns: ColumnDef<Appointment>[] = [
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem onClick={() => navigator.clipboard.writeText(appointment.id)}>
                             Copy Id
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
+                        </DropdownMenuItem>                        <DropdownMenuSeparator />
                         {/* //TODO: Add buttons to do specific things */}
                         <DropdownMenuItem>View Appointment</DropdownMenuItem>
                         <DropdownMenuItem>View Doctor</DropdownMenuItem>
+                        <DropdownMenuSeparator />                        <DropdownMenuItem asChild>
+                            <PrintPrescriptionButton
+                                appointmentId={appointment.id}
+                                patientName={appointment.name}
+                                doctorName={appointment.doctorName}
+                                variant="ghost"
+                                size="sm"
+                                className="w-full justify-start p-2 h-auto font-normal"
+                            />
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

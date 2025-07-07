@@ -30,7 +30,8 @@ export async function endSession(
         return { ok: false, error: StartSessionError.Doctor_Not_Found };
     }
     //@ts-ignore
-    if (!session.user.clinics.find((c) => c.clinicId === clinic)) {
+    const userClinics: { clinicId: string; clinicName: string }[] = session.user.clinics || [];
+    if (!userClinics.find((c: { clinicId: string; clinicName: string }) => c.clinicId === clinic)) {
         return { ok: false, error: StartSessionError.Clinic_Not_Found };
     }
 

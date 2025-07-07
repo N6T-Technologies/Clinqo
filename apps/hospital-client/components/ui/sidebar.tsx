@@ -46,7 +46,10 @@ export function Sidebar({ routes, help }: { routes: Route[]; help: boolean }) {
                 <div
                     className="flex items-center space-x-2"
                     onClick={async () => {
-                        await signOut();
+                        // First, sign out from NextAuth
+                        await signOut({ redirect: false });
+                        // Then redirect to our custom signout page
+                        router.push('/auth/signout');
                     }}
                 >
                     <SlLogout className="text-white cursor-pointer" />
