@@ -27,7 +27,8 @@ export async function endAppointment(clinicId: string) {
         return { ok: false, error: EndAppointmentError.Doctor_Not_Found };
     }
     //@ts-ignore
-    if (!session.user.clinics.find((c) => c.clinicId === clinicId)) {
+    const userClinics: { clinicId: string; clinicName: string }[] = session.user.clinics || [];
+    if (!userClinics.find((c: { clinicId: string; clinicName: string }) => c.clinicId === clinicId)) {
         return { ok: false, error: EndAppointmentError.Clinic_Not_Found };
     }
 

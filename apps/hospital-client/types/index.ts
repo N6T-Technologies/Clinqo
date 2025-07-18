@@ -85,7 +85,7 @@ export const CreateAppointmentSchema = z.object({
         .startsWith("+", "Country code is required"),
     symptoms: z.string().min(1, "Symptoms is required"),
     doctor: z.string().min(1, "Doctor is required"),
-    followup: z.boolean({ message: "followup is required" }),
+    followup: z.boolean().default(false),
     paymentMethod: z.custom<PaymentMethod>(),
 });
 
@@ -199,6 +199,7 @@ export interface StepperRefType {
 export type Clinic = {
     id: string;
     name: string;
+    logo?: string | null;
     headName: string;
     headEmail: string;
 };

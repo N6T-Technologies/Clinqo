@@ -5,7 +5,7 @@ import { Button } from "./button";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { useRouter } from "next/navigation";
 
-export function Appbar({ src, alt, icon, href }: { src: string; alt?: string; icon: ReactNode; href?: string }) {
+export function Appbar({ src, alt, icon, href }: { src?: string; alt?: string; icon: ReactNode; href?: string }) {
     const router = useRouter();
 
     return (

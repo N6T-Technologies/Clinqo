@@ -21,7 +21,7 @@ import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 import { Checkbox } from "../ui/checkbox";
 import { PaymentMethod } from "@repo/db/client";
 import { WsManger } from "@/lib/WsManager";
-import { Errors } from "../../../shefu/src/state/ReshipiBook";
+import PrintPrescriptionButton from "@/components/ui/print-prescription-button-simple";
 
 const formSteps: StepInfo[] = [
     {
@@ -45,9 +45,11 @@ const formSteps: StepInfo[] = [
 export default function CreateAppointment({
     availableDoctors,
     clinicId,
+    self = false,
 }: {
     availableDoctors: AvailableDoctorTable[];
     clinicId: string;
+    self?: boolean;
 }) {
     const [currentStep, setCurrentStep] = useState<number>(0);
     const [success, setSuccess] = useState<string | undefined>(undefined);
@@ -69,7 +71,7 @@ export default function CreateAppointment({
             WsManger.getInstance().deRegisterCallback("doctors", `doctors@${clinicId}`);
             WsManger.getInstance().sendMessage({ method: "UNSUBSCRIBE", params: [`doctors@${clinicId}`] });
         };
-    }, []);
+    }, [clinicId, availableDoctors]);
 
     const form = useForm<CreateAppointmentSchemaType>({
         resolver: zodResolver(CreateAppointmentSchema),
@@ -77,7 +79,7 @@ export default function CreateAppointment({
 
     const processForm: SubmitHandler<CreateAppointmentSchemaType> = (data) => {
         startTransition(async () => {
-            const res = await createAppointment(data);
+            const res = await createAppointment(data, { self: self, clinicId: clinicId });
             if (res.ok) {
                 setSuccess(res.msg);
             } else {
@@ -109,19 +111,36 @@ export default function CreateAppointment({
     };
 
     return (
-        <div className="w-full h-full flex flex-col justify-between pt-16 px-16">
+        <div className="w-full h-full flex flex-col justify-between px-4 pt-4 md:pt-16 md:px-16">
             <div>
-                <Stepper formSteps={formSteps} currentStep={currentStep} />
+                <div className="hidden md:block">
+                    <Stepper formSteps={formSteps} currentStep={currentStep} />
+                </div>
+                <div className="md:hidden">
+                    <h1 className="text-lg font-bold text-center mb-4">{formSteps[currentStep]?.name}</h1>
+                    <div className="flex justify-center items-center mb-4">
+                        <div className="flex space-x-2">
+                            {formSteps.map((_, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`h-2 w-2 rounded-full ${
+                                        idx === currentStep ? "bg-sky-600" : "bg-gray-300"
+                                    }`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
                 <Form {...form}>
                     <form
-                        className="flex justify-center w-full h-full mt-12 py-12"
+                        className="flex justify-center w-full h-full mt-4 md:mt-12 py-4 md:py-12"
                         onSubmit={form.handleSubmit(processForm)}
                     >
                         {currentStep === 0 && (
-                            <div>
+                            <div className="w-full">
                                 <h2 className="text-base font-semibold leading-7 text-gray-900">Patient Information</h2>
                                 <p className="mt-1 text-sm leading-6 text-gray-600">Provide details of Patient</p>
-                                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                <div className="mt-6 md:mt-10 grid grid-cols-1 gap-y-6 md:gap-y-8 md:gap-x-6 md:grid-cols-2">
                                     <FormField
                                         control={form.control}
                                         name="firstName"
@@ -173,7 +192,7 @@ export default function CreateAppointment({
                                         name="contactNumber"
                                         render={({ field }) => {
                                             return (
-                                                <FormItem>
+                                                <FormItem className="col-span-1 md:col-span-2">
                                                     <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
                                                         Phone number
                                                     </FormLabel>
@@ -236,18 +255,18 @@ export default function CreateAppointment({
                             </div>
                         )}
                         {currentStep === 1 && (
-                            <div>
+                            <div className="w-full">
                                 <h2 className="text-base font-semibold leading-7 text-gray-900">
                                     Appointment Information
                                 </h2>
                                 <p className="mt-1 text-sm leading-6 text-gray-600">Provide details of Appointment</p>
-                                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                <div className="mt-6 md:mt-10 grid grid-cols-1 gap-y-6 md:gap-y-8 md:gap-x-6 md:grid-cols-2">
                                     <FormField
                                         control={form.control}
                                         name="symptoms"
                                         render={({ field }) => {
                                             return (
-                                                <FormItem>
+                                                <FormItem className="col-span-1 md:col-span-2">
                                                     <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
                                                         Symptoms
                                                     </FormLabel>
@@ -284,6 +303,7 @@ export default function CreateAppointment({
                                                             {newAvailableDoctors.map((ad: AvailableDoctorTable) => {
                                                                 return (
                                                                     <SelectItem
+                                                                        key={ad.doctorId}
                                                                         value={`${ad.doctorName}_${ad.doctorId}`}
                                                                     >
                                                                         {ad.doctorName}
@@ -297,29 +317,29 @@ export default function CreateAppointment({
                                             );
                                         }}
                                     />
-                                    <FormField
-                                        control={form.control}
-                                        name="followup"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
-                                                    Follow up?
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                                                </FormControl>
-                                                <FormDescription></FormDescription>
-                                            </FormItem>
-                                        )}
-                                    />
+                                    {/* <FormField */}
+                                    {/*     control={form.control} */}
+                                    {/*     name="followup" */}
+                                    {/*     render={({ field }) => ( */}
+                                    {/*         <FormItem className="flex flex-row items-center space-x-2 space-y-0 mt-4"> */}
+                                    {/*             <FormControl> */}
+                                    {/*                 <Checkbox checked={field.value} onCheckedChange={field.onChange} /> */}
+                                    {/*             </FormControl> */}
+                                    {/*             <FormLabel className="text-sm font-medium leading-6 text-gray-900"> */}
+                                    {/*                 Follow up? */}
+                                    {/*             </FormLabel> */}
+                                    {/*             <FormDescription></FormDescription> */}
+                                    {/*         </FormItem> */}
+                                    {/*     )} */}
+                                    {/* /> */}
                                 </div>
                             </div>
                         )}
                         {currentStep === 2 && (
-                            <div>
+                            <div className="w-full">
                                 <h2 className="text-base font-semibold leading-7 text-gray-900">Payment Information</h2>
                                 <p className="mt-1 text-sm leading-6 text-gray-600">Provide details about Payment</p>
-                                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                <div className="mt-6 md:mt-10 grid grid-cols-1 gap-y-6 md:gap-y-8">
                                     <FormField
                                         control={form.control}
                                         name="paymentMethod"
@@ -351,27 +371,72 @@ export default function CreateAppointment({
                                     />
                                 </div>
                             </div>
+                        )}                        {currentStep === 3 && (
+                            <div className="w-full text-center p-4">
+                                {success ? (
+                                    <div className="space-y-4">
+                                        <div className="text-green-600 text-lg font-semibold p-4 bg-green-50 rounded-lg">
+                                            {success}
+                                        </div>
+                                        {(() => {
+                                            // Extract appointment ID from success message
+                                            const match = success.match(/Appointment with id (\S+) created/);
+                                            const appointmentId = match ? match[1] : null;
+                                            
+                                            if (appointmentId) {
+                                                // Get patient and doctor names from form data
+                                                const formValues = form.getValues();
+                                                const patientName = `${formValues.firstName} ${formValues.lastName}`;
+                                                const doctorName = formValues.doctor ? formValues.doctor.split("_")[0] : "";
+                                                
+                                                return (
+                                                    <div className="flex flex-col items-center space-y-3">
+                                                        <p className="text-gray-600 text-sm">
+                                                            Appointment ID: <span className="font-mono font-semibold">{appointmentId}</span>
+                                                        </p>                                                        <PrintPrescriptionButton
+                                                            appointmentId={appointmentId}
+                                                            patientName={patientName}
+                                                            doctorName={doctorName}
+                                                            variant="default"
+                                                            size="default"
+                                                            className="min-w-40"
+                                                            showDownload={true}
+                                                        />
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        })()}
+                                    </div>
+                                ) : error ? (
+                                    <div className="text-red-600 text-lg font-semibold p-4 bg-red-50 rounded-lg">
+                                        {error}
+                                    </div>
+                                ) : (
+                                    <div className="text-gray-600 text-lg font-semibold p-4">
+                                        Processing your appointment...
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </form>
                 </Form>
-                {currentStep != formSteps.length - 1 ? (
-                    <div className="flex justify-between fixed bottom-4 w-9/12">
-                        <Button variant="clinqo" className="p-2" onClick={() => prev()} disabled={currentStep == 0}>
-                            <BsChevronLeft className="h-6 w-6" />
+                {currentStep !== formSteps.length - 1 ? (
+                    <div className="flex justify-between w-full md:w-9/12 py-4 md:fixed md:bottom-4">
+                        <Button variant="clinqo" className="p-2" onClick={() => prev()} disabled={currentStep === 0}>
+                            <BsChevronLeft className="h-4 w-4 md:h-6 md:w-6" />
                         </Button>
 
                         <Button
                             variant="clinqo"
                             className="p-2"
                             onClick={() => next()}
-                            disabled={currentStep == formSteps.length - 1 || isPending}
+                            disabled={currentStep === formSteps.length - 1 || isPending}
                         >
-                            <BsChevronRight className="h-6 w-6" />
+                            {isPending ? "Processing..." : <BsChevronRight className="h-4 w-4 md:h-6 md:w-6" />}
                         </Button>
                     </div>
-                ) : (
-                    <div>{success ? success : error}</div>
-                )}
+                ) : null}
             </div>
         </div>
     );

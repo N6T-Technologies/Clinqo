@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "../ui/input";
 import { PhoneInput } from "../ui/phone-input";
 import { registerClinic } from "@/actions/register-clinic";
-import DragAndDrop from "../ui/drag-and-drop";
+import CloudinaryUpload from "../ui/cloudinary-upload";
 
 const formSteps: StepInfo[] = [
     {
@@ -423,13 +423,13 @@ export const ClinicRegForm = () => {
                         {currentStep === 2 && (
                             <div className="w-full h-full flex flex-col items-center">
                                 <h2 className="text-lg font-semibold leading-7 text-gray-900 text-center"></h2>
-                                {/* <p className="mt-1 text-sm leading-6 text-gray-600">Add Clinic Logo</p> */}
-                                <div className="w-full max-w-md mt-8">
+                                {/* <p className="mt-1 text-sm leading-6 text-gray-600">Add Clinic Logo</p> */}                                <div className="w-full max-w-md mt-8">
                                     <FormField
                                         control={form.control}
                                         name="logo"
                                         render={({ field }) => {
                                             return (
+<<<<<<< HEAD
                                                 <FormItem items-start>
                                                     <FormLabel className="block text-sm font-medium leading-6 text-gray-900 text-center items-start">
                                                         Upload Clinic Logo
@@ -446,6 +446,20 @@ export const ClinicRegForm = () => {
                                                         <DragAndDrop field={field} />
 
                                                         {/* enable DragAndDrop when S3 upload is available */}
+=======
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <CloudinaryUpload 
+                                                            field={field} 
+                                                            isPending={isPending}
+                                                            onUploadComplete={(url) => {
+                                                                console.log('Logo uploaded:', url);
+                                                            }}
+                                                            onUploadError={(error) => {
+                                                                console.error('Upload error:', error);
+                                                            }}
+                                                        />
+>>>>>>> upstream/main
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

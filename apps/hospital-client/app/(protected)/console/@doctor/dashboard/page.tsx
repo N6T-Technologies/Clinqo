@@ -5,21 +5,22 @@ import { AllClinicTable } from "@/types";
 export default async function Dashboard() {
     const session = await auth();
 
-    //@ts-ignore
-    const doctorId = session.user.doctorId;
-    //@ts-ignore
-    const clinics: { clinicId: string; clinicName: string }[] = session.user.clinics;
+    // If session is null, handle it gracefully
+    if (!session || !session.user) {
+        return <div>You must be signed in to view this page.</div>;
+    }
 
-    const data: AllClinicTable[] = clinics.map((c) => {
-        return {
-            id: c.clinicId,
-            name: c.clinicName,
-            timing: "--:--",
-        };
-    });
-    return (
-        <>
-            <DoctorDashboard doctorId={doctorId} data={data} />
-        </>
-    );
+    const doctorId = (session.user as any).doctorId;
+    const clinics = (session.user as any).clinics as {
+        clinicId: string;
+        clinicName: string;
+    }[];
+
+    const data: AllClinicTable[] = (clinics ?? []).map((c) => ({
+        id: c.clinicId,
+        name: c.clinicName,
+        timing: "--:--",
+    }));
+
+    return <DoctorDashboard doctorId={doctorId} data={data} />;
 }

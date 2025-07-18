@@ -11,8 +11,8 @@
         "dev": "yarn run build && yarn run start"
     },
     "dependencies": {
-        "redis": "^4.7.0",
-        "@repo/db": "*"
+        "@repo/db": "*",
+        "redis": "^4.7.0"
     },
     "exports": {
         "./appointments": "./src/types/reshipiTypes.ts",
