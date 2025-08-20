@@ -65,6 +65,47 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
     console.log(res);
 };
 
+export const sendClinicWelcomeEmail = async (
+    email: string, 
+    firstName: string, 
+    password: string,
+    clinicName: string
+) => {
+    try {
+        const res = await resend.emails.send({
+            from: `Clinqo <noreply@${domain}>`,
+            to: email,
+            subject: "Welcome to Clinqo - Your Clinic Account Created",
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                    <h2 style="color: #3297F5;">Welcome to Clinqo!</h2>
+                    <p>Dear ${firstName},</p>
+                    <p>Your clinic account for <strong>${clinicName}</strong> has been successfully created.</p>
+                    <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <h3>Your Login Credentials:</h3>
+                        <p><strong>Email:</strong> ${email}</p>
+                        <p><strong>Password:</strong> ${password}</p>
+                    </div>
+                    <p>Please log in to your account and change your password for security purposes.</p>
+                    <p>
+                        <a href="${url}/auth/login" 
+                           style="background-color: #3297F5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                           Login to Your Account
+                        </a>
+                    </p>
+                    <p>Best regards,<br>The Clinqo Team</p>
+                </div>
+            `,
+        });
+
+        console.log("Clinic welcome email sent:", res);
+        return res;
+    } catch (error) {
+        console.error("Failed to send clinic welcome email:", error);
+        throw error;
+    }
+};
+
 // export const sendVerificationEmail = async (email: string, token: string) => {
 //     const confirmLink = `http://localhost:3000/auth/new-verification?token=${token}`;
 //
