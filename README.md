@@ -25,6 +25,8 @@ Download Docker and install it based on your operating system.
 ```bash
 git clone https://github.com/N6T-Technologies/Clinqo.git  
 cd Clinqo  
+yarn install
+yarn add prisma@6.15.0 @prisma/client@6.15.0 -W
 ```
 
 #### 3. Configure Environment Variables
@@ -35,23 +37,27 @@ cp apps/hospital-client/env.example apps/hospital-client/.env
 cp packages/db/env.example apps/packages/db/.env  
 ```
 
-#### 4. Set up the Database
+#### 4. Start Docker Services
 ```bash
-cd packages/db/prisma  
-yarn prisma generate  
-yarn prisma migrate  
+# Start Redis and PostgreSQL containers
+docker compose up -d
+
+# To pause development environment
+docker compose pause
+
+# To resume development environment
+docker compose unpause
+
+# Note: Avoid using 'docker compose down' as it will delete existing database data
 ```
 
-#### 5. Add Seed Data (Optional)
-If you need to pre-populate your database with seed data:
+#### 5. Set up the Database
 ```bash
-# Update seed data file  
-nano packages/db/prisma/seedsData.ts  
-# Apply seeds  
-yarn prisma generate  
-yarn prisma migrate
-#if on a ubuntu based system
-node node packages/db/copy-engines.js 
+cd packages/db/prisma
+yarn prisma generate
+yarn prisma db seed
+yarn prisma generate
+yarn prisma migrate dev
 ```
 
 #### 6. Generate Hashcode for Password
@@ -61,28 +67,19 @@ node node packages/db/copy-engines.js
 yarn prisma studio  
 ```
 
-#### 7. Start the Application
+#### 7. Start the Services
 ```bash
-# From the root directory  
-pm2 start ecosystem.config.js  
+# Start shefu and ws services
+chmod +x service.sh  # if running for the first time
+./service.sh
+
+# Start the hospital client
+cd apps/hospital-client
+yarn run build
+yarn run start
 ```
 
-This will automatically start all necessary services:
-- PostgreSQL and Redis containers
-- WebSocket server
-- Shefu service
-- Hospital client
-- Database services
 
-#### 8. Monitor the Services
-```bash
-pm2 status  
-```
-
-To view logs:
-```bash
-pm2 logs  
-```
 
 ## 📝 Additional Information
 - **Containerization**: Uses Docker for PostgreSQL and Redis
