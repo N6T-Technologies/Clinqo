@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/state/SubscriptionManager.ts","./src/state/User.ts","./src/state/UserManager.ts","./src/types/incoming.ts","./src/types/outgoing.ts"],"version":"5.8.3"}
+{"root":["./src/index.ts","./src/state/subscriptionmanager.ts","./src/state/user.ts","./src/state/usermanager.ts","./src/types/incoming.ts","./src/types/outgoing.ts"],"version":"5.9.2"}

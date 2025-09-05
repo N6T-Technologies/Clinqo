@@ -1,0 +1,26 @@
+#Package installation
+yarn install
+yarn add prisma@6.15.0 @prisma/client@6.15.0 -W
+docker compose up -d
+
+## docker commands
+To pause dev: docker compose pause && docker compose unpause
+Never use docker compose down : this will delete existing data on database.
+
+## Database setup
+cd packages/db/prisma  
+yarn prisma generate
+yarn prisma db seed
+yarn prisma generate
+yarn prisma migrate dev
+
+## start with shefu and ws
+chmod +x service.txt (if first time)
+./service.txt
+
+## Main clinqo service
+cd apps/hospital-client
+yarn run build
+yarn run start
+
+

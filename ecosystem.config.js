@@ -12,7 +12,7 @@ module.exports = {
         // {
         //     name: "postgres-container",
         //     script: "docker",
-        //     args: "run --rm -d -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=mysecretpassword postgres:latest",
+        //     args: "run --rm -d -p 5434:5432 --name postgres -e POSTGRES_PASSWORD=YourSecretPassword postgres:latest",
         //     watch: false,
         //     autorestart: false,
         //     wait_ready: false,
