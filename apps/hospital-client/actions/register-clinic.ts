@@ -8,6 +8,7 @@ import { generatePass } from "@/lib/utils";
 import { ClinicRegError, CliniqRegSchema, CliniqRegSchemaType } from "@/types";
 import prisma, { EmployeeDesignation, EmployeeStatus, Genders, UserRoles } from "@repo/db/client";
 import { sendEmail } from "./send-email";
+import { sendClinicWelcomeEmail } from "@/data/password-reset-token";
 import {
     CredentailEmailTemplate,
     CredentialEmailTemplateProps,
@@ -105,11 +106,17 @@ export async function registerClinic(
     });
 
     const title = newUser.gender === Genders.MALE ? Title.Mr : Title.Ms;
-    await sendEmail<CredentialEmailTemplateProps>(
-        email,
-        { title: title, firstName: newUser.firstName, password: password },
-        CredentailEmailTemplate
-    );
+    
+    // Send welcome email with credentials to the clinic head
+    try {
 
-    return { ok: true, msg: `The clinic with id ${newClinic.id} created` };
+        await sendClinicWelcomeEmail(email, newUser.firstName, password, clinicName);
+        
+        console.log(`Welcome email sent successfully to ${email}`);
+    } catch (error) {
+        console.error("Failed to send welcome email:", error);
+        // Note: We don't fail the clinic creation if email fails
+    }
+
+    return { ok: true, msg: `The clinic with id ${newClinic.id} created and welcome email sent to ${email}` };
 }

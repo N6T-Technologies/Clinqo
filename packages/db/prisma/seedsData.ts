@@ -13,7 +13,7 @@ const seedsData: {
             email: "sanatbehera@gmail.com",
             contactNumber: "7417041977",
             countryCode: "+91",
-            password: "$2a$10$kPnaoUh.Pq3jpwB5mHJWXe7rNbEygHCJuhFqomtFN.BipIUezy36u",
+            password: "$2a$10$0WL6yF/Pm.1.QjJA3qtO0.2LJQGOXE6ucwvnHtiAkWMlyfMnl0Kbm",
             role: Roles.ADMIN,
         },
     ],
