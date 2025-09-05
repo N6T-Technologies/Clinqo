@@ -72,7 +72,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                 //@ts-ignore
                 session.user.doctorId = doctor?.id;
                 //@ts-ignore
-                session.user.clinics = clinics.map((c) => {
+                session.user.clinics = clinics.map((c: any) => {
                     return { clinicId: c.id, clinicName: c.name };
                 });
             }
