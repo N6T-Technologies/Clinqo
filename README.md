@@ -6,6 +6,7 @@ Welcome to Clinqo - An intelligent healthcare queue management solution that str
 
 ## ✨ Authors
 - [@meru45](https://www.github.com/meru45)
+- [@biswa](https://www.github.com/biswaranjan-dash)
 
 ## 🚀 Getting Started
 
