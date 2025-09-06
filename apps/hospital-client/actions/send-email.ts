@@ -7,11 +7,12 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function sendEmail<T>(to: string, emailData: T, template: (emailData: T) => React.JSX.Element) {
     try {
         const { data, error } = await resend.emails.send({
-            from: "Clinqo <noreply@l3xlabs.com>",
+            from: "Clinqo <noreply@n6t.in>",
             to: [to],
             subject: "Login Credentials",
             react: template(emailData),
         });
+        console.log("Email sent", { data, error });
 
         if (error) {
             return { ok: false, error, status: 500 };
