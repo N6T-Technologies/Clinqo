@@ -119,7 +119,7 @@ We may update this privacy policy periodically. We will notify you of any signif
 
 For privacy-related questions, you can reach us at:
 - Company: N6T Technologies
-- Website: https://n6t.in
+- Website: https://www.n6t.in
 - Email: team@n6t.in
 - Address: TI-109, 1st Floor, TIIR Building
           Foundation for Technology and Business Incubation (FTBI)
