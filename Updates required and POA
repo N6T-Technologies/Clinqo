@@ -1,0 +1,5 @@
+ in appointments in console of desk manager when appointment is created then only the ongoing and created appointments are shown, instead need to add the appointments even after there is created and completed status
+ in appointments engine the issue is it doesn't handle patients with same name and treats them as one appointment.
+ in doctor dashboard in appointment card where doctor checks appointment, the doctor has to start his appointment to view the appointments and patient name, change it to a flow where he can view appointments when he switches start in the clinics tab
+ in doctors tab in clinics the doctor should be able to set his timings.
+ in desk manager in appointments follow up has to be fixed and then in follow up the symptoms added in doctors to be shown as symptoms in doctor appointments card.
