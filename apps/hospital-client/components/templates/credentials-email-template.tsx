@@ -53,7 +53,7 @@ export function CredentailEmailTemplate({ title, firstName, password }: Credenti
             </main>
 
             <footer className="pt-4 mt-6 border-t border-gray-300 text-center">
-                <p className="text-gray-500 text-sm">For support, contact N6T Technologies at support@n6t.in</p>
+                <p className="text-gray-500 text-sm">For support, contact N6T Technologies at team@n6t.in</p>
             </footer>
         </div>
     );

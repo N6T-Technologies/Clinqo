@@ -28,15 +28,15 @@ export default async function DeskMangerLayout({ children }: { children: ReactNo
     ];
 
     return (
-        <div className="h-full w-full grid grid-cols-12">
+        <div className="h-screen w-full grid grid-cols-12">
             <Sidebar routes={routes} help={true} />
-            <div className="w-full col-span-10 bg-clinqoHover h-full">                
+            <div className="w-full col-span-10 bg-clinqoHover flex flex-col h-screen">                
                 <Appbar
                     alt={userInitials}
                     src={employee?.clinic?.logo}
                     icon={<EnvelopeClosedIcon className="h-6 w-6" />}
                 />
-                <div className="h-full w-full overflow-y-auto">{children}</div>
+                <div className="flex-1 overflow-y-auto relative">{children}</div>
             </div>
         </div>
     );

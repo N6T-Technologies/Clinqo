@@ -22,6 +22,7 @@ import { Checkbox } from "../ui/checkbox";
 import { PaymentMethod } from "@repo/db/client";
 import { WsManger } from "@/lib/WsManager";
 import PrintPrescriptionButton from "@/components/ui/print-prescription-button-simple";
+import SymptomChecker from "@/components/ui/symptom-checker";
 
 const formSteps: StepInfo[] = [
     {
@@ -111,8 +112,8 @@ export default function CreateAppointment({
     };
 
     return (
-        <div className="w-full h-full flex flex-col justify-between px-4 pt-4 md:pt-16 md:px-16">
-            <div>
+        <div className="w-full flex flex-col px-4 pt-4 md:pt-8 md:px-16 pb-24">
+            <div className="w-full max-w-5xl mx-auto">
                 <div className="hidden md:block">
                     <Stepper formSteps={formSteps} currentStep={currentStep} />
                 </div>
@@ -133,7 +134,7 @@ export default function CreateAppointment({
                 </div>
                 <Form {...form}>
                     <form
-                        className="flex justify-center w-full h-full mt-4 md:mt-12 py-4 md:py-12"
+                        className="flex justify-center w-full mt-4 md:mt-12 py-4 md:py-12"
                         onSubmit={form.handleSubmit(processForm)}
                     >
                         {currentStep === 0 && (
@@ -265,19 +266,21 @@ export default function CreateAppointment({
                                         control={form.control}
                                         name="symptoms"
                                         render={({ field }) => {
+                                            const symptomData = field.value ? JSON.parse(field.value) : undefined;
                                             return (
                                                 <FormItem className="col-span-1 md:col-span-2">
                                                     <FormLabel className="block text-sm font-medium leading-6 text-gray-900">
                                                         Symptoms
                                                     </FormLabel>
                                                     <FormControl>
-                                                        <Input
-                                                            className="text-gray-900 w-full border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6"
-                                                            {...field}
-                                                            disabled={isPending}
-                                                            type="text"
-                                                            placeholder="Nuro"
-                                                        />
+                                                        <div className="w-full">
+                                                            <SymptomChecker
+                                                                initialData={symptomData}
+                                                                onComplete={(data) => {
+                                                                    field.onChange(JSON.stringify(data));
+                                                                }}
+                                                            />
+                                                        </div>
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -317,21 +320,22 @@ export default function CreateAppointment({
                                             );
                                         }}
                                     />
-                                    {/* <FormField */}
-                                    {/*     control={form.control} */}
-                                    {/*     name="followup" */}
-                                    {/*     render={({ field }) => ( */}
-                                    {/*         <FormItem className="flex flex-row items-center space-x-2 space-y-0 mt-4"> */}
-                                    {/*             <FormControl> */}
-                                    {/*                 <Checkbox checked={field.value} onCheckedChange={field.onChange} /> */}
-                                    {/*             </FormControl> */}
-                                    {/*             <FormLabel className="text-sm font-medium leading-6 text-gray-900"> */}
-                                    {/*                 Follow up? */}
-                                    {/*             </FormLabel> */}
-                                    {/*             <FormDescription></FormDescription> */}
-                                    {/*         </FormItem> */}
-                                    {/*     )} */}
-                                    {/* /> */}
+                                    <FormField
+                                        control={form.control}
+                                        name="followup"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-row items-center space-x-2 space-y-0 mt-4">
+                                                <FormControl>
+                                                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                </FormControl>
+                                                <FormLabel className="text-sm font-medium leading-6 text-gray-900">
+                                                    Follow up?
+                                                </FormLabel>
+                                                <FormDescription></FormDescription>
+                                            </FormItem>
+                                        )}
+                                    />  
+
                                 </div>
                             </div>
                         )}
@@ -422,19 +426,27 @@ export default function CreateAppointment({
                     </form>
                 </Form>
                 {currentStep !== formSteps.length - 1 ? (
-                    <div className="flex justify-between w-full md:w-9/12 py-4 md:fixed md:bottom-4">
-                        <Button variant="clinqo" className="p-2" onClick={() => prev()} disabled={currentStep === 0}>
-                            <BsChevronLeft className="h-4 w-4 md:h-6 md:w-6" />
-                        </Button>
+                    <div className="fixed bottom-0 left-0 right-0 md:left-[16.666667%] bg-white shadow-lg z-50">
+                        <div className="flex justify-between max-w-5xl mx-auto px-4 py-4">
+                            <Button variant="clinqo" className="px-6 py-2" onClick={() => prev()} disabled={currentStep === 0}>
+                                <BsChevronLeft className="h-4 w-4 md:h-5 md:w-5 mr-2" />
+                                Back
+                            </Button>
 
-                        <Button
-                            variant="clinqo"
-                            className="p-2"
-                            onClick={() => next()}
-                            disabled={currentStep === formSteps.length - 1 || isPending}
-                        >
-                            {isPending ? "Processing..." : <BsChevronRight className="h-4 w-4 md:h-6 md:w-6" />}
-                        </Button>
+                            <Button
+                                variant="clinqo"
+                                className="px-6 py-2"
+                                onClick={() => next()}
+                                disabled={currentStep === formSteps.length - 1 || isPending}
+                            >
+                                {isPending ? "Processing..." : (
+                                    <>
+                                        Next
+                                        <BsChevronRight className="h-4 w-4 md:h-5 md:w-5 ml-2" />
+                                    </>
+                                )}
+                            </Button>
+                        </div>
                     </div>
                 ) : null}
             </div>

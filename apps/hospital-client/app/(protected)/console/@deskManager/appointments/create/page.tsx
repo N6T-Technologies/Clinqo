@@ -31,11 +31,13 @@ export default async function CreateAppointments() {
     console.log(session);
 
     return (
-        <div className="w-full">
+        <div className="w-full h-full">
             {res.ok && res.data ? (
                 <CreateAppointment availableDoctors={res.data} clinicId={clinicId} />
             ) : (
-                <div className="">No Doctor is available</div>
+                <div className="flex items-center justify-center h-full">
+                    <p className="text-lg text-gray-600">No Doctor is available</p>
+                </div>
             )}
         </div>
     );

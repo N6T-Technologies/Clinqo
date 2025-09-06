@@ -83,7 +83,14 @@ export const CreateAppointmentSchema = z.object({
         .min(1, "Contact number is required")
         .length(13, "Invalid contact number")
         .startsWith("+", "Country code is required"),
-    symptoms: z.string().min(1, "Symptoms is required"),
+    symptoms: z.string().min(1, "Symptoms details are required").transform((val) => {
+        try {
+            const parsed = JSON.parse(val);
+            return val;
+        } catch (e) {
+            return val;
+        }
+    }),
     doctor: z.string().min(1, "Doctor is required"),
     followup: z.boolean().default(false),
     paymentMethod: z.custom<PaymentMethod>(),
