@@ -179,7 +179,7 @@ ESLint + Prettier
 - **Architecture**: Monorepo with Yarn Workspaces
 - **Total Services**: 3 (Frontend, Queue Engine, WebSocket)
 - **User Roles**: 5 distinct roles
-- **Total Files**: 151+ TypeScript/React files
+- **Total Files**: ~151 TypeScript/React files (hospital-client)
 
 ---
 

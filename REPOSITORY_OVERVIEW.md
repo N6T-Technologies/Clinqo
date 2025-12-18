@@ -184,13 +184,27 @@ Recoil was chosen for its:
 **Example**:
 ```typescript
 // sessionAtom.ts
+import { atom } from "recoil";
+
 export const sessionAtom = atom<string | null>({
     key: "sessionAtom",
     default: null,
 });
 
 // Usage in components
-const [session, setSession] = useRecoilState(sessionAtom);
+import { useRecoilState } from "recoil";
+import { sessionAtom } from "@/store/atoms/sessionAtom";
+
+function MyComponent() {
+    const [session, setSession] = useRecoilState(sessionAtom);
+    
+    // Update session
+    const handleSessionUpdate = (newSessionId: string) => {
+        setSession(newSessionId);
+    };
+    
+    return <div>Session: {session}</div>;
+}
 ```
 
 ### **Server-Side State Management: Redis**
